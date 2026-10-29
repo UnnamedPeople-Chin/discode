@@ -2,7 +2,7 @@
   "name": "discode",
   "displayName": "DisCode — Visual Discord Rich Presence",
   "description": "Supercharge your Discord status with dynamic file icons, custom elapsed timers, and an interactive live preview settings dashboard.",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "icon": "assets/icon.png",
   "repository": {
     "type": "git",

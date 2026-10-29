@@ -95,7 +95,7 @@ Install directly through the Visual Studio Code Extensions Marketplace:
 
 Or install via terminal:
 ```bash
-code --install-extension UnnamedPeople.discode-rpc
+code --install-extension UnnamedPeople.unnamed-discord-rpc
 ```
 
 ### Discord Setup

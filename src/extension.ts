@@ -49,7 +49,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     // Registrasi Command: Buka Settings UI Webview
     context.subscriptions.push(
         vscode.commands.registerCommand('discordPresence.openSettings', () => {
-            SettingsWebviewPanel.render(context.extensionUri, configHandler, activityDetector);
+            SettingsWebviewPanel.render(context.extensionUri, configHandler, activityDetector, rpcManager);
         })
     );
 

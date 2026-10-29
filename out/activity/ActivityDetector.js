@@ -47,6 +47,9 @@ class ActivityDetector {
     manualStartTimestamp;
     lastFileName = '';
     lastActiveFilePayload = null;
+    currentPayload = null;
+    onActivityChangeEmitter = new vscode.EventEmitter();
+    onDidChangeActivity = this.onActivityChangeEmitter.event;
     constructor(rpcManager, configHandler) {
         this.rpcManager = rpcManager;
         this.configHandler = configHandler;
@@ -124,29 +127,42 @@ class ActivityDetector {
     evaluateState(forceSync = false) {
         const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
         const workspaceName = workspaceFolder ? workspaceFolder.name : '';
-        if (!this.configHandler.enabled) {
+        const clear = () => {
+            this.currentPayload = null;
             this.rpcManager.clearActivity();
+            this.onActivityChangeEmitter.fire({
+                payload: null,
+                previewData: this.getCurrentPreviewData()
+            });
+        };
+        if (!this.configHandler.enabled) {
+            clear();
             return;
         }
         if (!this.configHandler.isWorkspaceAllowed(workspaceName)) {
-            this.rpcManager.clearActivity();
+            clear();
             return;
         }
         const editorInfo = this.getEditorAppInfo();
         const startTimestamp = this.resolveStartTimestamp();
         const dispatch = (payload) => {
+            this.currentPayload = payload;
             if (forceSync) {
                 this.rpcManager.forceSendActivity(payload);
             }
             else {
                 this.rpcManager.updateActivity(payload);
             }
+            this.onActivityChangeEmitter.fire({
+                payload,
+                previewData: this.getCurrentPreviewData()
+            });
         };
         // 1. Skenario Idle
         if (this.isIdle) {
             const idleAction = this.configHandler.behavior.idleAction;
             if (idleAction === 'clear') {
-                this.rpcManager.clearActivity();
+                clear();
                 return;
             }
             if (idleAction === 'showIdle') {
@@ -231,7 +247,7 @@ class ActivityDetector {
             return;
         }
         if (whenNoFileOpen === 'clear') {
-            this.rpcManager.clearActivity();
+            clear();
             return;
         }
         if (whenNoFileOpen === 'idle') {
@@ -372,14 +388,19 @@ class ActivityDetector {
             return '';
         }
     }
+    getCurrentPayload() {
+        return this.currentPayload || this.lastActiveFilePayload;
+    }
     dispose() {
         if (this.idleTimer) {
             clearTimeout(this.idleTimer);
             this.idleTimer = null;
         }
+        this.onActivityChangeEmitter.dispose();
         this.disposables.forEach(d => d.dispose());
         this.disposables = [];
         this.lastActiveFilePayload = null;
+        this.currentPayload = null;
     }
 }
 exports.ActivityDetector = ActivityDetector;

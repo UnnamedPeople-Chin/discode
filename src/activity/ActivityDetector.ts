@@ -18,6 +18,21 @@ export class ActivityDetector implements vscode.Disposable {
     private manualStartTimestamp: number;
     private lastFileName = '';
     private lastActiveFilePayload: ActivityPayload | null = null;
+    private currentPayload: ActivityPayload | null = null;
+
+    private readonly onActivityChangeEmitter = new vscode.EventEmitter<{
+        payload: ActivityPayload | null;
+        previewData: {
+            fileName: string;
+            language: string;
+            workspace: string;
+            gitBranch: string;
+            lineCount: string;
+            currentLine: string;
+            startTimestamp?: number;
+        };
+    }>();
+    public readonly onDidChangeActivity = this.onActivityChangeEmitter.event;
 
     constructor(
         private readonly rpcManager: DiscordRpcManager,
@@ -114,13 +129,22 @@ export class ActivityDetector implements vscode.Disposable {
         const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
         const workspaceName = workspaceFolder ? workspaceFolder.name : '';
 
-        if (!this.configHandler.enabled) {
+        const clear = () => {
+            this.currentPayload = null;
             this.rpcManager.clearActivity();
+            this.onActivityChangeEmitter.fire({
+                payload: null,
+                previewData: this.getCurrentPreviewData()
+            });
+        };
+
+        if (!this.configHandler.enabled) {
+            clear();
             return;
         }
 
         if (!this.configHandler.isWorkspaceAllowed(workspaceName)) {
-            this.rpcManager.clearActivity();
+            clear();
             return;
         }
 
@@ -128,18 +152,23 @@ export class ActivityDetector implements vscode.Disposable {
         const startTimestamp = this.resolveStartTimestamp();
 
         const dispatch = (payload: ActivityPayload) => {
+            this.currentPayload = payload;
             if (forceSync) {
                 this.rpcManager.forceSendActivity(payload);
             } else {
                 this.rpcManager.updateActivity(payload);
             }
+            this.onActivityChangeEmitter.fire({
+                payload,
+                previewData: this.getCurrentPreviewData()
+            });
         };
 
         // 1. Skenario Idle
         if (this.isIdle) {
             const idleAction = this.configHandler.behavior.idleAction;
             if (idleAction === 'clear') {
-                this.rpcManager.clearActivity();
+                clear();
                 return;
             }
             if (idleAction === 'showIdle') {
@@ -236,7 +265,7 @@ export class ActivityDetector implements vscode.Disposable {
         }
 
         if (whenNoFileOpen === 'clear') {
-            this.rpcManager.clearActivity();
+            clear();
             return;
         }
 
@@ -400,13 +429,19 @@ export class ActivityDetector implements vscode.Disposable {
         }
     }
 
+    public getCurrentPayload(): ActivityPayload | null {
+        return this.currentPayload || this.lastActiveFilePayload;
+    }
+
     public dispose(): void {
         if (this.idleTimer) {
             clearTimeout(this.idleTimer);
             this.idleTimer = null;
         }
+        this.onActivityChangeEmitter.dispose();
         this.disposables.forEach(d => d.dispose());
         this.disposables = [];
         this.lastActiveFilePayload = null;
+        this.currentPayload = null;
     }
 }

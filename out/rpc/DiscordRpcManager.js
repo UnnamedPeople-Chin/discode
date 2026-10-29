@@ -12,6 +12,7 @@ class DiscordRpcManager {
     retryCount = 0;
     reconnectTimer = null;
     discordUser = null;
+    currentUserInfo = null;
     THROTTLE_INTERVAL_MS = 15000;
     lastSendTimestamp = 0;
     pendingPayload = null;
@@ -72,8 +73,37 @@ class DiscordRpcManager {
                 this.isConnected = true;
                 this.isConnecting = false;
                 this.retryCount = 0;
-                this.discordUser = client.user?.username || 'User';
-                this.log(`Successfully connected to Discord as: ${this.discordUser}`);
+                const rawUser = client.user;
+                if (rawUser && rawUser.id) {
+                    let avatarUrl = '';
+                    if (rawUser.avatar) {
+                        const isAnimated = rawUser.avatar.startsWith('a_');
+                        avatarUrl = `https://cdn.discordapp.com/avatars/${rawUser.id}/${rawUser.avatar}.${isAnimated ? 'gif' : 'png'}?size=160`;
+                    }
+                    else {
+                        const disc = rawUser.discriminator && rawUser.discriminator !== '0'
+                            ? parseInt(rawUser.discriminator, 10)
+                            : null;
+                        const defaultIdx = disc !== null
+                            ? (disc % 5)
+                            : Number((BigInt(rawUser.id) >> 22n) % 6n);
+                        avatarUrl = `https://cdn.discordapp.com/embed/avatars/${defaultIdx}.png`;
+                    }
+                    this.currentUserInfo = {
+                        id: rawUser.id,
+                        username: rawUser.username || 'User',
+                        globalName: rawUser.global_name || rawUser.username || 'User',
+                        discriminator: rawUser.discriminator,
+                        avatar: rawUser.avatar,
+                        avatarUrl
+                    };
+                    this.discordUser = this.currentUserInfo.globalName;
+                }
+                else {
+                    this.discordUser = client.user?.username || 'User';
+                    this.currentUserInfo = null;
+                }
+                this.log(`Successfully connected to Discord as: ${this.discordUser} (ID: ${this.currentUserInfo?.id || 'Unknown'})`);
                 this.emitState();
                 if (this.pendingPayload) {
                     const toSend = this.pendingPayload;
@@ -107,13 +137,15 @@ class DiscordRpcManager {
         this.events.emit('change', {
             isConnected: this.isConnected,
             isConnecting: this.isConnecting,
-            user: this.discordUser || undefined
+            user: this.discordUser || undefined,
+            userInfo: this.currentUserInfo || undefined
         });
     }
     handleDisconnect(error) {
         this.isConnected = false;
         this.isConnecting = false;
         this.discordUser = null;
+        this.currentUserInfo = null;
         this.emitState();
         this.cleanupClient();
         this.scheduleReconnect();
@@ -229,8 +261,15 @@ class DiscordRpcManager {
             isConnected: this.isConnected,
             isConnecting: this.isConnecting,
             retryCount: this.retryCount,
-            user: this.discordUser
+            user: this.discordUser,
+            userInfo: this.currentUserInfo
         };
+    }
+    getCurrentUserInfo() {
+        return this.currentUserInfo;
+    }
+    isCurrentlyConnected() {
+        return this.isConnected;
     }
     dispose() {
         this.disconnectAndClean();

@@ -574,11 +574,11 @@ export function getSettingsModalWebviewHtml(): string {
                             <!-- Avatar Offset -->
                             <div class="relative -mt-8 mb-2 flex items-end justify-between">
                                 <div class="relative">
-                                    <div class="w-14 h-14 rounded-full border-4 border-[#18191c] bg-surface-container-high overflow-hidden shadow-lg flex items-center justify-center font-bold text-white text-base" style="background: linear-gradient(135deg, #7d0016, #1b0206);">
-                                        <img class="w-full h-full object-cover" onerror="this.style.display='none'" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkh3mGNyiU66nqoy7HHLZybVuG_NrBtCj4bAuREVsWBiGpbFmMFZwuH_MvY8G3VzfrJmvIxBPSHGKpVlSbpolFdHRVuRZxe3KTxjtWnGTJD9QZfDx7-1qncjHmQG8nmniw-upJKqTaKrNQ-HBOebMfk3MoSrWx-LkHzMDD5Tl3IFhgFhBeg4eRfByFlZlhs2j0ecx2PWBd2KFwE_Ut_63YAzaijnD6IwMkfk7ePGR_" alt="Avatar"/>
-                                        <span>⚔</span>
+                                    <div class="w-14 h-14 rounded-full border-4 border-[#18191c] bg-surface-container-high overflow-hidden shadow-lg flex items-center justify-center font-bold text-white text-base relative" style="background: linear-gradient(135deg, #7d0016, #1b0206);">
+                                        <img class="w-full h-full object-cover" id="previewAvatarImg" onerror="this.style.display='none'; document.getElementById('previewAvatarFallback').style.display='block';" src="" alt="Avatar"/>
+                                        <span id="previewAvatarFallback" class="text-xs font-bold font-code-inline">⚔</span>
                                     </div>
-                                    <div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-[#23a55a] rounded-full ring-2 ring-[#18191c]"></div>
+                                    <div id="previewStatusDot" class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-[#23a55a] rounded-full ring-2 ring-[#18191c]"></div>
                                 </div>
                                 <div class="flex items-center gap-1 bg-[#111214] px-1.5 py-0.5">
                                     <span class="material-symbols-outlined text-primary text-[12px]">code</span>
@@ -590,10 +590,9 @@ export function getSettingsModalWebviewHtml(): string {
                             <!-- Name -->
                             <div class="flex flex-col mb-2.5">
                                 <div class="flex items-center gap-1.5">
-                                    <span class="font-headline-sm text-sm text-on-surface font-bold leading-tight" id="previewProfileName">Kenshi.dev</span>
-                                    <span class="bg-surface-container text-tertiary font-code-inline text-[8px] px-1">BOT</span>
+                                    <span class="font-headline-sm text-sm text-on-surface font-bold leading-tight truncate max-w-[170px]" id="previewProfileName">Connecting to Discord...</span>
                                 </div>
-                                <span class="font-code-inline text-[10px] text-outline">@kenshi • he/him</span>
+                                <span class="font-code-inline text-[10px] text-outline truncate" id="previewUserTag">@detecting...</span>
                             </div>
 
                             <!-- Activity Box -->
@@ -627,7 +626,7 @@ export function getSettingsModalWebviewHtml(): string {
                                         </span>
                                         <div class="flex items-center gap-1 mt-1 text-tertiary-container font-code-inline text-[10px]" id="previewTimerRow">
                                             <span class="material-symbols-outlined text-[11px] text-primary">schedule</span>
-                                            <span id="previewTimerDigits">01:42:19 elapsed</span>
+                                            <span id="previewTimerDigits">00:00:00 elapsed</span>
                                         </div>
                                     </div>
                                 </div>
@@ -659,11 +658,11 @@ export function getSettingsModalWebviewHtml(): string {
                 <div class="bg-surface-container-lowest p-2 flex flex-col gap-1 border border-outline-variant/20">
                     <div class="flex items-center justify-between font-code-inline text-[9px] text-tertiary">
                         <span>DISCORD_CLIENT</span>
-                        <span class="text-on-surface">CANARY // BUILD 298144</span>
+                        <span class="text-on-surface font-bold" id="previewFooterClient">IPC: DETECTING...</span>
                     </div>
                     <div class="flex items-center justify-between font-code-inline text-[9px] text-tertiary">
-                        <span>HANDSHAKE_HASH</span>
-                        <span class="text-primary">SHA256:7B12..C94E</span>
+                        <span>USER_ID</span>
+                        <span class="text-primary font-mono" id="previewFooterUserId">--</span>
                     </div>
                 </div>
 
@@ -700,12 +699,25 @@ export function getSettingsModalWebviewHtml(): string {
             const saveStatus = document.getElementById('saveStatus');
             const tokenButtons = document.querySelectorAll('.token-btn');
 
-            let secondsElapsed = 6139; // 01:42:19
+            // Live Profile elements
+            const previewAvatarImg = document.getElementById('previewAvatarImg');
+            const previewAvatarFallback = document.getElementById('previewAvatarFallback');
+            const previewProfileName = document.getElementById('previewProfileName');
+            const previewUserTag = document.getElementById('previewUserTag');
+            const previewStatusDot = document.getElementById('previewStatusDot');
+            const previewFooterClient = document.getElementById('previewFooterClient');
+            const previewFooterUserId = document.getElementById('previewFooterUserId');
+            const previewBadgeIcon = document.getElementById('previewBadgeIcon');
+            const kyotoRelayStatus = document.getElementById('kyotoRelayStatus');
+
+            let currentDiscordUser = null;
+            let currentPresence = null;
+            let realStartTimestamp = null;
             let livePreviewData = {
-                fileName: 'index.tsx',
-                workspace: 'DisCode-Core',
-                gitBranch: 'main*',
-                lineCount: '482 lines',
+                fileName: 'App.tsx',
+                workspace: 'my-project',
+                gitBranch: 'main',
+                lineCount: '128 lines',
                 language: 'TypeScript'
             };
 
@@ -716,27 +728,67 @@ export function getSettingsModalWebviewHtml(): string {
                 return hrs + ':' + mins + ':' + secs + ' elapsed';
             }
 
+            function updateDiscordAccount(user, connState) {
+                if (user && user.id) {
+                    currentDiscordUser = user;
+                    previewProfileName.textContent = user.globalName || user.username;
+                    previewUserTag.textContent = '@' + user.username + (user.discriminator && user.discriminator !== '0' ? '#' + user.discriminator : '');
+                    if (user.avatarUrl) {
+                        previewAvatarImg.src = user.avatarUrl;
+                        previewAvatarImg.style.display = 'block';
+                        previewAvatarFallback.style.display = 'none';
+                    }
+                    previewStatusDot.className = 'absolute bottom-0 right-0 w-3.5 h-3.5 bg-[#23a55a] rounded-full ring-2 ring-[#18191c]';
+                    previewFooterClient.textContent = 'IPC: ' + user.username.toUpperCase() + ' // LIVE';
+                    previewFooterUserId.textContent = user.id;
+                    if (kyotoRelayStatus) {
+                        kyotoRelayStatus.textContent = 'CONNECTED: ' + user.username;
+                        kyotoRelayStatus.className = 'text-xs text-emerald-400 font-bold';
+                    }
+                } else if (connState && connState.isConnected) {
+                    previewProfileName.textContent = connState.user || 'Discord User';
+                    previewUserTag.textContent = '@connected';
+                    previewStatusDot.className = 'absolute bottom-0 right-0 w-3.5 h-3.5 bg-[#23a55a] rounded-full ring-2 ring-[#18191c]';
+                    previewFooterClient.textContent = 'IPC: CONNECTED';
+                    previewFooterUserId.textContent = 'ACTIVE';
+                } else {
+                    previewProfileName.textContent = 'Discord Offline';
+                    previewUserTag.textContent = '@not-connected';
+                    previewAvatarImg.style.display = 'none';
+                    previewAvatarFallback.style.display = 'block';
+                    previewStatusDot.className = 'absolute bottom-0 right-0 w-3.5 h-3.5 bg-[#f0b232] rounded-full ring-2 ring-[#18191c]';
+                    previewFooterClient.textContent = 'IPC: DISCONNECTED';
+                    previewFooterUserId.textContent = 'OFFLINE';
+                    if (kyotoRelayStatus) {
+                        kyotoRelayStatus.textContent = 'CONNECTING...';
+                        kyotoRelayStatus.className = 'text-xs text-amber-400 font-bold';
+                    }
+                }
+            }
+
             function syncPreview() {
-                let dVal = detailsInput.value || 'Editing index.tsx';
+                let dVal = detailsInput.value || 'Editing {fileName}';
                 let sVal = stateInput.value || 'Workspace: {workspace}';
 
-                const curFile = showFileName.checked ? (livePreviewData.fileName || 'index.tsx') : 'a file';
-                const curWs = showWorkspaceName.checked ? (livePreviewData.workspace || 'DisCode-Core') : 'Confidential Project';
-                const curBranch = showGitBranch.checked ? (livePreviewData.gitBranch || 'main*') : '';
+                const curFile = showFileName.checked ? (livePreviewData.fileName || 'App.tsx') : 'a file';
+                const curWs = showWorkspaceName.checked ? (livePreviewData.workspace || 'my-project') : 'Confidential Project';
+                const curBranch = showGitBranch.checked ? (livePreviewData.gitBranch || 'main') : '';
 
                 dVal = dVal
-                    .replace(/\\{fileName\\}/g, curFile)
-                    .replace(/\\{workspace\\}/g, curWs)
-                    .replace(/\\{gitBranch\\}/g, curBranch)
-                    .replace(/\\{lineCount\\}/g, livePreviewData.lineCount || '482 lines')
-                    .replace(/\\{language\\}/g, livePreviewData.language || 'TypeScript');
+                    .replace(/\{fileName\}/g, curFile)
+                    .replace(/\{workspace\}/g, curWs)
+                    .replace(/\{gitBranch\}/g, curBranch)
+                    .replace(/\{lineCount\}/g, livePreviewData.lineCount || '128 lines')
+                    .replace(/\{currentLine\}/g, livePreviewData.currentLine || '1')
+                    .replace(/\{language\}/g, livePreviewData.language || 'TypeScript');
 
                 sVal = sVal
-                    .replace(/\\{fileName\\}/g, curFile)
-                    .replace(/\\{workspace\\}/g, curWs)
-                    .replace(/\\{gitBranch\\}/g, curBranch)
-                    .replace(/\\{lineCount\\}/g, livePreviewData.lineCount || '482 lines')
-                    .replace(/\\{language\\}/g, livePreviewData.language || 'TypeScript');
+                    .replace(/\{fileName\}/g, curFile)
+                    .replace(/\{workspace\}/g, curWs)
+                    .replace(/\{gitBranch\}/g, curBranch)
+                    .replace(/\{lineCount\}/g, livePreviewData.lineCount || '128 lines')
+                    .replace(/\{currentLine\}/g, livePreviewData.currentLine || '1')
+                    .replace(/\{language\}/g, livePreviewData.language || 'TypeScript');
 
                 previewLine1.textContent = dVal;
                 previewLine2.textContent = sVal;
@@ -744,6 +796,17 @@ export function getSettingsModalWebviewHtml(): string {
                 if (showElapsedTime.checked) {
                     previewTimerRow.style.display = 'flex';
                 } else {
+                    previewTimerRow.style.display = 'none';
+                }
+            }
+
+            function tickTimer() {
+                if (showElapsedTime.checked && realStartTimestamp) {
+                    const nowSec = Math.floor(Date.now() / 1000);
+                    const diffSec = Math.max(0, nowSec - realStartTimestamp);
+                    previewTimerDigits.textContent = formatTime(diffSec);
+                    previewTimerRow.style.display = 'flex';
+                } else if (!showElapsedTime.checked) {
                     previewTimerRow.style.display = 'none';
                 }
             }
@@ -793,15 +856,17 @@ export function getSettingsModalWebviewHtml(): string {
             document.getElementById('btnPlus1').addEventListener('click', () => {
                 const cur = parseInt(timerHours.value || '0', 10);
                 timerHours.value = cur + 1;
-                secondsElapsed += 3600;
-                previewTimerDigits.textContent = formatTime(secondsElapsed);
+                if (!realStartTimestamp) realStartTimestamp = Math.floor(Date.now() / 1000);
+                realStartTimestamp -= 3600;
+                tickTimer();
             });
 
             document.getElementById('btnPlus2').addEventListener('click', () => {
                 const cur = parseInt(timerHours.value || '0', 10);
                 timerHours.value = cur + 2;
-                secondsElapsed += 7200;
-                previewTimerDigits.textContent = formatTime(secondsElapsed);
+                if (!realStartTimestamp) realStartTimestamp = Math.floor(Date.now() / 1000);
+                realStartTimestamp -= 7200;
+                tickTimer();
             });
 
             document.getElementById('btnPlus3').addEventListener('click', () => {
@@ -809,15 +874,16 @@ export function getSettingsModalWebviewHtml(): string {
                 const curM = parseInt(timerMinutes.value || '0', 10);
                 timerHours.value = curH + 3;
                 timerMinutes.value = (curM + 30) % 60;
-                secondsElapsed += 12600;
-                previewTimerDigits.textContent = formatTime(secondsElapsed);
+                if (!realStartTimestamp) realStartTimestamp = Math.floor(Date.now() / 1000);
+                realStartTimestamp -= 12600;
+                tickTimer();
             });
 
             document.getElementById('btnResetTimer').addEventListener('click', () => {
                 timerHours.value = 0;
                 timerMinutes.value = 0;
-                secondsElapsed = 0;
-                previewTimerDigits.textContent = formatTime(secondsElapsed);
+                realStartTimestamp = Math.floor(Date.now() / 1000);
+                tickTimer();
                 vscode.postMessage({ command: 'resetTimer' });
                 showStatusBadge('TIMER_RESET_OK');
             });
@@ -915,7 +981,6 @@ export function getSettingsModalWebviewHtml(): string {
                         const totalM = parseInt(s['timer.customOffsetMinutes'], 10) || 0;
                         timerHours.value = Math.floor(totalM / 60);
                         timerMinutes.value = totalM % 60;
-                        secondsElapsed = totalM * 60;
                     }
                     if (s['behavior.whenNoFileOpen']) document.getElementById('whenNoFileOpen').value = s['behavior.whenNoFileOpen'];
                     if (s['behavior.idleAction']) document.getElementById('idleAction').value = s['behavior.idleAction'];
@@ -929,23 +994,47 @@ export function getSettingsModalWebviewHtml(): string {
                     if (message.previewData) {
                         livePreviewData = Object.assign(livePreviewData, message.previewData);
                         if (livePreviewData.language) {
-                            document.getElementById('previewBadgeIcon').textContent = livePreviewData.language.substring(0, 3).toUpperCase();
+                            previewBadgeIcon.textContent = livePreviewData.language.substring(0, 3).toUpperCase();
+                        }
+                        if (livePreviewData.startTimestamp) {
+                            realStartTimestamp = livePreviewData.startTimestamp;
                         }
                     }
 
+                    if (message.currentPresence && message.currentPresence.startTimestamp) {
+                        realStartTimestamp = message.currentPresence.startTimestamp;
+                    }
+
+                    updateDiscordAccount(message.discordUser, message.connectionState);
                     syncPreview();
+                    tickTimer();
+                } else if (message.command === 'liveUpdate') {
+                    if (message.discordUser) {
+                        updateDiscordAccount(message.discordUser);
+                    }
+                    if (message.previewData) {
+                        livePreviewData = Object.assign(livePreviewData, message.previewData);
+                        if (livePreviewData.language) {
+                            previewBadgeIcon.textContent = livePreviewData.language.substring(0, 3).toUpperCase();
+                        }
+                        if (livePreviewData.startTimestamp) {
+                            realStartTimestamp = livePreviewData.startTimestamp;
+                        }
+                    }
+                    if (message.presence && message.presence.startTimestamp) {
+                        realStartTimestamp = message.presence.startTimestamp;
+                    }
+                    syncPreview();
+                    tickTimer();
+                } else if (message.command === 'connectionUpdate') {
+                    updateDiscordAccount(message.discordUser, message.connectionState);
                 } else if (message.command === 'actionResult') {
                     showStatusBadge(message.ok ? 'SYNC_COMPLETE' : 'ERROR_OCCURRED');
                 }
             });
 
-            // Ambient timer tick
-            setInterval(() => {
-                if (showElapsedTime.checked) {
-                    secondsElapsed += 1;
-                    previewTimerDigits.textContent = formatTime(secondsElapsed);
-                }
-            }, 1000);
+            // Ambient 1-second timer tick
+            setInterval(tickTimer, 1000);
 
             // Escape key to close
             document.addEventListener('keydown', e => {

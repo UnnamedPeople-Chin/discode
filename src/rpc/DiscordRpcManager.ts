@@ -4,10 +4,20 @@ import type * as vscode from 'vscode';
 
 export type ActivityPayload = Presence;
 
+export interface DiscordUserInfo {
+    id: string;
+    username: string;
+    globalName: string;
+    discriminator?: string;
+    avatar?: string | null;
+    avatarUrl?: string;
+}
+
 export interface ConnectionState {
     isConnected: boolean;
     isConnecting: boolean;
     user?: string;
+    userInfo?: DiscordUserInfo;
 }
 
 export class DiscordRpcManager implements vscode.Disposable {
@@ -20,6 +30,7 @@ export class DiscordRpcManager implements vscode.Disposable {
     private retryCount = 0;
     private reconnectTimer: NodeJS.Timeout | null = null;
     private discordUser: string | null = null;
+    private currentUserInfo: DiscordUserInfo | null = null;
 
     private readonly THROTTLE_INTERVAL_MS = 15000;
     private lastSendTimestamp = 0;
@@ -95,8 +106,47 @@ export class DiscordRpcManager implements vscode.Disposable {
                 this.isConnected = true;
                 this.isConnecting = false;
                 this.retryCount = 0;
-                this.discordUser = client.user?.username || 'User';
-                this.log(`Successfully connected to Discord as: ${this.discordUser}`);
+
+                const rawUser = (client as unknown as {
+                    user?: {
+                        id?: string;
+                        username?: string;
+                        discriminator?: string;
+                        global_name?: string;
+                        avatar?: string | null;
+                    };
+                }).user;
+
+                if (rawUser && rawUser.id) {
+                    let avatarUrl = '';
+                    if (rawUser.avatar) {
+                        const isAnimated = rawUser.avatar.startsWith('a_');
+                        avatarUrl = `https://cdn.discordapp.com/avatars/${rawUser.id}/${rawUser.avatar}.${isAnimated ? 'gif' : 'png'}?size=160`;
+                    } else {
+                        const disc = rawUser.discriminator && rawUser.discriminator !== '0'
+                            ? parseInt(rawUser.discriminator, 10)
+                            : null;
+                        const defaultIdx = disc !== null
+                            ? (disc % 5)
+                            : Number((BigInt(rawUser.id) >> 22n) % 6n);
+                        avatarUrl = `https://cdn.discordapp.com/embed/avatars/${defaultIdx}.png`;
+                    }
+
+                    this.currentUserInfo = {
+                        id: rawUser.id,
+                        username: rawUser.username || 'User',
+                        globalName: rawUser.global_name || rawUser.username || 'User',
+                        discriminator: rawUser.discriminator,
+                        avatar: rawUser.avatar,
+                        avatarUrl
+                    };
+                    this.discordUser = this.currentUserInfo.globalName;
+                } else {
+                    this.discordUser = client.user?.username || 'User';
+                    this.currentUserInfo = null;
+                }
+
+                this.log(`Successfully connected to Discord as: ${this.discordUser} (ID: ${this.currentUserInfo?.id || 'Unknown'})`);
                 this.emitState();
 
                 if (this.pendingPayload) {
@@ -135,7 +185,8 @@ export class DiscordRpcManager implements vscode.Disposable {
         this.events.emit('change', {
             isConnected: this.isConnected,
             isConnecting: this.isConnecting,
-            user: this.discordUser || undefined
+            user: this.discordUser || undefined,
+            userInfo: this.currentUserInfo || undefined
         });
     }
 
@@ -143,6 +194,7 @@ export class DiscordRpcManager implements vscode.Disposable {
         this.isConnected = false;
         this.isConnecting = false;
         this.discordUser = null;
+        this.currentUserInfo = null;
         this.emitState();
         this.cleanupClient();
         this.scheduleReconnect();
@@ -264,13 +316,22 @@ export class DiscordRpcManager implements vscode.Disposable {
         this.emitState();
     }
 
-    public getStatus(): { isConnected: boolean; isConnecting: boolean; retryCount: number; user: string | null } {
+    public getStatus(): { isConnected: boolean; isConnecting: boolean; retryCount: number; user: string | null; userInfo: DiscordUserInfo | null } {
         return {
             isConnected: this.isConnected,
             isConnecting: this.isConnecting,
             retryCount: this.retryCount,
-            user: this.discordUser
+            user: this.discordUser,
+            userInfo: this.currentUserInfo
         };
+    }
+
+    public getCurrentUserInfo(): DiscordUserInfo | null {
+        return this.currentUserInfo;
+    }
+
+    public isCurrentlyConnected(): boolean {
+        return this.isConnected;
     }
 
     public dispose(): void {

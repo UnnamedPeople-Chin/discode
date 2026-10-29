@@ -39,15 +39,23 @@ const settingsModalWebviewHtml_1 = require("./settingsModalWebviewHtml");
 class SettingsWebviewPanel {
     configHandler;
     activityDetector;
+    rpcManager;
     static currentPanel;
     panel;
     disposables = [];
-    constructor(panel, configHandler, activityDetector) {
+    constructor(panel, configHandler, activityDetector, rpcManager) {
         this.configHandler = configHandler;
         this.activityDetector = activityDetector;
+        this.rpcManager = rpcManager;
         this.panel = panel;
         this.panel.webview.html = this.getHtmlContent();
         this.panel.onDidDispose(() => this.dispose(), null, this.disposables);
+        // Subscribing to live events from VS Code & Discord IPC
+        this.disposables.push(this.activityDetector.onDidChangeActivity(({ payload, previewData }) => {
+            this.sendLivePresenceUpdate(payload, previewData);
+        }), this.rpcManager.onConnectionChange(state => {
+            this.sendConnectionUpdate(state);
+        }));
         this.panel.webview.onDidReceiveMessage(async (message) => {
             switch (message.command) {
                 case 'ready':
@@ -95,7 +103,7 @@ class SettingsWebviewPanel {
             }
         }, null, this.disposables);
     }
-    static render(extensionUri, configHandler, activityDetector) {
+    static render(extensionUri, configHandler, activityDetector, rpcManager) {
         if (SettingsWebviewPanel.currentPanel) {
             SettingsWebviewPanel.currentPanel.panel.reveal(vscode.ViewColumn.One);
             SettingsWebviewPanel.currentPanel.sendInitialData();
@@ -105,14 +113,32 @@ class SettingsWebviewPanel {
             enableScripts: true,
             retainContextWhenHidden: true
         });
-        SettingsWebviewPanel.currentPanel = new SettingsWebviewPanel(panel, configHandler, activityDetector);
+        SettingsWebviewPanel.currentPanel = new SettingsWebviewPanel(panel, configHandler, activityDetector, rpcManager);
         return SettingsWebviewPanel.currentPanel;
     }
     sendInitialData() {
         this.panel.webview.postMessage({
             command: 'init',
             settings: this.configHandler.getAllSettingsAsObject(),
+            discordUser: this.rpcManager.getCurrentUserInfo(),
+            connectionState: this.rpcManager.getStatus(),
+            currentPresence: this.activityDetector.getCurrentPayload(),
             previewData: this.activityDetector.getCurrentPreviewData()
+        });
+    }
+    sendLivePresenceUpdate(payload, previewData) {
+        this.panel.webview.postMessage({
+            command: 'liveUpdate',
+            discordUser: this.rpcManager.getCurrentUserInfo(),
+            presence: payload,
+            previewData
+        });
+    }
+    sendConnectionUpdate(state) {
+        this.panel.webview.postMessage({
+            command: 'connectionUpdate',
+            discordUser: this.rpcManager.getCurrentUserInfo(),
+            connectionState: state
         });
     }
     async handleSaveSettings(newSettings) {

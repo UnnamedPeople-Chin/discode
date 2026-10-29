@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { ActivityDetector } from '../activity/ActivityDetector';
 import { ConfigurationHandler } from '../config/ConfigurationHandler';
+import { ActivityPayload, ConnectionState, DiscordRpcManager } from '../rpc/DiscordRpcManager';
 import { getSettingsModalWebviewHtml } from './settingsModalWebviewHtml';
 
 export class SettingsWebviewPanel {
@@ -11,12 +12,24 @@ export class SettingsWebviewPanel {
     private constructor(
         panel: vscode.WebviewPanel,
         private readonly configHandler: ConfigurationHandler,
-        private readonly activityDetector: ActivityDetector
+        private readonly activityDetector: ActivityDetector,
+        private readonly rpcManager: DiscordRpcManager
     ) {
         this.panel = panel;
         this.panel.webview.html = this.getHtmlContent();
 
         this.panel.onDidDispose(() => this.dispose(), null, this.disposables);
+
+        // Subscribing to live events from VS Code & Discord IPC
+        this.disposables.push(
+            this.activityDetector.onDidChangeActivity(({ payload, previewData }) => {
+                this.sendLivePresenceUpdate(payload, previewData);
+            }),
+            this.rpcManager.onConnectionChange(state => {
+                this.sendConnectionUpdate(state);
+            })
+        );
+
         this.panel.webview.onDidReceiveMessage(
             async message => {
                 switch (message.command) {
@@ -72,7 +85,8 @@ export class SettingsWebviewPanel {
     public static render(
         extensionUri: vscode.Uri,
         configHandler: ConfigurationHandler,
-        activityDetector: ActivityDetector
+        activityDetector: ActivityDetector,
+        rpcManager: DiscordRpcManager
     ): SettingsWebviewPanel {
         if (SettingsWebviewPanel.currentPanel) {
             SettingsWebviewPanel.currentPanel.panel.reveal(vscode.ViewColumn.One);
@@ -90,7 +104,7 @@ export class SettingsWebviewPanel {
             }
         );
 
-        SettingsWebviewPanel.currentPanel = new SettingsWebviewPanel(panel, configHandler, activityDetector);
+        SettingsWebviewPanel.currentPanel = new SettingsWebviewPanel(panel, configHandler, activityDetector, rpcManager);
         return SettingsWebviewPanel.currentPanel;
     }
 
@@ -98,7 +112,30 @@ export class SettingsWebviewPanel {
         this.panel.webview.postMessage({
             command: 'init',
             settings: this.configHandler.getAllSettingsAsObject(),
+            discordUser: this.rpcManager.getCurrentUserInfo(),
+            connectionState: this.rpcManager.getStatus(),
+            currentPresence: this.activityDetector.getCurrentPayload(),
             previewData: this.activityDetector.getCurrentPreviewData()
+        });
+    }
+
+    private sendLivePresenceUpdate(
+        payload: ActivityPayload | null,
+        previewData: ReturnType<ActivityDetector['getCurrentPreviewData']>
+    ): void {
+        this.panel.webview.postMessage({
+            command: 'liveUpdate',
+            discordUser: this.rpcManager.getCurrentUserInfo(),
+            presence: payload,
+            previewData
+        });
+    }
+
+    private sendConnectionUpdate(state: ConnectionState): void {
+        this.panel.webview.postMessage({
+            command: 'connectionUpdate',
+            discordUser: this.rpcManager.getCurrentUserInfo(),
+            connectionState: state
         });
     }
 

@@ -77,7 +77,7 @@ async function activate(context) {
     }));
     // Registrasi Command: Buka Settings UI Webview
     context.subscriptions.push(vscode.commands.registerCommand('discordPresence.openSettings', () => {
-        SettingsWebviewPanel_1.SettingsWebviewPanel.render(context.extensionUri, configHandler, activityDetector);
+        SettingsWebviewPanel_1.SettingsWebviewPanel.render(context.extensionUri, configHandler, activityDetector, rpcManager);
     }));
     // Registrasi Command: Reset Timer Cepat
     context.subscriptions.push(vscode.commands.registerCommand('discordPresence.resetTimer', () => {

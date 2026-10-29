@@ -1,0 +1,386 @@
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ActivityDetector = void 0;
+const path = __importStar(require("path"));
+const vscode = __importStar(require("vscode"));
+class ActivityDetector {
+    rpcManager;
+    configHandler;
+    disposables = [];
+    idleTimer = null;
+    isIdle = false;
+    sessionStartTimestamp;
+    fileStartTimestamp;
+    manualStartTimestamp;
+    lastFileName = '';
+    lastActiveFilePayload = null;
+    constructor(rpcManager, configHandler) {
+        this.rpcManager = rpcManager;
+        this.configHandler = configHandler;
+        const nowSec = Math.floor(Date.now() / 1000);
+        this.sessionStartTimestamp = nowSec;
+        this.fileStartTimestamp = nowSec;
+        this.manualStartTimestamp = nowSec;
+        this.registerListeners();
+        this.resetIdleTimer();
+        this.evaluateState();
+    }
+    registerListeners() {
+        this.disposables.push(vscode.window.onDidChangeActiveTextEditor(() => this.onUserActivity(true)), vscode.window.onDidChangeTextEditorSelection(() => this.onUserActivity(false)), vscode.workspace.onDidChangeTextDocument(e => {
+            if (e.contentChanges.length > 0) {
+                this.onUserActivity(false);
+            }
+        }), vscode.window.onDidChangeWindowState(state => {
+            if (state.focused) {
+                this.onUserActivity(false);
+            }
+            else {
+                this.evaluateState();
+            }
+        }), vscode.debug.onDidStartDebugSession(() => this.evaluateState()), vscode.debug.onDidTerminateDebugSession(() => this.evaluateState()), vscode.workspace.onDidChangeWorkspaceFolders(() => this.evaluateState()));
+    }
+    onUserActivity(isFileSwitch) {
+        if (this.isIdle) {
+            this.isIdle = false;
+        }
+        if (isFileSwitch) {
+            const currentDoc = vscode.window.activeTextEditor?.document;
+            const currentFileName = currentDoc ? path.basename(currentDoc.fileName) : '';
+            if (currentFileName && currentFileName !== this.lastFileName) {
+                this.fileStartTimestamp = Math.floor(Date.now() / 1000);
+                this.lastFileName = currentFileName;
+            }
+        }
+        this.resetIdleTimer();
+        this.evaluateState();
+    }
+    resetIdleTimer() {
+        if (this.idleTimer) {
+            clearTimeout(this.idleTimer);
+        }
+        const timeoutMs = this.configHandler.idleTimeoutSeconds * 1000;
+        this.idleTimer = setTimeout(() => {
+            this.isIdle = true;
+            this.evaluateState();
+        }, timeoutMs);
+    }
+    resetTimer() {
+        const nowSec = Math.floor(Date.now() / 1000);
+        this.manualStartTimestamp = nowSec;
+        this.fileStartTimestamp = nowSec;
+        this.evaluateState(true);
+    }
+    forceSync() {
+        this.evaluateState(true);
+    }
+    resolveStartTimestamp() {
+        if (!this.configHandler.appearance.showElapsedTime) {
+            return undefined;
+        }
+        const offsetSec = (this.configHandler.timer.customOffsetMinutes || 0) * 60;
+        const mode = this.configHandler.timer.mode;
+        let base = this.sessionStartTimestamp;
+        if (mode === 'file') {
+            base = this.fileStartTimestamp;
+        }
+        else if (mode === 'manual') {
+            base = this.manualStartTimestamp;
+        }
+        return base - offsetSec;
+    }
+    evaluateState(forceSync = false) {
+        const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+        const workspaceName = workspaceFolder ? workspaceFolder.name : '';
+        if (!this.configHandler.enabled) {
+            this.rpcManager.clearActivity();
+            return;
+        }
+        if (!this.configHandler.isWorkspaceAllowed(workspaceName)) {
+            this.rpcManager.clearActivity();
+            return;
+        }
+        const editorInfo = this.getEditorAppInfo();
+        const startTimestamp = this.resolveStartTimestamp();
+        const dispatch = (payload) => {
+            if (forceSync) {
+                this.rpcManager.forceSendActivity(payload);
+            }
+            else {
+                this.rpcManager.updateActivity(payload);
+            }
+        };
+        // 1. Skenario Idle
+        if (this.isIdle) {
+            const idleAction = this.configHandler.behavior.idleAction;
+            if (idleAction === 'clear') {
+                this.rpcManager.clearActivity();
+                return;
+            }
+            if (idleAction === 'showIdle') {
+                const templateVars = this.buildTemplateVars(workspaceName);
+                const details = this.formatTemplate(this.configHandler.formatting.detailsIdle, templateVars);
+                const state = this.formatTemplate(this.configHandler.formatting.stateIdle, templateVars);
+                dispatch({
+                    details: details || undefined,
+                    state: state || undefined,
+                    startTimestamp,
+                    largeImageKey: editorInfo.icon,
+                    largeImageText: editorInfo.label,
+                    smallImageKey: 'idle',
+                    smallImageText: 'Idle',
+                    instance: false
+                });
+                return;
+            }
+        }
+        // 2. Skenario Debugging
+        const debugSession = vscode.debug.activeDebugSession;
+        if (debugSession && this.configHandler.privacy.showDebugStatus) {
+            const templateVars = this.buildTemplateVars(workspaceName, {
+                debugType: debugSession.type,
+                debugSession: debugSession.name
+            });
+            const details = this.formatTemplate(this.configHandler.formatting.detailsDebugging, templateVars);
+            const state = this.formatTemplate(this.configHandler.formatting.stateDebugging, templateVars);
+            dispatch({
+                details: details || undefined,
+                state: state || undefined,
+                startTimestamp,
+                largeImageKey: editorInfo.icon,
+                largeImageText: editorInfo.label,
+                smallImageKey: 'debug',
+                smallImageText: `Debugging: ${debugSession.name}`,
+                instance: false
+            });
+            return;
+        }
+        // 3. Skenario File Aktif Terbuka
+        const activeEditor = vscode.window.activeTextEditor;
+        if (activeEditor && activeEditor.document) {
+            const doc = activeEditor.document;
+            const fullFileName = path.basename(doc.fileName);
+            const ext = path.extname(fullFileName).replace('.', '');
+            const lineCount = String(doc.lineCount);
+            const currentLine = String(activeEditor.selection.active.line + 1);
+            const fileInfo = this.resolveFileIcon(doc.languageId, ext, fullFileName);
+            const templateVars = this.buildTemplateVars(workspaceName, {
+                fileName: fullFileName,
+                fileExt: ext,
+                language: fileInfo.label,
+                lineCount,
+                currentLine
+            });
+            const details = this.formatTemplate(this.configHandler.formatting.detailsEditing, templateVars);
+            const state = this.formatTemplate(this.configHandler.formatting.stateEditing, templateVars);
+            const isFileIconLarge = this.configHandler.appearance.largeImageStyle === 'fileIcon';
+            const largeKey = isFileIconLarge ? fileInfo.iconKey : editorInfo.icon;
+            const largeText = isFileIconLarge ? fileInfo.label : editorInfo.label;
+            const smallKey = isFileIconLarge ? editorInfo.icon : fileInfo.iconKey;
+            const smallText = isFileIconLarge ? editorInfo.label : fileInfo.label;
+            const payload = {
+                details: details || undefined,
+                state: state || undefined,
+                startTimestamp,
+                largeImageKey: largeKey,
+                largeImageText: largeText,
+                smallImageKey: smallKey,
+                smallImageText: smallText,
+                instance: false
+            };
+            this.lastActiveFilePayload = payload;
+            dispatch(payload);
+            return;
+        }
+        // 4. Skenario Tidak Ada File Terbuka
+        const whenNoFileOpen = this.configHandler.behavior.whenNoFileOpen;
+        if (whenNoFileOpen === 'keepLastFile' && this.lastActiveFilePayload) {
+            dispatch(this.lastActiveFilePayload);
+            return;
+        }
+        if (whenNoFileOpen === 'clear') {
+            this.rpcManager.clearActivity();
+            return;
+        }
+        if (whenNoFileOpen === 'idle') {
+            const templateVars = this.buildTemplateVars(workspaceName);
+            const details = this.formatTemplate(this.configHandler.formatting.detailsIdle, templateVars);
+            const state = this.formatTemplate(this.configHandler.formatting.stateIdle, templateVars);
+            dispatch({
+                details: details || undefined,
+                state: state || undefined,
+                startTimestamp,
+                largeImageKey: editorInfo.icon,
+                largeImageText: editorInfo.label,
+                smallImageKey: 'idle',
+                smallImageText: 'Idle',
+                instance: false
+            });
+            return;
+        }
+        const templateVars = this.buildTemplateVars(workspaceName);
+        const details = this.formatTemplate(this.configHandler.formatting.detailsNoFile, templateVars);
+        const state = this.formatTemplate(this.configHandler.formatting.stateNoFile, templateVars);
+        dispatch({
+            details: details || undefined,
+            state: state || undefined,
+            startTimestamp,
+            largeImageKey: editorInfo.icon,
+            largeImageText: editorInfo.label,
+            instance: false
+        });
+    }
+    resolveFileIcon(languageId, ext, fileName) {
+        const lowerName = fileName.toLowerCase();
+        const lowerExt = ext.toLowerCase();
+        if (lowerName === 'dockerfile' || lowerName.startsWith('dockerfile.')) {
+            return { iconKey: 'docker', label: 'Docker' };
+        }
+        if (lowerName === 'package.json') {
+            return { iconKey: 'json', label: 'Node Package Manifest' };
+        }
+        if (lowerName.includes('.git') || lowerName === '.gitignore') {
+            return { iconKey: 'git', label: 'Git' };
+        }
+        const map = {
+            typescript: { iconKey: 'typescript', label: 'TypeScript' },
+            typescriptreact: { iconKey: 'react', label: 'React (TypeScript)' },
+            javascript: { iconKey: 'javascript', label: 'JavaScript' },
+            javascriptreact: { iconKey: 'react', label: 'React (JavaScript)' },
+            python: { iconKey: 'python', label: 'Python' },
+            rust: { iconKey: 'rust', label: 'Rust' },
+            go: { iconKey: 'go', label: 'Go' },
+            cpp: { iconKey: 'cpp', label: 'C++' },
+            c: { iconKey: 'c', label: 'C' },
+            csharp: { iconKey: 'csharp', label: 'C#' },
+            html: { iconKey: 'html', label: 'HTML' },
+            css: { iconKey: 'css', label: 'CSS' },
+            scss: { iconKey: 'sass', label: 'SCSS' },
+            sass: { iconKey: 'sass', label: 'Sass' },
+            less: { iconKey: 'css', label: 'Less' },
+            vue: { iconKey: 'vue', label: 'Vue' },
+            svelte: { iconKey: 'svelte', label: 'Svelte' },
+            json: { iconKey: 'json', label: 'JSON' },
+            markdown: { iconKey: 'markdown', label: 'Markdown' },
+            php: { iconKey: 'php', label: 'PHP' },
+            ruby: { iconKey: 'ruby', label: 'Ruby' },
+            java: { iconKey: 'java', label: 'Java' },
+            kotlin: { iconKey: 'kotlin', label: 'Kotlin' },
+            swift: { iconKey: 'swift', label: 'Swift' },
+            dart: { iconKey: 'dart', label: 'Dart' },
+            lua: { iconKey: 'lua', label: 'Lua' },
+            sql: { iconKey: 'sql', label: 'SQL' },
+            shellscript: { iconKey: 'bash', label: 'Shell' },
+            powershell: { iconKey: 'powershell', label: 'PowerShell' },
+            dockerfile: { iconKey: 'docker', label: 'Docker' },
+            yaml: { iconKey: 'yaml', label: 'YAML' },
+            xml: { iconKey: 'xml', label: 'XML' }
+        };
+        return map[languageId] || map[lowerExt] || { iconKey: 'text', label: languageId || 'File' };
+    }
+    getEditorAppInfo() {
+        const appName = vscode.env.appName;
+        const appLower = appName.toLowerCase();
+        if (appLower.includes('insiders')) {
+            return { icon: 'vscode-insiders', label: appName };
+        }
+        if (appLower.includes('codium')) {
+            return { icon: 'vscodium', label: appName };
+        }
+        return { icon: 'vscode', label: appName };
+    }
+    buildTemplateVars(workspaceName, extra = {}) {
+        const privacy = this.configHandler.privacy;
+        const gitBranch = privacy.showGitBranch ? this.getGitBranch() : '';
+        return {
+            ...extra,
+            workspace: privacy.showWorkspaceName ? workspaceName : '',
+            fileName: privacy.showFileName ? (extra.fileName || '') : 'a file',
+            fileExt: privacy.showFileName ? (extra.fileExt || '') : '',
+            language: extra.language || '',
+            lineCount: extra.lineCount || '1',
+            currentLine: extra.currentLine || '1',
+            gitBranch: gitBranch,
+            debugType: privacy.showDebugStatus ? (extra.debugType || '') : '',
+            debugSession: privacy.showDebugStatus ? (extra.debugSession || '') : ''
+        };
+    }
+    formatTemplate(template, vars) {
+        return template.replace(/\{(\w+)\}/g, (_, key) => vars[key] ?? '').trim();
+    }
+    getCurrentPreviewData() {
+        const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+        const workspaceName = workspaceFolder ? workspaceFolder.name : 'my-workspace';
+        const doc = vscode.window.activeTextEditor?.document;
+        const fileName = doc ? path.basename(doc.fileName) : 'App.tsx';
+        const ext = path.extname(fileName).replace('.', '') || 'tsx';
+        const fileInfo = this.resolveFileIcon(doc?.languageId || 'typescriptreact', ext, fileName);
+        return {
+            fileName,
+            language: fileInfo.label,
+            workspace: workspaceName,
+            gitBranch: this.getGitBranch() || 'main',
+            lineCount: String(doc?.lineCount || 128),
+            currentLine: String((vscode.window.activeTextEditor?.selection.active.line || 0) + 1),
+            startTimestamp: this.resolveStartTimestamp()
+        };
+    }
+    getGitBranch() {
+        try {
+            const gitExtension = vscode.extensions.getExtension('vscode.git')?.exports;
+            const gitApi = gitExtension?.getAPI?.(1);
+            const activeUri = vscode.window.activeTextEditor?.document?.uri
+                ?? vscode.workspace.workspaceFolders?.[0]?.uri;
+            if (!gitApi || !activeUri)
+                return '';
+            const repo = gitApi.getRepository(activeUri);
+            return repo?.state?.HEAD?.name || '';
+        }
+        catch {
+            return '';
+        }
+    }
+    dispose() {
+        if (this.idleTimer) {
+            clearTimeout(this.idleTimer);
+            this.idleTimer = null;
+        }
+        this.disposables.forEach(d => d.dispose());
+        this.disposables = [];
+        this.lastActiveFilePayload = null;
+    }
+}
+exports.ActivityDetector = ActivityDetector;
+//# sourceMappingURL=ActivityDetector.js.map

@@ -1,0 +1,222 @@
+{
+  "name": "discode",
+  "displayName": "DisCode — Visual Discord Rich Presence",
+  "description": "Supercharge your Discord status with dynamic file icons, custom elapsed timers, and an interactive live preview settings dashboard.",
+  "version": "1.3.0",
+  "icon": "assets/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/developer/discode"
+  },
+  "publisher": "developer",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "discordPresence.openSettings",
+        "title": "Discord Presence: Open Settings & Live Preview",
+        "icon": "$(gear)"
+      },
+      {
+        "command": "discordPresence.resetTimer",
+        "title": "Discord Presence: Reset Elapsed Timer",
+        "icon": "$(history)"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "discordPresence.openSettings",
+        "key": "ctrl+alt+d",
+        "mac": "cmd+alt+d"
+      }
+    ],
+    "configuration": {
+      "title": "Discord Rich Presence",
+      "properties": {
+        "discordPresence.clientId": {
+          "type": "string",
+          "default": "",
+          "description": "Custom Discord Application Client ID. Kosongkan untuk menggunakan default.",
+          "scope": "window"
+        },
+        "discordPresence.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Aktifkan atau nonaktifkan Rich Presence Discord.",
+          "scope": "window"
+        },
+        "discordPresence.timer.mode": {
+          "type": "string",
+          "enum": ["session", "file", "manual"],
+          "enumDescriptions": [
+            "Mulai timer sejak VS Code pertama kali dibuka.",
+            "Reset timer ke 00:00 setiap kali berpindah file.",
+            "Timer manual (dapat di-reset kapan saja via tombol di UI Settings)."
+          ],
+          "default": "session",
+          "description": "Mode perhitungan durasi waktu (elapsed time).",
+          "scope": "resource"
+        },
+        "discordPresence.timer.customOffsetMinutes": {
+          "type": "number",
+          "default": 0,
+          "description": "Tambahkan offset waktu manual (dalam menit). Misalnya isi 120 untuk langsung menampilkan 2 jam koding.",
+          "scope": "resource"
+        },
+        "discordPresence.appearance.largeImageStyle": {
+          "type": "string",
+          "enum": ["fileIcon", "editorIcon"],
+          "enumDescriptions": [
+            "Ikon jenis file/bahasa menjadi logo besar utama (Logo VS Code menjadi ikon kecil).",
+            "Logo VS Code menjadi gambar besar utama (Ikon jenis file menjadi ikon kecil)."
+          ],
+          "default": "fileIcon",
+          "description": "Tentukan ikon mana yang menjadi gambar besar utama di profil Discord.",
+          "scope": "resource"
+        },
+        "discordPresence.appearance.showElapsedTime": {
+          "type": "boolean",
+          "default": true,
+          "description": "Tampilkan timer durasi waktu (elapsed time) koding di Discord.",
+          "scope": "resource"
+        },
+        "discordPresence.behavior.whenNoFileOpen": {
+          "type": "string",
+          "enum": ["keepLastFile", "showWorkspace", "idle", "clear"],
+          "enumDescriptions": [
+            "Tetap tampilkan file terakhir yang dibuka/diedit meskipun semua tab editor ditutup.",
+            "Ubah status menjadi 'In Workspace' tanpa menampilkan nama file.",
+            "Ubah status menjadi 'Idling' saat tidak ada file yang dibuka.",
+            "Hilangkan status Rich Presence sama sekali dari profil Discord."
+          ],
+          "default": "keepLastFile",
+          "description": "Aksi yang dilakukan ketika tidak ada file/tab yang sedang terbuka di editor.",
+          "scope": "resource"
+        },
+        "discordPresence.behavior.idleAction": {
+          "type": "string",
+          "enum": ["showIdle", "keepFile", "clear"],
+          "enumDescriptions": [
+            "Ubah status menjadi 'Idling' saat pengguna tidak aktif selama batas waktu.",
+            "Tetap tampilkan file aktif tanpa teks 'Idling'.",
+            "Hilangkan status Rich Presence dari Discord saat pengguna sedang idle."
+          ],
+          "default": "showIdle",
+          "description": "Aksi yang dilakukan ketika editor mendeteksi status idle (tidak aktif).",
+          "scope": "window"
+        },
+        "discordPresence.idleTimeoutSeconds": {
+          "type": "number",
+          "default": 300,
+          "description": "Batas waktu tidak aktif (dalam detik) sebelum status beralih ke Idle.",
+          "scope": "window"
+        },
+        "discordPresence.formatting.detailsEditing": {
+          "type": "string",
+          "default": "Editing {fileName}",
+          "description": "Template teks baris atas saat mengedit file. Variabel: {fileName}, {fileExt}, {workspace}, {language}, {lineCount}, {currentLine}, {gitBranch}",
+          "scope": "resource"
+        },
+        "discordPresence.formatting.stateEditing": {
+          "type": "string",
+          "default": "Workspace: {workspace}",
+          "description": "Template teks baris bawah saat mengedit file. Variabel: {fileName}, {fileExt}, {workspace}, {language}, {lineCount}, {currentLine}, {gitBranch}",
+          "scope": "resource"
+        },
+        "discordPresence.formatting.detailsIdle": {
+          "type": "string",
+          "default": "Idling",
+          "description": "Template teks baris atas saat status Idle.",
+          "scope": "resource"
+        },
+        "discordPresence.formatting.stateIdle": {
+          "type": "string",
+          "default": "Workspace: {workspace}",
+          "description": "Template teks baris bawah saat status Idle.",
+          "scope": "resource"
+        },
+        "discordPresence.formatting.detailsDebugging": {
+          "type": "string",
+          "default": "Debugging ({debugType})",
+          "description": "Template teks baris atas saat sesi debugging aktif.",
+          "scope": "resource"
+        },
+        "discordPresence.formatting.stateDebugging": {
+          "type": "string",
+          "default": "{debugSession}",
+          "description": "Template teks baris bawah saat sesi debugging aktif.",
+          "scope": "resource"
+        },
+        "discordPresence.formatting.detailsNoFile": {
+          "type": "string",
+          "default": "In Workspace",
+          "description": "Template teks baris atas saat berada di workspace tanpa file terbuka.",
+          "scope": "resource"
+        },
+        "discordPresence.formatting.stateNoFile": {
+          "type": "string",
+          "default": "{workspace}",
+          "description": "Template teks baris bawah saat berada di workspace tanpa file terbuka.",
+          "scope": "resource"
+        },
+        "discordPresence.privacy.showFileName": {
+          "type": "boolean",
+          "default": true,
+          "description": "Izinkan nama file aktif ditampilkan di Discord.",
+          "scope": "resource"
+        },
+        "discordPresence.privacy.showWorkspaceName": {
+          "type": "boolean",
+          "default": true,
+          "description": "Izinkan nama workspace/proyek ditampilkan di Discord.",
+          "scope": "resource"
+        },
+        "discordPresence.privacy.showGitBranch": {
+          "type": "boolean",
+          "default": false,
+          "description": "Izinkan nama branch Git aktif ditampilkan di Discord.",
+          "scope": "resource"
+        },
+        "discordPresence.privacy.showDebugStatus": {
+          "type": "boolean",
+          "default": true,
+          "description": "Izinkan status debugging aktif ditampilkan di Discord.",
+          "scope": "window"
+        },
+        "discordPresence.privacy.blacklistedWorkspaces": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Daftar nama folder workspace rahasia yang tidak boleh dimunculkan sama sekali di Discord.",
+          "scope": "window"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "test": "npm run compile && node out/test/self-check.js"
+  },
+  "dependencies": {
+    "discord-rpc": "^4.0.1"
+  },
+  "devDependencies": {
+    "@types/discord-rpc": "^4.0.8",
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.3.3"
+  }
+}

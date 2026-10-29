@@ -1,0 +1,7 @@
+.vscode/**
+src/**
+tsconfig.json
+anti-slop/**
+graphify-out/**
+*.log
+.gitignore

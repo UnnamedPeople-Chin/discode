@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e1f22"/>
+      <stop offset="100%" stop-color="#0f1012"/>
+    </linearGradient>
+
+    <!-- Blurple to Cyan Neon Gradient -->
+    <linearGradient id="primaryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5865F2"/>
+      <stop offset="50%" stop-color="#4752C4"/>
+      <stop offset="100%" stop-color="#00D2FF"/>
+    </linearGradient>
+
+    <!-- Cyan Accent Gradient -->
+    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00F5FF"/>
+      <stop offset="100%" stop-color="#00A3FF"/>
+    </linearGradient>
+
+    <!-- Glow Filter -->
+    <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="14" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="borderGlow" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Squircle Base -->
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="url(#bgGrad)"/>
+  
+  <!-- Subtle Border Glow -->
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="none" stroke="url(#primaryGrad)" stroke-width="4" stroke-opacity="0.4" filter="url(#borderGlow)"/>
+
+  <!-- Discord Body Silhouette (Stylized) -->
+  <g filter="url(#neonGlow)">
+    <!-- Controller Head Shape -->
+    <path d="M374.5 152C347.8 139.7 319.2 130.8 289.4 126C285.8 132.4 281.7 141 278.8 147.8C247.1 143.1 215.7 143.1 184.4 147.8C181.5 141 177.3 132.4 173.8 126C143.9 130.8 115.3 139.8 88.6 152.1C35.1 231.4 20.6 308.7 27.9 384.8C63.4 410.9 97.8 426.8 131.7 437.3C140.1 426 147.5 413.9 153.8 401.1C141.6 396.5 129.9 390.6 118.8 383.6C121.8 381.4 124.7 379.1 127.5 376.8C194.8 407.7 268.4 407.7 334.8 376.8C337.6 379.1 340.5 381.5 343.5 383.6C332.3 390.7 320.6 396.6 308.3 401.2C314.7 413.9 322.1 426.1 330.5 437.4C364.5 426.9 398.9 411 434.4 384.8C442.8 296.8 420.4 220 374.5 152Z" 
+          fill="url(#primaryGrad)" 
+          opacity="0.18"/>
+
+    <path d="M374.5 152C347.8 139.7 319.2 130.8 289.4 126C285.8 132.4 281.7 141 278.8 147.8C247.1 143.1 215.7 143.1 184.4 147.8C181.5 141 177.3 132.4 173.8 126C143.9 130.8 115.3 139.8 88.6 152.1C35.1 231.4 20.6 308.7 27.9 384.8C63.4 410.9 97.8 426.8 131.7 437.3C140.1 426 147.5 413.9 153.8 401.1C141.6 396.5 129.9 390.6 118.8 383.6C121.8 381.4 124.7 379.1 127.5 376.8C194.8 407.7 268.4 407.7 334.8 376.8C337.6 379.1 340.5 381.5 343.5 383.6C332.3 390.7 320.6 396.6 308.3 401.2C314.7 413.9 322.1 426.1 330.5 437.4C364.5 426.9 398.9 411 434.4 384.8C442.8 296.8 420.4 220 374.5 152Z" 
+          fill="none" 
+          stroke="url(#primaryGrad)" 
+          stroke-width="12" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"/>
+  </g>
+
+  <!-- Coding Elements: Central Code Brackets & Slash in Neon Glow -->
+  <g filter="url(#neonGlow)">
+    <!-- Left Curly Bracket { -->
+    <path d="M 195 210 C 165 210, 160 230, 160 250 C 160 262, 142 272, 130 272 C 142 272, 160 282, 160 294 C 160 314, 165 334, 195 334" 
+          fill="none" 
+          stroke="url(#cyanGrad)" 
+          stroke-width="18" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"/>
+
+    <!-- Right Curly Bracket } -->
+    <path d="M 317 210 C 347 210, 352 230, 352 250 C 352 262, 370 272, 382 272 C 370 272, 352 282, 352 294 C 352 314, 347 334, 317 334" 
+          fill="none" 
+          stroke="url(#cyanGrad)" 
+          stroke-width="18" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"/>
+
+    <!-- Forward Slash / (Code separator) -->
+    <line x1="272" y1="218" x2="240" y2="326" 
+          stroke="#FFFFFF" 
+          stroke-width="16" 
+          stroke-linecap="round"/>
+  </g>
+
+  <!-- Little Sparkle Highlights -->
+  <circle cx="390" cy="120" r="6" fill="#00F5FF" filter="url(#borderGlow)"/>
+  <circle cx="110" cy="380" r="4" fill="#5865F2" filter="url(#borderGlow)"/>
+</svg>

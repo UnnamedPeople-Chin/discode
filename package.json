@@ -6,9 +6,9 @@
   "icon": "assets/icon.png",
   "repository": {
     "type": "git",
-    "url": "https://github.com/developer/discode"
+    "url": "https://github.com/UnnamedPeople-Chin/discode.git"
   },
-  "publisher": "developer",
+  "publisher": "UnnamedPeople",
   "engines": {
     "vscode": "^1.85.0"
   },

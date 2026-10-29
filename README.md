@@ -1,6 +1,8 @@
 <div align="center">
 
-  <img src="./assets/icon.png" width="130" alt="DisCode Logo" style="border-radius: 26px; box-shadow: 0 10px 30px rgba(88, 101, 242, 0.45);" />
+  <a href="https://github.com/UnnamedPeople-Chin/discode">
+    <img src="./assets/icon.png" width="130" alt="DisCode Logo" />
+  </a>
 
   # DisCode — Visual Discord Rich Presence
 
@@ -43,38 +45,26 @@ Modern developers spend hours writing code across multiple projects, yet sharing
 <table width="100%">
   <tr>
     <td width="50%" align="center" valign="top">
-      <img src="./assets/icon.png" width="90%" style="border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.5);" alt="Dashboard Preview" />
+      <img src="./assets/screenshots/dashboard-preview.png" width="100%" style="border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.5);" alt="Dashboard Preview" />
       <br />
       <em><b>Figure 1:</b> Interactive Settings Dashboard with Live Profile Preview (<code>Ctrl + Alt + D</code>)</em>
     </td>
     <td width="50%" align="center" valign="top">
-      <img src="./assets/logo.jpg" width="90%" style="border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.5);" alt="Discord Card Preview" />
+      <img src="./assets/screenshots/tokens-preview.png" width="100%" style="border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.5);" alt="Activity Tokens Preview" />
       <br />
-      <em><b>Figure 2:</b> Authentic Discord Rich Presence Profile Card with Dynamic Language Icon</em>
+      <em><b>Figure 2:</b> Activity Customizer with Clickable Dynamic Variable Pills</em>
     </td>
   </tr>
   <tr>
-    <td width="50%" align="center" valign="top">
-      <div style="background:#1e1f22; padding:20px; border-radius:12px; border:1px solid #313338; text-align:left; font-family:monospace; font-size:12px;">
-        <span style="color:#5865F2;">⏱️ Elapsed Timer Customizer</span><br/><br/>
-        &gt; Mode: Manual Offset<br/>
-        &gt; Initial Duration: <b>02h 30m</b><br/>
-        &gt; Live Presence: <code>02:30:14 elapsed</code><br/>
-        &gt; Instant Sync: <b>Active (Bypass Queue)</b>
-      </div>
+    <td width="60%" align="center" valign="middle">
+      <img src="./assets/screenshots/vscode-editor-view.png" width="100%" style="border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.5);" alt="VS Code Editor View" />
       <br />
-      <em><b>Figure 3:</b> Granular Timer Setup with Instant Preset Buttons (+1h, +2h, +3.5h, +5h)</em>
+      <em><b>Figure 3:</b> VS Code Editor Workspace with Integrated DisCode Status Bar</em>
     </td>
-    <td width="50%" align="center" valign="top">
-      <div style="background:#1e1f22; padding:20px; border-radius:12px; border:1px solid #313338; text-align:left; font-family:monospace; font-size:12px;">
-        <span style="color:#23a55a;">🔒 Privacy & Blacklist Gate</span><br/><br/>
-        &gt; Hide File Names: <code>Enabled (a file)</code><br/>
-        &gt; Git Branch Visibility: <code>Protected</code><br/>
-        &gt; Blacklisted Folders: <code>['internal-secrets', 'corp-fin']</code><br/>
-        &gt; Activity Status: <b>Suppressed on Confidential Workspaces</b>
-      </div>
+    <td width="40%" align="center" valign="middle">
+      <img src="./assets/screenshots/discord-profile-card.png" height="280" style="border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.5);" alt="Discord Profile Card" />
       <br />
-      <em><b>Figure 4:</b> Resource-Scoped Workspace Privacy & Blacklist Enforcement</em>
+      <em><b>Figure 4:</b> Authentic Discord Profile Presence with File, Workspace & Elapsed Timer</em>
     </td>
   </tr>
 </table>
@@ -163,9 +153,13 @@ flowchart TD
 ```text
 discode/
 ├── assets/
-│   ├── icon.png                 # Official 512x512 high-resolution extension icon
-│   ├── icon.svg                 # Scalable vector branding badge
-│   └── logo.jpg                 # Cover visual asset
+│   ├── icon.png                 # Transparent 512x512 extension mascot icon
+│   ├── icon.svg                 # Scalable vector branding badge (transparent background)
+│   └── screenshots/             # Production UI and live presence screenshots
+│       ├── dashboard-preview.png # Settings modal & real-time profile card preview
+│       ├── tokens-preview.png   # Activity customization with dynamic variable pills
+│       ├── vscode-editor-view.png # Active VS Code editor with status bar integration
+│       └── discord-profile-card.png # Authentic Discord Rich Presence profile card
 ├── src/
 │   ├── extension.ts             # Extension activation lifecycle, commands & status bar registration
 │   ├── activity/

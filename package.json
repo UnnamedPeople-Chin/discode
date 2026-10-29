@@ -22,10 +22,8 @@
     "discord",
     "discord-rpc",
     "rich-presence",
-    "rpc",
     "activity",
-    "status",
-    "cyberpunk"
+    "status"
   ],
   "engines": {
     "vscode": "^1.85.0"
@@ -239,9 +237,10 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
+    "vscode:prepublish": "npm run package",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
+    "package": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node",
     "test": "npm run compile && node out/test/self-check.js"
   },
   "dependencies": {
@@ -251,6 +250,7 @@
     "@types/discord-rpc": "^4.0.8",
     "@types/node": "^20.11.0",
     "@types/vscode": "^1.85.0",
+    "esbuild": "^0.28.2",
     "tailwindcss": "^3.4.19",
     "typescript": "^5.3.3"
   }

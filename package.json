@@ -69,7 +69,11 @@
         },
         "discordPresence.timer.mode": {
           "type": "string",
-          "enum": ["session", "file", "manual"],
+          "enum": [
+            "session",
+            "file",
+            "manual"
+          ],
           "enumDescriptions": [
             "Mulai timer sejak VS Code pertama kali dibuka.",
             "Reset timer ke 00:00 setiap kali berpindah file.",
@@ -87,7 +91,10 @@
         },
         "discordPresence.appearance.largeImageStyle": {
           "type": "string",
-          "enum": ["fileIcon", "editorIcon"],
+          "enum": [
+            "fileIcon",
+            "editorIcon"
+          ],
           "enumDescriptions": [
             "Ikon jenis file/bahasa menjadi logo besar utama (Logo VS Code menjadi ikon kecil).",
             "Logo VS Code menjadi gambar besar utama (Ikon jenis file menjadi ikon kecil)."
@@ -104,7 +111,12 @@
         },
         "discordPresence.behavior.whenNoFileOpen": {
           "type": "string",
-          "enum": ["keepLastFile", "showWorkspace", "idle", "clear"],
+          "enum": [
+            "keepLastFile",
+            "showWorkspace",
+            "idle",
+            "clear"
+          ],
           "enumDescriptions": [
             "Tetap tampilkan file terakhir yang dibuka/diedit meskipun semua tab editor ditutup.",
             "Ubah status menjadi 'In Workspace' tanpa menampilkan nama file.",
@@ -117,7 +129,11 @@
         },
         "discordPresence.behavior.idleAction": {
           "type": "string",
-          "enum": ["showIdle", "keepFile", "clear"],
+          "enum": [
+            "showIdle",
+            "keepFile",
+            "clear"
+          ],
           "enumDescriptions": [
             "Ubah status menjadi 'Idling' saat pengguna tidak aktif selama batas waktu.",
             "Tetap tampilkan file aktif tanpa teks 'Idling'.",
@@ -230,6 +246,7 @@
     "@types/discord-rpc": "^4.0.8",
     "@types/node": "^20.11.0",
     "@types/vscode": "^1.85.0",
+    "tailwindcss": "^3.4.19",
     "typescript": "^5.3.3"
   }
 }

@@ -1,7 +1,14 @@
 .vscode/**
+.github/**
 src/**
-tsconfig.json
+scripts/**
+stitch-assets/**
 anti-slop/**
 graphify-out/**
+tsconfig.json
+tailwind.config.js
+assets/flora-generated-*
+*.vsix
 *.log
 .gitignore
+package-lock.json

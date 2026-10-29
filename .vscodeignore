@@ -12,3 +12,14 @@ assets/flora-generated-*
 *.log
 .gitignore
 package-lock.json
+out/test/**
+**/*.map
+node_modules/**/.github/**
+node_modules/**/.eslintrc*
+node_modules/**/docs/**
+node_modules/**/docs-out/**
+node_modules/**/README.md
+node_modules/**/LICENSE*
+node_modules/**/test/**
+node_modules/**/tests/**
+node_modules/**/.git*

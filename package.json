@@ -1,12 +1,18 @@
 {
   "name": "discode-rpc",
-  "displayName": "DisCode — Visual Discord Rich Presence",
+  "displayName": "DisCode - Visual Discord Rich Presence",
   "description": "Supercharge your Discord status with dynamic file icons, custom elapsed timers, and an interactive live preview settings dashboard.",
   "version": "1.3.1",
+  "publisher": "UnnamedPeople",
+  "author": {
+    "name": "UnnamedPeople",
+    "url": "https://github.com/UnnamedPeople-Chin"
+  },
+  "license": "MIT",
   "icon": "assets/icon.png",
   "repository": {
     "type": "git",
-    "url": "https://github.com/UnnamedPeople-Chin/discode.git"
+    "url": "https://github.com/UnnamedPeople-Chin/discode"
   },
   "bugs": {
     "url": "https://github.com/UnnamedPeople-Chin/discode/issues"
@@ -21,7 +27,6 @@
     "status",
     "cyberpunk"
   ],
-  "publisher": "UnnamedPeople",
   "engines": {
     "vscode": "^1.85.0"
   },

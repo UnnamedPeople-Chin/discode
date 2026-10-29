@@ -47,12 +47,12 @@ Modern developers spend hours writing code across multiple projects, yet sharing
     <td width="50%" align="center" valign="top">
       <img src="./assets/screenshots/dashboard-preview.png" width="100%" style="border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.5);" alt="Dashboard Preview" />
       <br />
-      <em><b>Figure 1:</b> Interactive Settings Dashboard with Live Profile Preview (<code>Ctrl + Alt + D</code>)</em>
+      <em><b>Figure 1:</b> Cyber-Ronin Settings Dashboard with Live Profile Preview (<code>Ctrl + Alt + D</code>)</em>
     </td>
     <td width="50%" align="center" valign="top">
       <img src="./assets/screenshots/tokens-preview.png" width="100%" style="border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.5);" alt="Activity Tokens Preview" />
       <br />
-      <em><b>Figure 2:</b> Activity Customizer with Clickable Dynamic Variable Pills</em>
+      <em><b>Figure 2:</b> Activity Customizer with Clickable Variable Pills & Kamon Aesthetic</em>
     </td>
   </tr>
   <tr>

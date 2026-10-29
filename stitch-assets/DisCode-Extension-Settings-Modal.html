@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,600;0,700;1,400&amp;family=Space+Mono:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-primary-fixed":"#410002","surface-container-lowest":"#0d0e11","secondary-fixed-dim":"#ffb3af","surface-container-low":"#1b1b1f","on-surface":"#e3e2e6","surface-container-high":"#292a2d","on-secondary":"#68000e","inverse-primary":"#c00014","surface-bright":"#38393c","tertiary-container":"#8d909e","on-secondary-container":"#ffe7e5","surface-tint":"#ffb4ab","tertiary-fixed":"#dfe2f1","on-error":"#690005","on-tertiary-fixed-variant":"#434752","tertiary-fixed-dim":"#c3c6d4","on-tertiary-container":"#262a34","secondary":"#ffb3af","inverse-on-surface":"#303034","on-tertiary":"#2c303b","on-primary-fixed-variant":"#93000c","inverse-surface":"#e3e2e6","primary-fixed-dim":"#ffb4ab","surface-container":"#1f1f23","error":"#ffb4ab","outline":"#af8783","on-primary":"#690006","primary":"#ffb4ab","surface":"#121316","outline-variant":"#5f3f3b","on-secondary-fixed":"#410005","on-primary-container":"#5c0005","primary-fixed":"#ffdad6","tertiary":"#c3c6d4","error-container":"#93000a","on-error-container":"#ffdad6","background":"#121316","surface-dim":"#121316","on-surface-variant":"#e9bcb7","on-tertiary-fixed":"#171b26","surface-variant":"#343538","primary-container":"#ff544b","on-background":"#e3e2e6","secondary-fixed":"#ffdad7","secondary-container":"#d70028","on-secondary-fixed-variant":"#930018","surface-container-highest":"#343538"},borderRadius:{DEFAULT:"0.25rem",lg:"0.5rem",xl:"0.75rem",full:"9999px"},spacing:{gutter:"1rem","space-xs":"0.25rem","space-lg":"1.25rem","gutter-compact":"0.5rem","space-sm":"0.5rem",margin:"1.5rem","space-xl":"2rem","space-md":"0.75rem","margin-panel":"1rem"},fontFamily:{"body-lg":["Space Mono"],"code-inline":["Space Mono"],"headline-xl":["Noto Serif"],"label-md":["Space Mono"],"headline-lg":["Noto Serif"],"body-md":["Space Mono"],"label-sm":["Space Mono"],"headline-sm":["Noto Serif"]},fontSize:{"body-lg":["14px",{lineHeight:"22px",letterSpacing:"-0.01em",fontWeight:"400"}],"code-inline":["11px",{lineHeight:"16px",letterSpacing:"0.02em",fontWeight:"700"}],"headline-xl":["32px",{lineHeight:"40px",letterSpacing:"-0.02em",fontWeight:"700"}],"label-md":["11px",{lineHeight:"14px",letterSpacing:"0.08em",fontWeight:"700"}],"headline-lg":["24px",{lineHeight:"32px",letterSpacing:"-0.01em",fontWeight:"600"}],"body-md":["12px",{lineHeight:"18px",letterSpacing:"0em",fontWeight:"400"}],"label-sm":["10px",{lineHeight:"12px",letterSpacing:"0.1em",fontWeight:"400"}],"headline-sm":["18px",{lineHeight:"24px",letterSpacing:"0em",fontWeight:"600"}]}}}}</script></head><body class="bg-surface-container-lowest text-on-surface font-body-md text-body-md antialiased min-h-screen selection:bg-primary-container selection:text-on-primary"><div class="fixed inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-surface-container/20 via-surface-container-lowest to-surface-container-lowest z-0"></div><header class="fixed top-0 left-0 right-0 z-50 h-10 bg-surface-container-lowest border-b border-outline-variant/40 flex items-center justify-between px-gutter select-none"><div class="flex items-center gap-space-md"><div class="flex items-center gap-1.5"><div class="w-2.5 h-2.5 rounded-full bg-secondary-container hover:opacity-80 transition-opacity cursor-pointer"></div><div class="w-2.5 h-2.5 rounded-full bg-surface-variant hover:opacity-80 transition-opacity cursor-pointer"></div><div class="w-2.5 h-2.5 rounded-full bg-surface-bright hover:opacity-80 transition-opacity cursor-pointer"></div></div><span class="font-code-inline text-code-inline text-outline-variant">|</span><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-primary text-[14px]">terminal</span><span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface">DisCode Settings — Extension Preferences</span></div></div><div class="flex items-center gap-space-lg"><div class="flex items-center gap-space-xs text-outline font-code-inline text-code-inline"><span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span><span>RPC: CONNECTED</span></div><div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[14px]">person</span></div><button aria-label="Close modal" class="text-outline hover:text-primary transition-colors flex items-center justify-center"><span class="material-symbols-outlined text-[16px]">close</span></button></div></header><aside class="fixed left-0 top-10 bottom-0 w-64 bg-surface-container-low border-r border-outline-variant/30 z-40 flex flex-col justify-between"><div class="flex flex-col"><div class="px-gutter py-space-md border-b border-outline-variant/20 flex items-center justify-between"><span class="font-label-sm text-label-sm uppercase text-outline tracking-widest">MANIFEST // CONFIG</span><span class="font-code-inline text-code-inline text-primary">v2.4.1</span></div><nav class="flex flex-col py-space-sm" data-active-classes="bg-surface-container-high text-on-surface border-l-2 border-primary"><a aria-current="page" class="px-gutter py-space-sm font-label-md transition-colors flex items-center justify-between bg-surface-container-high text-on-surface border-l-2 border-primary" data-path="general-settings" href="#"><span>01. GENERAL PRESENCE</span><span class="font-code-inline text-code-inline text-outline">[GEN]</span></a><a class="px-gutter py-space-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md text-label-md transition-colors flex items-center justify-between" data-path="activity-status" href="#"><span>02. ACTIVITY &amp; STATUS</span><span class="font-code-inline text-code-inline text-outline">[ACT]</span></a><a class="px-gutter py-space-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md text-label-md transition-colors flex items-center justify-between" data-path="workspace-rules" href="#"><span>03. WORKSPACE RULES</span><span class="font-code-inline text-code-inline text-outline">[RUL]</span></a><a class="px-gutter py-space-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md text-label-md transition-colors flex items-center justify-between" data-path="custom-assets" href="#"><span>04. ASSET OVERLAYS</span><span class="font-code-inline text-code-inline text-outline">[AST]</span></a><a class="px-gutter py-space-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md text-label-md transition-colors flex items-center justify-between" data-path="privacy-diagnostics" href="#"><span>05. PRIVACY &amp; TELEMETRY</span><span class="font-code-inline text-code-inline text-outline">[SEC]</span></a></nav></div><div class="p-gutter border-t border-outline-variant/20 bg-surface-container-lowest"><div class="font-code-inline text-code-inline text-outline flex items-center justify-between"><span>DAEMON ID</span><span class="text-on-surface">0x7E3A9</span></div><div class="font-code-inline text-code-inline text-outline flex items-center justify-between mt-1"><span>CLIENT ENGINE</span><span class="text-primary">DISCORD-IPC</span></div></div></aside><div class="pl-64"><main class="relative pt-10 min-h-screen bg-surface px-space-xl py-space-lg"><div class="flex flex-col w-full">
+<!-- Zen Architectural Modal Container (DisCode Settings Matrix) -->
+<div class="w-full max-w-[1240px] mx-auto bg-surface-container-lowest shadow-2xl overflow-hidden flex flex-col">
+<!-- Top System Hairline Telemetry Bar -->
+<div class="w-full bg-surface-container-low px-space-md py-1 flex items-center justify-between">
+<div class="flex items-center gap-space-md">
+<span class="font-code-inline text-code-inline text-primary tracking-widest flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 bg-primary"></span>
+          SYS.EXT // DISCODE_BRIDGE
+        </span>
+<span class="font-label-sm text-label-sm text-tertiary-container">IPC_PIPELINE: ACTIVE (0x8F91)</span>
+</div>
+<div class="flex items-center gap-space-lg">
+<span class="font-label-sm text-label-sm text-tertiary">ENCODING: UTF-8 / CRLF</span>
+<span class="font-code-inline text-code-inline text-outline">LOCALE: JA_JP / EN_US</span>
+</div>
+</div>
+<!-- Main 3-Column Split Framework -->
+<div class="grid grid-cols-12 w-full min-h-[700px] bg-surface-container-lowest">
+<!-- COLUMN 1: Left Navigation Sidebar (approx 220-240px equivalent: 2.5 cols) -->
+<nav aria-label="Settings Categories" class="col-span-12 lg:col-span-3 xl:col-span-2 bg-surface-container-low p-space-md flex flex-col justify-between">
+<div class="flex flex-col gap-space-lg">
+<!-- Monogram Crest & Manifest Identity -->
+<div class="flex items-center justify-between pb-space-sm bg-surface-container-lowest/40 p-space-sm">
+<div class="flex items-center gap-2.5">
+<!-- Geometric Vermilion Seal Crest (DisCode Kanji/Code glyph) -->
+<div class="w-8 h-8 bg-secondary-container flex items-center justify-center text-on-secondary-container font-headline-sm font-bold shadow-md">
+<span class="font-code-inline text-[13px] tracking-tighter">零壱</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface tracking-wider leading-none">DisCode</span>
+<span class="font-label-sm text-label-sm text-outline-variant mt-0.5 tracking-widest">VSCODE RPC</span>
+</div>
+</div>
+<span class="bg-surface-container-highest px-1.5 py-0.5 text-on-surface-variant font-code-inline text-[10px]">v1.3.0</span>
+</div>
+<!-- Vertical Sub-Navigation Tabs -->
+<div class="flex flex-col gap-1" id="navTabs">
+<button class="w-full text-left px-space-md py-space-sm bg-surface-container-high text-on-surface font-label-md text-label-md flex items-center justify-between shadow-sm" type="button">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[15px]">tune</span>
+                01. GENERAL
+              </span>
+<span class="w-1.5 h-1.5 bg-primary"></span>
+</button>
+<button class="w-full text-left px-space-md py-space-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md text-label-md transition-colors flex items-center justify-between" type="button">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline text-[15px]">palette</span>
+                02. APPEARANCE
+              </span>
+<span class="font-code-inline text-label-sm text-outline">UI</span>
+</button>
+<button class="w-full text-left px-space-md py-space-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md text-label-md transition-colors flex items-center justify-between" type="button">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline text-[15px]">terminal</span>
+                03. ACTIVITY
+              </span>
+<span class="font-code-inline text-label-sm text-outline">ACT</span>
+</button>
+<button class="w-full text-left px-space-md py-space-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md text-label-md transition-colors flex items-center justify-between" type="button">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline text-[15px]">memory</span>
+                04. BEHAVIOR
+              </span>
+<span class="font-code-inline text-label-sm text-outline">DAE</span>
+</button>
+<button class="w-full text-left px-space-md py-space-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md text-label-md transition-colors flex items-center justify-between" type="button">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline text-[15px]">shield</span>
+                05. PRIVACY
+              </span>
+<span class="font-code-inline text-label-sm text-outline">SEC</span>
+</button>
+<button class="w-full text-left px-space-md py-space-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md text-label-md transition-colors flex items-center justify-between" type="button">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline text-[15px]">hub</span>
+                06. DISCORD IPC
+              </span>
+<span class="font-code-inline text-label-sm text-outline">NET</span>
+</button>
+</div>
+<!-- Ukiyo-e Atmospheric Vignette Badge -->
+<div class="relative bg-surface-container p-space-sm overflow-hidden flex flex-col gap-1 mt-4">
+<div class="absolute -right-3 -bottom-3 w-16 h-16 rounded-full bg-secondary-container/10 pointer-events-none"></div>
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-outline-variant">KYOTO RELAY</span>
+<span class="font-code-inline text-label-sm text-secondary">JP-EAST</span>
+</div>
+<span class="font-body-md text-body-md text-tertiary">墨絵調の仮想端末設定</span>
+<div class="w-full bg-surface-container-lowest h-1 mt-1 overflow-hidden">
+<div class="bg-secondary-container h-full w-2/3"></div>
+</div>
+</div>
+</div>
+<!-- Latency & Connection Footer Diagnostic -->
+<div class="bg-surface-container-lowest p-space-sm flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-tertiary">SOCKET STREAM</span>
+<span class="flex items-center gap-1 font-code-inline text-[10px] text-primary">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-ping"></span>
+              LIVE
+            </span>
+</div>
+<div class="flex items-center justify-between text-on-surface">
+<span class="font-code-inline text-code-inline text-tertiary-container">IPC LATENCY</span>
+<span class="font-code-inline text-code-inline text-primary font-bold">14 ms</span>
+</div>
+</div>
+</nav>
+<!-- COLUMN 2: Center Configuration Canvas (Fluid core: 6.5 cols) -->
+<section aria-label="Configuration Settings" class="col-span-12 lg:col-span-5 xl:col-span-6 bg-surface p-space-xl flex flex-col justify-between">
+<div class="flex flex-col gap-space-lg">
+<!-- Header Module -->
+<header class="flex flex-col gap-1 pb-space-md bg-surface-container-low/40 p-space-md">
+<div class="flex items-center justify-between">
+<h1 class="font-headline-lg text-headline-lg text-on-surface">
+                Discord Rich Presence
+              </h1>
+<span class="font-label-sm text-label-sm text-outline bg-surface-container-highest px-2 py-0.5">
+                ACTIVE_PROFILE: DEV_NIGHT
+              </span>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm text-primary tracking-widest">外部アクティビティ連携設定</span>
+<span class="text-outline">/</span>
+<span class="font-body-md text-body-md text-tertiary">Presence Tokens, Timers &amp; Masking</span>
+</div>
+<p class="font-body-md text-body-md text-tertiary-container mt-1">
+              Configure real-time activity strings, elapsed timestamp offsets, and sensitive workspace metadata masking for the Discord IPC daemon.
+            </p>
+</header>
+<!-- Form Area -->
+<div class="flex flex-col gap-space-lg">
+<!-- SECTION 1: Presence Display Pattern -->
+<div class="bg-surface-container-low p-space-md flex flex-col gap-space-md shadow-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-3 bg-secondary-container"></span>
+<span class="font-label-md text-label-md text-on-surface uppercase">01. Presence Display Pattern</span>
+</div>
+<span class="font-label-sm text-label-sm text-outline">STR_PATTERN_V2</span>
+</div>
+<!-- Details Format Input -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-sm text-label-sm text-on-surface-variant flex items-center justify-between" for="detailsFormat">
+<span>DETAILS FORMAT STRING</span>
+<span class="font-code-inline text-[10px] text-tertiary-container">DEFAULT: "Editing {fileName}"</span>
+</label>
+<div class="relative flex items-center">
+<input class="w-full bg-surface-container-lowest text-on-surface font-body-md text-body-md px-space-md py-2 text-on-surface placeholder:text-outline focus:outline-none focus:bg-surface-container-high transition-colors" id="detailsFormat" type="text" value="Editing {fileName}"/>
+<span class="absolute right-3 font-code-inline text-[10px] text-primary">LINE_1</span>
+</div>
+</div>
+<!-- Dynamic Tag Token Cloud -->
+<div class="flex flex-col gap-1.5">
+<span class="font-label-sm text-label-sm text-outline uppercase tracking-wider">AVAILABLE METADATA TOKENS (CLICK TO APPEND)</span>
+<div class="flex flex-wrap gap-1.5" id="tokenContainer">
+<button class="token-btn bg-surface-container hover:bg-secondary-container hover:text-on-secondary px-2 py-1 font-code-inline text-code-inline text-on-surface transition-colors flex items-center gap-1" data-token="{fileName}" type="button">
+<span>{fileName}</span>
+<span class="text-primary font-bold">+</span>
+</button>
+<button class="token-btn bg-surface-container hover:bg-secondary-container hover:text-on-secondary px-2 py-1 font-code-inline text-code-inline text-on-surface transition-colors flex items-center gap-1" data-token="{workspace}" type="button">
+<span>{workspace}</span>
+<span class="text-primary font-bold">+</span>
+</button>
+<button class="token-btn bg-surface-container hover:bg-secondary-container hover:text-on-secondary px-2 py-1 font-code-inline text-code-inline text-on-surface transition-colors flex items-center gap-1" data-token="{gitBranch}" type="button">
+<span>{gitBranch}</span>
+<span class="text-primary font-bold">+</span>
+</button>
+<button class="token-btn bg-surface-container hover:bg-secondary-container hover:text-on-secondary px-2 py-1 font-code-inline text-code-inline text-on-surface transition-colors flex items-center gap-1" data-token="{lineCount}" type="button">
+<span>{lineCount}</span>
+<span class="text-primary font-bold">+</span>
+</button>
+<button class="token-btn bg-surface-container hover:bg-secondary-container hover:text-on-secondary px-2 py-1 font-code-inline text-code-inline text-on-surface transition-colors flex items-center gap-1" data-token="{language}" type="button">
+<span>{language}</span>
+<span class="text-primary font-bold">+</span>
+</button>
+</div>
+</div>
+<!-- State Format Input -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-sm text-label-sm text-on-surface-variant flex items-center justify-between" for="stateFormat">
+<span>STATE FORMAT STRING</span>
+<span class="font-code-inline text-[10px] text-tertiary-container">DEFAULT: "In {workspace} ({gitBranch})"</span>
+</label>
+<div class="relative flex items-center">
+<input class="w-full bg-surface-container-lowest text-on-surface font-body-md text-body-md px-space-md py-2 focus:outline-none focus:bg-surface-container-high transition-colors" id="stateFormat" type="text" value="In {workspace} ({gitBranch})"/>
+<span class="absolute right-3 font-code-inline text-[10px] text-outline">LINE_2</span>
+</div>
+</div>
+</div>
+<!-- SECTION 2: Time Elapsed & Customizer -->
+<div class="bg-surface-container-low p-space-md flex flex-col gap-space-md shadow-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-3 bg-secondary-container"></span>
+<span class="font-label-md text-label-md text-on-surface uppercase">02. Time Elapsed &amp; Customizer</span>
+</div>
+<span class="font-label-sm text-label-sm text-outline">EPOCH_SYNC</span>
+</div>
+<!-- Toggle Row: Show Elapsed Time -->
+<div class="flex items-center justify-between bg-surface-container-lowest/60 p-space-sm">
+<div class="flex flex-col">
+<span class="font-body-md text-body-md text-on-surface">Show Elapsed Session Time</span>
+<span class="font-label-sm text-label-sm text-tertiary">Renders Discord timestamp telemetry pill under status.</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" id="toggleElapsed" type="checkbox"/>
+<div class="w-9 h-5 bg-surface-container-highest peer-checked:bg-secondary-container transition-colors relative flex items-center px-0.5">
+<div class="w-4 h-4 bg-on-secondary transition-transform peer-checked:translate-x-4"></div>
+</div>
+</label>
+</div>
+<!-- Timer Controls and Quick Offset Actions -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<div class="flex flex-col gap-1.5">
+<label class="font-label-sm text-label-sm text-outline" for="timerBehavior">TIMESTAMP LOGIC</label>
+<select class="w-full bg-surface-container-lowest text-on-surface font-body-md text-body-md px-space-sm py-2 focus:outline-none" id="timerBehavior">
+<option>Elapsed since editor launch</option>
+<option>File switch reset counter</option>
+<option>Strict Git commit delta</option>
+</select>
+</div>
+<div class="flex flex-col gap-1.5">
+<span class="font-label-sm text-label-sm text-outline">QUICK OFFSET ADJUSTMENT</span>
+<div class="flex items-center gap-1.5">
+<button class="flex-1 bg-surface-container hover:bg-secondary-container hover:text-on-secondary font-code-inline text-code-inline py-2 text-on-surface transition-colors" id="btnPlus1" type="button">+1h</button>
+<button class="flex-1 bg-surface-container hover:bg-secondary-container hover:text-on-secondary font-code-inline text-code-inline py-2 text-on-surface transition-colors" id="btnPlus2" type="button">+2h</button>
+<button class="flex-1 bg-surface-container-highest hover:bg-surface-bright font-code-inline text-code-inline py-2 text-outline hover:text-on-surface transition-colors" id="btnResetTimer" type="button">Reset</button>
+</div>
+</div>
+</div>
+</div>
+<!-- SECTION 3: Idle & Privacy Behavior -->
+<div class="bg-surface-container-low p-space-md flex flex-col gap-space-sm shadow-sm">
+<div class="flex items-center justify-between mb-1">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-3 bg-secondary-container"></span>
+<span class="font-label-md text-label-md text-on-surface uppercase">03. Idle &amp; Privacy Safeguards</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary">ANONYMIZER</span>
+</div>
+<!-- Switch 1: Idle AFK -->
+<div class="flex items-center justify-between py-1.5">
+<div class="flex flex-col">
+<span class="font-body-md text-body-md text-on-surface">Display Inactive when AFK (&gt;15m)</span>
+<span class="font-label-sm text-label-sm text-tertiary">Switches status icon to sleeping and clears file paths.</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-9 h-5 bg-surface-container-highest peer-checked:bg-secondary-container transition-colors relative flex items-center px-0.5">
+<div class="w-4 h-4 bg-on-secondary transition-transform peer-checked:translate-x-4"></div>
+</div>
+</label>
+</div>
+<!-- Switch 2: Mask Sensitive Workspaces -->
+<div class="flex items-center justify-between py-1.5">
+<div class="flex flex-col">
+<span class="font-body-md text-body-md text-on-surface">Mask Sensitive Workspace Names</span>
+<span class="font-label-sm text-label-sm text-tertiary">Replaces client repositories with “Confidential Project”.</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" id="toggleMask" type="checkbox"/>
+<div class="w-9 h-5 bg-surface-container-highest peer-checked:bg-secondary-container transition-colors relative flex items-center px-0.5">
+<div class="w-4 h-4 bg-on-secondary transition-transform peer-checked:translate-x-4"></div>
+</div>
+</label>
+</div>
+</div>
+</div>
+</div>
+<!-- Sticky Bottom Action Toolbar -->
+<footer class="mt-space-xl pt-space-md flex items-center justify-between bg-surface-container-lowest p-space-md shadow-md">
+<div class="flex items-center gap-2">
+<button class="px-space-md py-2 bg-surface-container hover:bg-surface-container-high text-tertiary hover:text-on-surface font-code-inline text-code-inline uppercase transition-colors" id="btnResetDefaults" type="button">
+              Reset to Defaults
+            </button>
+<span class="font-label-sm text-label-sm text-outline-variant hidden sm:inline">NO UNSAVED LOCKS</span>
+</div>
+<div class="flex items-center gap-space-md">
+<span class="font-code-inline text-[11px] text-primary opacity-0 transition-opacity" id="saveStatus">CHANGES_COMMITTED</span>
+<button class="px-space-xl py-2 bg-secondary-container hover:bg-primary-container text-on-secondary font-code-inline text-code-inline uppercase tracking-widest flex items-center gap-2 shadow-lg transition-transform active:translate-y-0.5" id="btnSave" type="button">
+<span class="material-symbols-outlined text-[16px]">check</span>
+<span>Save Changes</span>
+</button>
+</div>
+</footer>
+</section>
+<!-- COLUMN 3: Right Live Discord Preview Panel (approx 340-360px: 4 cols) -->
+<aside aria-label="Discord Presence Preview" class="col-span-12 xl:col-span-4 bg-surface-container-low p-space-lg flex flex-col justify-between">
+<div class="flex flex-col gap-space-md">
+<!-- Section Badge & Sync Indicator -->
+<div class="flex items-center justify-between pb-space-sm bg-surface-container-lowest/50 p-space-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[16px]">visibility</span>
+<span class="font-label-md text-label-md text-on-surface tracking-wider">LIVE PREVIEW / プレビュー</span>
+</div>
+<div class="flex items-center gap-1.5 bg-surface-container px-2 py-0.5">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+<span class="font-code-inline text-[10px] text-primary font-bold">SYNC: ACTIVE</span>
+</div>
+</div>
+<!-- Japanese Architectural Minimalist Outer Frame -->
+<div class="relative bg-surface-container-lowest p-space-md shadow-2xl overflow-hidden">
+<!-- Delicate Japanese red accent corners (Sumi-e inspired framing) -->
+<div class="absolute top-0 left-0 w-3 h-3 bg-secondary-container"></div>
+<div class="absolute top-0 right-0 w-3 h-3 bg-secondary-container"></div>
+<div class="absolute bottom-0 left-0 w-3 h-3 bg-secondary-container"></div>
+<div class="absolute bottom-0 right-0 w-3 h-3 bg-secondary-container"></div>
+<!-- Discord Client Mini Profile Card Mockup -->
+<div class="w-full bg-[#18191c] text-on-surface overflow-hidden shadow-xl flex flex-col">
+<!-- Profile Card Header Wash Banner -->
+<div class="relative h-24 w-full bg-surface-container-highest overflow-hidden">
+<div class="w-full h-full bg-cover bg-center" data-alt="Dark atmospheric Japanese landscape at dusk featuring deep crimson maple foliage, dramatic mountain silhouette with a blazing red sun, and monochrome sumi-e ink washes inspired by traditional woodblock prints." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAs_8L-Ws3OmzxsBXSz9yJlzNL3CW6sqsqFsaQCmimmIawaN9YCN63lT5L1pt3vYlOI0AJ_Viq09qDkKcPpFtq6Iu2QiQK3je6Mhaop1iO8JJdJfzVN1F6qKCqEAIIm6h9uSxj24BE2lSyM2eJrVt5kmTGDKO1gJx9Nk8xinekBjqUa-H3wHkAs5rF_USyMqMQWeOMXPofH3bc4BNnZI16K7eL-Hpbt8wKNi5rY1DjW')"></div>
+<!-- Vermilion Mist Gradient Scrim -->
+<div class="absolute inset-0 bg-gradient-to-t from-[#18191c] via-surface-container-lowest/60 to-transparent"></div>
+<!-- Japanese Crest Stamp in Preview Corner -->
+<div class="absolute top-2 right-2 px-1.5 py-0.5 bg-secondary-container text-on-secondary font-code-inline text-[9px] font-bold">
+                  神楽
+                </div>
+</div>
+<!-- Profile Details & Avatar Offset -->
+<div class="px-space-md pb-space-md pt-0 relative flex flex-col">
+<!-- Avatar with Online Dot -->
+<div class="relative -mt-9 mb-space-sm flex items-end justify-between">
+<div class="relative">
+<img class="w-16 h-16 bg-surface-container-high object-cover shadow-lg" data-alt="High contrast cyberpunk developer portrait wearing a minimal dark techwear jacket, subtle crimson ambient highlights across the face, dark moody aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkh3mGNyiU66nqoy7HHLZybVuG_NrBtCj4bAuREVsWBiGpbFmMFZwuH_MvY8G3VzfrJmvIxBPSHGKpVlSbpolFdHRVuRZxe3KTxjtWnGTJD9QZfDx7-1qncjHmQG8nmniw-upJKqTaKrNQ-HBOebMfk3MoSrWx-LkHzMDD5Tl3IFhgFhBeg4eRfByFlZlhs2j0ecx2PWBd2KFwE_Ut_63YAzaijnD6IwMkfk7ePGR_"/>
+<!-- Green Online Badge -->
+<div class="absolute bottom-0 right-0 w-4 h-4 bg-[#23a55a] rounded-full ring-4 ring-[#18191c] flex items-center justify-center"></div>
+</div>
+<!-- Badges Stack -->
+<div class="flex items-center gap-1 bg-[#111214] px-2 py-1">
+<span class="material-symbols-outlined text-primary text-[14px]">code</span>
+<span class="material-symbols-outlined text-[#5865f2] text-[14px]">bolt</span>
+<span class="material-symbols-outlined text-secondary text-[14px]">verified</span>
+</div>
+</div>
+<!-- Username & Handle -->
+<div class="flex flex-col mb-space-md">
+<div class="flex items-center gap-1.5">
+<span class="font-headline-sm text-[16px] text-on-surface font-bold leading-tight">Kenshi.dev</span>
+<span class="bg-surface-container text-tertiary font-code-inline text-[9px] px-1">BOT</span>
+</div>
+<span class="font-code-inline text-label-sm text-outline">@kenshi • he/him</span>
+</div>
+<!-- Activity Card: Discord "Playing a Game" Component -->
+<div class="bg-[#1e1f22] p-space-md flex flex-col gap-space-sm shadow-inner">
+<!-- Activity Type Sub-heading -->
+<div class="flex items-center justify-between text-[11px] font-code-inline font-bold tracking-wider text-outline uppercase">
+<span>PLAYING A GAME</span>
+<span class="text-primary font-code-inline text-[10px]">RICH RPC</span>
+</div>
+<!-- Activity Body: VS Code Icon + Live Strings -->
+<div class="flex items-start gap-3 mt-0.5">
+<!-- VS Code Icon with Small State Indicator Badge -->
+<div class="relative flex-shrink-0">
+<div class="w-12 h-12 bg-surface-container-highest flex items-center justify-center text-[#007acc] shadow-sm">
+<span class="material-symbols-outlined text-[32px]">code_blocks</span>
+</div>
+<!-- Small Crimson Corner Presence Seal -->
+<div class="absolute -bottom-1 -right-1 w-4 h-4 bg-secondary-container flex items-center justify-center text-on-secondary shadow-sm">
+<span class="material-symbols-outlined text-[10px]">edit</span>
+</div>
+</div>
+<!-- Live Dynamic Text Strings -->
+<div class="flex flex-col min-w-0 flex-1">
+<span class="font-headline-sm text-[13px] font-bold text-on-surface truncate leading-tight">
+                        Visual Studio Code
+                      </span>
+<!-- Line 1: Live Details preview -->
+<span class="font-body-md text-body-md text-on-surface-variant truncate mt-0.5" id="previewLine1">
+                        Editing index.tsx
+                      </span>
+<!-- Line 2: Live State preview -->
+<span class="font-body-md text-body-md text-tertiary truncate" id="previewLine2">
+                        In DisCode-Core (main*)
+                      </span>
+<!-- Line 3: Elapsed Timer -->
+<div class="flex items-center gap-1.5 mt-1 text-tertiary-container font-code-inline text-[11px]" id="previewTimerRow">
+<span class="material-symbols-outlined text-[12px] text-primary">schedule</span>
+<span id="previewTimerDigits">01:42:19 elapsed</span>
+</div>
+</div>
+</div>
+<!-- Quick Discord RPC Action Button (Simulated) -->
+<div class="mt-space-sm pt-space-xs flex flex-col gap-1.5">
+<button class="w-full bg-[#2b2d31] hover:bg-[#35373c] text-on-surface font-code-inline text-[11px] py-1.5 text-center transition-colors" type="button">
+                      View Repository
+                    </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Preview Mode Toggle Toolbar -->
+<div class="bg-surface-container p-space-sm flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-outline">VIEWPORT MODE</span>
+<div class="flex items-center gap-1 bg-surface-container-lowest p-0.5">
+<button class="px-2 py-0.5 bg-secondary-container text-on-secondary font-code-inline text-[10px]" id="btnModeDetailed" type="button">
+                DETAILED
+              </button>
+<button class="px-2 py-0.5 text-outline hover:text-on-surface font-code-inline text-[10px]" id="btnModeCompact" type="button">
+                COMPACT
+              </button>
+</div>
+</div>
+<!-- Diagnostic Telemetry Readout -->
+<div class="bg-surface-container-lowest p-space-sm flex flex-col gap-1">
+<div class="flex items-center justify-between font-code-inline text-[10px] text-tertiary">
+<span>DISCORD_CLIENT</span>
+<span class="text-on-surface">CANARY // BUILD 298144</span>
+</div>
+<div class="flex items-center justify-between font-code-inline text-[10px] text-tertiary">
+<span>HANDSHAKE_HASH</span>
+<span class="text-primary">SHA256:7B12..C94E</span>
+</div>
+</div>
+</div>
+<!-- Ukiyo-e Minimal Footer Seal -->
+<div class="pt-space-md flex items-center justify-between text-outline-variant font-label-sm text-label-sm">
+<span>伝統と電脳の調和</span>
+<span>DISCODE KYOTO © 2025</span>
+</div>
+</aside>
+</div>
+</div>
+</div>
+<script>
+  (function () {
+    const detailsInput = document.getElementById('detailsFormat');
+    const stateInput = document.getElementById('stateFormat');
+    const previewLine1 = document.getElementById('previewLine1');
+    const previewLine2 = document.getElementById('previewLine2');
+    const previewTimerRow = document.getElementById('previewTimerRow');
+    const previewTimerDigits = document.getElementById('previewTimerDigits');
+    const toggleElapsed = document.getElementById('toggleElapsed');
+    const toggleMask = document.getElementById('toggleMask');
+    const btnSave = document.getElementById('btnSave');
+    const saveStatus = document.getElementById('saveStatus');
+    const tokenButtons = document.querySelectorAll('.token-btn');
+
+    let secondsElapsed = 6139; // 01:42:19
+
+    function formatTime(totalSec) {
+      const hrs = String(Math.floor(totalSec / 3600)).padStart(2, '0');
+      const mins = String(Math.floor((totalSec % 3600) / 60)).padStart(2, '0');
+      const secs = String(totalSec % 60).padStart(2, '0');
+      return `${hrs}:${mins}:${secs} elapsed`;
+    }
+
+    function syncPreview() {
+      let dVal = detailsInput.value || 'Editing index.tsx';
+      let sVal = stateInput.value || 'In DisCode-Core (main*)';
+
+      if (toggleMask && toggleMask.checked) {
+        sVal = sVal.replace(/\{workspace\}/g, 'Confidential-Proj');
+        sVal = sVal.replace(/DisCode-Core/g, 'Confidential-Proj');
+      }
+
+      // Token substitution simulation
+      dVal = dVal
+        .replace(/\{fileName\}/g, 'index.tsx')
+        .replace(/\{workspace\}/g, toggleMask.checked ? 'Confidential-Proj' : 'DisCode-Core')
+        .replace(/\{gitBranch\}/g, 'main*')
+        .replace(/\{lineCount\}/g, '482 lines')
+        .replace(/\{language\}/g, 'TypeScript');
+
+      sVal = sVal
+        .replace(/\{fileName\}/g, 'index.tsx')
+        .replace(/\{workspace\}/g, toggleMask.checked ? 'Confidential-Proj' : 'DisCode-Core')
+        .replace(/\{gitBranch\}/g, 'main*')
+        .replace(/\{lineCount\}/g, '482 lines')
+        .replace(/\{language\}/g, 'TypeScript');
+
+      previewLine1.textContent = dVal;
+      previewLine2.textContent = sVal;
+    }
+
+    // Input listeners
+    detailsInput.addEventListener('input', syncPreview);
+    stateInput.addEventListener('input', syncPreview);
+
+    // Dynamic tag buttons click to append
+    tokenButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const token = btn.getAttribute('data-token');
+        detailsInput.value = detailsInput.value + ' ' + token;
+        syncPreview();
+        detailsInput.focus();
+      });
+    });
+
+    // Toggle elapsed
+    toggleElapsed.addEventListener('change', () => {
+      if (toggleElapsed.checked) {
+        previewTimerRow.style.display = 'flex';
+      } else {
+        previewTimerRow.style.display = 'none';
+      }
+    });
+
+    // Mask toggle
+    toggleMask.addEventListener('change', syncPreview);
+
+    // Timer offset adjustments
+    document.getElementById('btnPlus1').addEventListener('click', () => {
+      secondsElapsed += 3600;
+      previewTimerDigits.textContent = formatTime(secondsElapsed);
+    });
+
+    document.getElementById('btnPlus2').addEventListener('click', () => {
+      secondsElapsed += 7200;
+      previewTimerDigits.textContent = formatTime(secondsElapsed);
+    });
+
+    document.getElementById('btnResetTimer').addEventListener('click', () => {
+      secondsElapsed = 0;
+      previewTimerDigits.textContent = formatTime(secondsElapsed);
+    });
+
+    // Save feedback
+    btnSave.addEventListener('click', () => {
+      saveStatus.style.opacity = '1';
+      setTimeout(() => {
+        saveStatus.style.opacity = '0';
+      }, 2200);
+    });
+
+    // Reset to defaults
+    document.getElementById('btnResetDefaults').addEventListener('click', () => {
+      detailsInput.value = 'Editing {fileName}';
+      stateInput.value = 'In {workspace} ({gitBranch})';
+      toggleElapsed.checked = true;
+      toggleMask.checked = false;
+      previewTimerRow.style.display = 'flex';
+      secondsElapsed = 6139;
+      previewTimerDigits.textContent = formatTime(secondsElapsed);
+      syncPreview();
+    });
+
+    // Preview mode switches
+    const btnDetailed = document.getElementById('btnModeDetailed');
+    const btnCompact = document.getElementById('btnModeCompact');
+    btnDetailed.addEventListener('click', () => {
+      btnDetailed.className = 'px-2 py-0.5 bg-secondary-container text-on-secondary font-code-inline text-[10px]';
+      btnCompact.className = 'px-2 py-0.5 text-outline hover:text-on-surface font-code-inline text-[10px]';
+      previewLine2.style.display = 'block';
+      if (toggleElapsed.checked) previewTimerRow.style.display = 'flex';
+    });
+
+    btnCompact.addEventListener('click', () => {
+      btnCompact.className = 'px-2 py-0.5 bg-secondary-container text-on-secondary font-code-inline text-[10px]';
+      btnDetailed.className = 'px-2 py-0.5 text-outline hover:text-on-surface font-code-inline text-[10px]';
+      previewLine2.style.display = 'none';
+      previewTimerRow.style.display = 'none';
+    });
+
+    // Ambient timer tick
+    setInterval(() => {
+      if (toggleElapsed.checked) {
+        secondsElapsed += 1;
+        previewTimerDigits.textContent = formatTime(secondsElapsed);
+      }
+    }, 1000);
+
+    syncPreview();
+  })();
+</script></main></div></body></html>

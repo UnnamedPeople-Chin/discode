@@ -1,78 +1,265 @@
-<p align="center">
-  <img src="./assets/icon.png" width="160" alt="DisCode Logo" style="border-radius: 28px; box-shadow: 0 8px 24px rgba(88, 101, 242, 0.4);" />
-</p>
+<div align="center">
 
-<h1 align="center">DisCode — Visual Discord Rich Presence</h1>
+  <img src="./assets/icon.png" width="130" alt="DisCode Logo" style="border-radius: 26px; box-shadow: 0 10px 30px rgba(88, 101, 242, 0.45);" />
 
-<p align="center">
-  <b>Tingkatkan status Discord kamu dengan ikon bahasa dinamis, kustomisasi timer akurat, dan Dashboard Pengaturan dengan Live Preview interaktif.</b>
-</p>
+  # DisCode — Visual Discord Rich Presence
 
-<p align="center">
-  <img src="https://img.shields.io/badge/VS%20Code-v1.85%2B-blue?logo=visualstudiocode" alt="VS Code Version">
-  <img src="https://img.shields.io/badge/Discord%20RPC-Supported-5865F2?logo=discord" alt="Discord RPC">
-  <img src="https://img.shields.io/badge/TypeScript-Strict-3178C6?logo=typescript" alt="TypeScript">
-  <img src="https://img.shields.io/badge/License-MIT-green" alt="License">
-</p>
+  <p align="center">
+    <b>A high-performance, privacy-conscious Discord Rich Presence extension for VS Code with an interactive Live Preview dashboard, dynamic language branding, and instant synchronization.</b>
+  </p>
 
----
+  <p align="center">
+    <a href="https://github.com/UnnamedPeople-Chin/discode/releases"><img src="https://img.shields.io/badge/Release-v1.3.0-5865F2?style=for-the-badge&logo=github" alt="Release v1.3.0"></a>
+    <a href="https://code.visualstudio.com"><img src="https://img.shields.io/badge/VS_Code-^1.85.0-007ACC?style=for-the-badge&logo=visualstudiocode&logoColor=white" alt="VS Code Engine"></a>
+    <a href="https://www.typescriptlang.org"><img src="https://img.shields.io/badge/TypeScript-5.3+-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript"></a>
+    <a href="https://discord.com"><img src="https://img.shields.io/badge/Discord-RPC_API-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord RPC"></a>
+    <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-23A55A?style=for-the-badge" alt="MIT License"></a>
+  </p>
 
-## 🌟 Fitur Utama
+  <p align="center">
+    <a href="#-executive-summary">Executive Summary</a> •
+    <a href="#-visual-previews">Visual Previews</a> •
+    <a href="#-key-features">Key Features</a> •
+    <a href="#-system-architecture--tech-stack">System Architecture</a> •
+    <a href="#-project-directory-structure">Directory Structure</a> •
+    <a href="#-getting-started--setup-guide">Getting Started</a> •
+    <a href="#-team--credits">Team & Credits</a>
+  </p>
 
-- 🎨 **Live Preview Settings UI (`Ctrl + Alt + D`):** Tidak perlu lagi otak-atik `settings.json`! Atur semua konfigurasi lewat antarmuka grafis yang ramah pengguna lengkap dengan simulasi profil Discord yang bergerak secara *real-time*.
-- ⚡ **Instant Sync (Tanpa Restart):** Ubah pengaturan atau kustom durasi waktu dan langsung terapkan ke Discord dalam <1 detik lewat tombol **Instant Sync**.
-- ⏱️ **Kustom Durasi Waktu (Elapsed Timer):**
-  - Hitung durasi per sesi VS Code, reset otomatis per file, atau **masukkan durasi jam & menit koding secara manual** (misal langsung mulai dari `2 Jam 30 Menit`).
-  - Dilengkapi tombol preset cepat (`+1 Jam`, `+2 Jam`, `+3.5 Jam`, `+5 Jam`).
-- 📁 **Ikon Bahasa & File Dinamis:** Logo utama di Discord otomatis berganti sesuai ekstensi file yang aktif (React, TypeScript, Python, Go, Rust, Docker, HTML, CSS, dll).
-- 🚪 **Perilaku Fleksibel Saat File Ditutup:** Pilih untuk tetap menampilkan file terakhir, menampilkan folder workspace saja, beralih ke status *Idling*, atau menghapus status sama sekali.
-- 🔒 **Privasi & Keamanan:** Sembunyikan nama file, sembunyikan nama repo Git, atau masukkan folder ke daftar *blacklist* agar tidak pernah muncul di profil publik.
-- 🛡️ **Zero Lag & Stabilitas IPC:** Menggunakan protokol IPC lokal Windows/Unix dengan proteksi *exponential backoff* dan penanganan *rate-limiting* 15 detik agar editor tetap mulus tanpa kompromi performa.
-
----
-
-## 🚀 Cara Menjalankan
-
-### 1. Buka Menu Pengaturan
-Ada 3 cara praktis untuk membuka Dashboard DisCode:
-- **Shortcut Keyboard:** Tekan **`Ctrl + Alt + D`** (di macOS: `Cmd + Alt + D`).
-- **Status Bar:** Klik tombol **`Discord: Connected`** di pojok kanan bawah.
-- **Command Palette:** Tekan `Ctrl + Shift + P` $\to$ pilih `Discord Presence: Open Settings & Live Preview`.
-
-### 2. Reset / Terapkan Durasi Waktu
-- Gunakan tombol **`⚡ Terapkan Waktu Saja`** di menu pengaturan untuk langsung meng-update durasi jam koding ke Discord seketika.
+</div>
 
 ---
 
-## 📦 Pemasangan Manual (.VSIX)
+## 📌 Executive Summary
 
-1. Unduh file `discode-1.3.0.vsix`.
-2. Di VS Code, buka menu **Extensions** (`Ctrl + Shift + X`).
-3. Klik ikon titik tiga (**`...`**) di pojok kanan atas tab Extensions.
-4. Pilih **Install from VSIX...** lalu pilih file `discode-1.3.0.vsix`.
+Modern developers spend hours writing code across multiple projects, yet sharing real-time status on Discord is often hindered by legacy extensions suffering from **frequent IPC socket disconnects, unhandled memory leaks, and rigid configuration workflows**. Developers are typically forced to modify obscure `settings.json` keys blindly without knowing how their profile appears to peers.
+
+**DisCode** solves this by establishing a rock-solid, production-grade integration between the **VS Code Extension API** and the **Discord Local RPC IPC socket**. Built with a centralized Singleton state orchestrator, exponential backoff reconnection, and an anti-leak disposal lifecycle, DisCode guarantees zero editor lag. Crucially, it introduces an **Interactive GUI Settings Dashboard with a Live Discord Profile Preview (`Ctrl + Alt + D`)**, dynamic language logo matching (React, TypeScript, Python, Go, Docker, etc.), granular elapsed timer controls, and sub-second instant synchronization without restarting your editor.
 
 ---
 
-## 💻 Pengembangan Lokal
+## 📸 Visual Previews
 
-```bash
-# Clone repository
-git clone https://github.com/developer/discode.git
-cd discode
+<table width="100%">
+  <tr>
+    <td width="50%" align="center" valign="top">
+      <img src="./assets/icon.png" width="90%" style="border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.5);" alt="Dashboard Preview" />
+      <br />
+      <em><b>Figure 1:</b> Interactive Settings Dashboard with Live Profile Preview (<code>Ctrl + Alt + D</code>)</em>
+    </td>
+    <td width="50%" align="center" valign="top">
+      <img src="./assets/logo.jpg" width="90%" style="border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.5);" alt="Discord Card Preview" />
+      <br />
+      <em><b>Figure 2:</b> Authentic Discord Rich Presence Profile Card with Dynamic Language Icon</em>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center" valign="top">
+      <div style="background:#1e1f22; padding:20px; border-radius:12px; border:1px solid #313338; text-align:left; font-family:monospace; font-size:12px;">
+        <span style="color:#5865F2;">⏱️ Elapsed Timer Customizer</span><br/><br/>
+        &gt; Mode: Manual Offset<br/>
+        &gt; Initial Duration: <b>02h 30m</b><br/>
+        &gt; Live Presence: <code>02:30:14 elapsed</code><br/>
+        &gt; Instant Sync: <b>Active (Bypass Queue)</b>
+      </div>
+      <br />
+      <em><b>Figure 3:</b> Granular Timer Setup with Instant Preset Buttons (+1h, +2h, +3.5h, +5h)</em>
+    </td>
+    <td width="50%" align="center" valign="top">
+      <div style="background:#1e1f22; padding:20px; border-radius:12px; border:1px solid #313338; text-align:left; font-family:monospace; font-size:12px;">
+        <span style="color:#23a55a;">🔒 Privacy & Blacklist Gate</span><br/><br/>
+        &gt; Hide File Names: <code>Enabled (a file)</code><br/>
+        &gt; Git Branch Visibility: <code>Protected</code><br/>
+        &gt; Blacklisted Folders: <code>['internal-secrets', 'corp-fin']</code><br/>
+        &gt; Activity Status: <b>Suppressed on Confidential Workspaces</b>
+      </div>
+      <br />
+      <em><b>Figure 4:</b> Resource-Scoped Workspace Privacy & Blacklist Enforcement</em>
+    </td>
+  </tr>
+</table>
 
-# Install dependencies
-npm install
+---
 
-# Compile TypeScript
-npm run compile
+## ✨ Key Features
 
-# Jalankan Unit Testing
-npm test
+### 🎨 1. GUI Settings Dashboard & Live Profile Card Preview
+- **Interactive Webview (`Ctrl + Alt + D`):** Adjust all extension options through a sleek, Discord-styled visual dashboard without ever touching raw JSON configuration files.
+- **Authentic Live Preview:** A real-time replica of the Discord user profile card sits alongside the configuration form, updating instantly as you type templates, toggle options, or change icon styles.
+- **Clickable Variable Pills:** Click placeholder tags (`{fileName}`, `{language}`, `{workspace}`, `{gitBranch}`, `{currentLine}`) to automatically insert them into your status text.
 
-# Tekan F5 di VS Code untuk meluncurkan jendela Extension Development Host
+### ⏱️ 2. Advanced Elapsed Timer Engine
+- **Multiple Timer Modes:**
+  - `session`: Accumulates continuously from the moment VS Code starts.
+  - `file`: Automatically resets back to `00:00` upon switching active documents.
+  - `manual`: Reset manually on demand via UI button or Command Palette.
+- **Custom Duration Offset:** Manually specify elapsed hours and minutes (e.g. start immediately at *2 Hours 30 Minutes*) with quick preset buttons (`+1h`, `+2h`, `+3.5h`, `+5h`).
+- **Instant Timer Apply:** Dedicated `⚡ Terapkan Waktu Saja` button updates Discord's time counter in <1 second.
+
+### ⚡ 3. High-Performance IPC Engine & Instant Sync
+- **Sub-Second Instant Sync:** Bypasses Discord's 15-second typing rate-limit buffer on manual apply, broadcasting changes directly to the IPC socket without editor or Discord restarts.
+- **Exponential Backoff Reconnection:** If Discord closes or crashes, the client reconnects smoothly using $\min(60\text{s}, 5\text{s} \times 2^{\text{retry}}) + \text{jitter}(0-2\text{s})$, preventing CPU spikes and socket flooding.
+- **Socket Error Trapping:** Internal transport-level socket listeners catch pipe disconnects cleanly, preventing crashes in the VS Code Extension Host.
+
+### 📁 4. Context Detection & Privacy Control
+- **Dynamic Language Branding:** File icons (React, TypeScript, Python, Rust, Go, Docker, HTML, CSS, SQL, etc.) dynamically take center stage as the large image asset.
+- **Closing Behavior Choices:** Choose what happens when all tabs are closed: retain the last edited file, show workspace name only, switch to *Idling*, or clear activity completely.
+- **Strict Privacy Controls:** Full toggles for masking file names, Git branch names, workspace directories, and blacklisting sensitive workspace folders.
+
+---
+
+## 🏗️ System Architecture & Tech Stack
+
+```mermaid
+flowchart TD
+    subgraph VSCodeHost ["VS Code Extension Host"]
+        EE["VS Code Window / Document / Debug Events"]
+        WV["Settings Webview Dashboard\n(Vanilla JS / CSS)"]
+        
+        subgraph DisCodeCore ["DisCode Core Engine"]
+            AD["ActivityDetector\n(File Watcher, Idle Timer, State Normalizer)"]
+            CH["ConfigurationHandler\n(Workspace/Global Resolver & Privacy Gate)"]
+            
+            subgraph RPCManager ["DiscordRpcManager (Singleton)"]
+                TH["15s Rate Limiter & Debounce Queue"]
+                FS["forceSync / Direct Socket Bypass"]
+                EB["Exponential Backoff & Reconnect Engine"]
+                RPC["discord-rpc Client (IPC Transport)"]
+            end
+        end
+    end
+
+    subgraph OS_Discord ["Operating System Daemon"]
+        PIPE["Discord Named Pipe Socket\n(\\\\.\\pipe\\discord-ipc-0 / /tmp/discord-ipc-0)"]
+        DC["Discord Desktop Client"]
+    end
+
+    EE -->|"Emit Events (Non-blocking)"| AD
+    WV <-->|"postMessage (Two-way Live Sync)"| CH
+    CH -->|"Privacy Rules & Custom Timer"| AD
+    AD -->|"Normal State Updates"| TH
+    AD -->|"Instant Apply Trigger"| FS
+    TH -->|"Throttled Payload"| RPC
+    FS -->|"Immediate Frame"| RPC
+    EB <-->|"Heartbeat & Retry"| RPC
+    RPC <-->|"Local IPC Handshake"| PIPE
+    PIPE <-->|"Rich Presence Sync"| DC
+```
+
+### 🛠️ Technology Stack Breakdown
+
+| Layer / Component | Technology | Purpose & Implementation Details |
+| :--- | :--- | :--- |
+| **Runtime Environment** | VS Code Extension API (`^1.85.0`) | Provides event subscriptions, Webview Panels, Commands, and Status Bar integration. |
+| **Language & Engine** | TypeScript 5.3+ (Strict Mode) | Zero-any guarantee, memory-safe data structures, compiled to CommonJS Node.js target. |
+| **IPC Communication** | `discord-rpc` (`^4.0.1`) | Native communication via Windows Named Pipes (`\\.\pipe\discord-ipc-0`) and Unix Domain Sockets. |
+| **GUI Dashboard** | HTML5, CSS3, Vanilla JavaScript | Responsive two-column Webview panel with real-time state synchronization via `postMessage`. |
+| **Package Format** | VS Code VSIX Package (`.vsix`) | Fully bundled, standalone distribution package (~976 KB) with zero global dependencies. |
+
+---
+
+## 📂 Project Directory Structure
+
+```text
+discode/
+├── assets/
+│   ├── icon.png                 # Official 512x512 high-resolution extension icon
+│   ├── icon.svg                 # Scalable vector branding badge
+│   └── logo.jpg                 # Cover visual asset
+├── src/
+│   ├── extension.ts             # Extension activation lifecycle, commands & status bar registration
+│   ├── activity/
+│   │   └── ActivityDetector.ts  # State normalization, language icon resolver, and idle tracker
+│   ├── config/
+│   │   └── ConfigurationHandler.ts # Settings manager, privacy policy evaluator, and workspace overrides
+│   ├── rpc/
+│   │   └── DiscordRpcManager.ts # Singleton IPC connection, exponential backoff, and instant sync bypass
+│   ├── ui/
+│   │   └── SettingsWebviewPanel.ts # Responsive Webview GUI with real-time Discord Card Preview
+│   └── test/
+│       └── self-check.ts        # Self-contained verification suite for backoff & template invariants
+├── .vscode/
+│   ├── launch.json              # Clean extension debugging configuration (F5)
+│   └── tasks.json               # Automated build & compilation tasks
+├── package.json                 # Extension manifest, commands, keybindings, and settings schema
+├── tsconfig.json                # TypeScript compiler configuration (ES2022 / CommonJS)
+├── .vscodeignore                # Packaging filter for lean VSIX generation
+├── LICENSE                      # MIT Open Source License
+└── README.md                    # Project documentation
 ```
 
 ---
 
-## 📄 Lisensi
-Didistribusikan di bawah lisensi MIT.
+## 🚀 Getting Started & Setup Guide
+
+### Prerequisites
+- [Node.js](https://nodejs.org/) (version 18.0.0 or higher)
+- [Visual Studio Code](https://code.visualstudio.com/) (version 1.85.0 or higher)
+- [Discord Desktop Client](https://discord.com/) (installed, running, and logged in)
+
+> [!IMPORTANT]
+> Ensure **Display current activity as a status message** is enabled in your Discord settings under:  
+> `User Settings` ➔ `Activity Privacy`.
+
+---
+
+### Method A: Quick Installation via VSIX Package (Recommended)
+
+1. Download [`discode-1.3.0.vsix`](./discode-1.3.0.vsix) from the root directory or repository releases.
+2. Open terminal and run:
+   ```bash
+   code --install-extension discode-1.3.0.vsix
+   ```
+3. *Alternative:* In VS Code, navigate to `Extensions` (`Ctrl + Shift + X`), click the top-right `...` menu, select **Install from VSIX...**, and choose the `.vsix` file.
+
+---
+
+### Method B: Local Development & Contribution Setup
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/UnnamedPeople-Chin/discode.git
+   cd discode
+   ```
+
+2. **Install project dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Compile TypeScript:**
+   ```bash
+   npm run compile
+   ```
+
+4. **Execute Self-Check Unit Tests:**
+   ```bash
+   npm test
+   ```
+
+5. **Launch Debugger:**
+   Press **`F5`** in VS Code to open the isolated `[Extension Development Host]` window.
+
+---
+
+## ⌨️ Shortcuts & Commands
+
+| Trigger | Action |
+| :--- | :--- |
+| **`Ctrl + Alt + D`** (macOS: `Cmd + Alt + D`) | Opens the **DisCode Settings Dashboard & Live Preview**. |
+| **Status Bar Item** (Bottom right: `$(pulse) Discord: Connected`) | Shows live IPC status and opens settings on click. |
+| **`Ctrl + Shift + P`** ➔ `Discord Presence: Reset Elapsed Timer` | Resets the elapsed coding counter back to `00:00`. |
+
+---
+
+## 👥 Team & Credits
+
+- **Creator & Lead Developer:** [UnnamedPeople-Chin](https://github.com/UnnamedPeople-Chin)
+- **Project Repository:** [https://github.com/UnnamedPeople-Chin/discode](https://github.com/UnnamedPeople-Chin/discode)
+- **Issues & Feedback:** [GitHub Issue Tracker](https://github.com/UnnamedPeople-Chin/discode/issues)
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** — see the [LICENSE](./LICENSE) file for complete details.

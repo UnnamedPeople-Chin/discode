@@ -8,6 +8,19 @@
     "type": "git",
     "url": "https://github.com/UnnamedPeople-Chin/discode.git"
   },
+  "bugs": {
+    "url": "https://github.com/UnnamedPeople-Chin/discode/issues"
+  },
+  "homepage": "https://github.com/UnnamedPeople-Chin/discode#readme",
+  "keywords": [
+    "discord",
+    "discord-rpc",
+    "rich-presence",
+    "rpc",
+    "activity",
+    "status",
+    "cyberpunk"
+  ],
   "publisher": "UnnamedPeople",
   "engines": {
     "vscode": "^1.85.0"

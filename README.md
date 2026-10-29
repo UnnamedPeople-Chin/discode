@@ -90,7 +90,7 @@ Key highlights include an **Interactive GUI Settings Dashboard with a Live Disco
 Install directly through the Visual Studio Code Extensions Marketplace:
 1. Open VS Code.
 2. Press `Ctrl + Shift + X` (macOS: `Cmd + Shift + X`) to open the Extensions view.
-3. Search for **`DisCode`** (`discode-rpc`) published by **UnnamedPeople**.
+3. Search for **`DisCode`** (`unnamed-discord-rpc`) published by **UnnamedPeople**.
 4. Click **Install**.
 
 Or install via terminal:

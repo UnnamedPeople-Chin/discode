@@ -8097,7 +8097,32 @@ var ICONS = {
   check: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`,
   visibility: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`,
   code: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>`,
-  edit: `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>`
+  edit: `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>`,
+  discodeLogo: `<svg viewBox="0 0 512 512" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="discodeSunGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FF2E36"/>
+      <stop offset="100%" stop-color="#D70014"/>
+    </linearGradient>
+    <clipPath id="discodeSunClip">
+      <circle cx="256" cy="256" r="200"/>
+    </clipPath>
+  </defs>
+  <circle cx="256" cy="256" r="200" fill="url(#discodeSunGrad)"/>
+  <g clip-path="url(#discodeSunClip)">
+    <rect x="56" y="356" width="400" height="10" fill="#0D0E11"/>
+    <rect x="56" y="378" width="400" height="10" fill="#0D0E11"/>
+    <rect x="56" y="400" width="400" height="10" fill="#0D0E11"/>
+    <rect x="56" y="422" width="400" height="10" fill="#0D0E11"/>
+  </g>
+  <g transform="translate(256, 240) scale(0.68) translate(-256, -260)">
+    <path d="M374.5 152C347.8 139.7 319.2 130.8 289.4 126C285.8 132.4 281.7 141 278.8 147.8C247.1 143.1 215.7 143.1 184.4 147.8C181.5 141 177.3 132.4 173.8 126C143.9 130.8 115.3 139.8 88.6 152.1C35.1 231.4 20.6 308.7 27.9 384.8C63.4 410.9 97.8 426.8 131.7 437.3C140.1 426 147.5 413.9 153.8 401.1C141.6 396.5 129.9 390.6 118.8 383.6C121.8 381.4 124.7 379.1 127.5 376.8C194.8 407.7 268.4 407.7 334.8 376.8C337.6 379.1 340.5 381.5 343.5 383.6C332.3 390.7 320.6 396.6 308.3 401.2C314.7 413.9 322.1 426.1 330.5 437.4C364.5 426.9 398.9 411 434.4 384.8C442.8 296.8 420.4 220 374.5 152Z" fill="#0D0E11" stroke="#FFFFFF" stroke-width="18" stroke-linejoin="round"/>
+    <circle cx="162" cy="272" r="24" fill="#FF2E36"/>
+    <circle cx="350" cy="272" r="24" fill="#FF2E36"/>
+    <path d="M 230 226 C 208 226, 202 240, 202 254 C 202 264, 188 270, 180 270 C 188 270, 202 276, 202 286 C 202 300, 208 314, 230 314" fill="none" stroke="#FFFFFF" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 282 226 C 304 226, 310 240, 310 254 C 310 264, 324 270, 332 270 C 324 270, 310 276, 310 286 C 310 300, 304 314, 282 314" fill="none" stroke="#FFFFFF" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>`
 };
 function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = "") {
   return `<!DOCTYPE html>
@@ -8157,17 +8182,21 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = "") {
             gap: 10px;
         }
         .brand-icon {
-            width: 26px;
-            height: 26px;
-            background: var(--accent);
-            border-radius: 6px;
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #fff;
-            font-weight: 800;
-            font-size: 13px;
-            box-shadow: 0 2px 6px rgba(224, 36, 68, 0.4);
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(224, 36, 68, 0.4);
+            flex-shrink: 0;
+            background: #0d0e11;
+        }
+        .brand-icon svg {
+            width: 100%;
+            height: 100%;
+            display: block;
         }
         .brand-name {
             font-weight: 700;
@@ -8791,17 +8820,23 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = "") {
         }
         .discord-small-badge {
             position: absolute;
-            bottom: -3px;
-            right: -3px;
-            width: 18px;
-            height: 18px;
+            bottom: -4px;
+            right: -4px;
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
-            background: var(--accent);
             border: 2px solid #1e1f22;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #fff;
+            overflow: hidden;
+            background: #0d0e11;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+        }
+        .discord-small-badge svg {
+            width: 100%;
+            height: 100%;
+            display: block;
         }
         .discord-act-text {
             flex: 1;
@@ -8914,7 +8949,9 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = "") {
         <!-- Top App Header -->
         <header class="top-bar">
             <div class="brand-badge">
-                <div class="brand-icon">D</div>
+                <div class="brand-icon">
+                    ${ICONS.discodeLogo}
+                </div>
                 <div>
                     <span class="brand-name">DisCode</span>
                     <span class="brand-version">v1.3.1</span>
@@ -9282,8 +9319,8 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = "") {
                             <div class="discord-act-main">
                                 <div class="discord-icon-container" id="previewAppIconWrap">
                                     <span id="previewBadgeIcon" class="discord-large-badge">TS</span>
-                                    <div class="discord-small-badge" title="DisCode">
-                                        ${ICONS.edit}
+                                    <div class="discord-small-badge" title="DisCode Official">
+                                        ${ICONS.discodeLogo}
                                     </div>
                                 </div>
                                 <div class="discord-act-text">

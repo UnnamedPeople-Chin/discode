@@ -8085,658 +8085,1208 @@ var vscode3 = __toESM(require("vscode"));
 
 // src/ui/settingsModalWebviewHtml.ts
 var ICONS = {
-  terminal: `<svg class="inline-block flex-shrink-0" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>`,
-  schedule: `<svg class="inline-block flex-shrink-0" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`,
-  palette: `<svg class="inline-block flex-shrink-0" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.563-2.512 5.563-5.563C22 6.5 17.5 2 12 2z"></path></svg>`,
-  shield: `<svg class="inline-block flex-shrink-0" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>`,
-  memory: `<svg class="inline-block flex-shrink-0" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>`,
-  hub: `<svg class="inline-block flex-shrink-0" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"></circle><circle cx="6" cy="19" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="12" y1="8" x2="12" y2="12"></line><path d="M6 16v-1a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3v1"></path></svg>`,
-  close: `<svg class="inline-block flex-shrink-0" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`,
-  bolt: `<svg class="inline-block flex-shrink-0" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`,
-  check: `<svg class="inline-block flex-shrink-0" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`,
-  visibility: `<svg class="inline-block flex-shrink-0" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`,
-  code: `<svg class="inline-block flex-shrink-0" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>`,
-  verified: `<svg class="inline-block flex-shrink-0" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 2.8 3.7-.4 1.2 3.5 3.3 1.7-.8 3.6 2.1 3-2.1 3 .8 3.6-3.3 1.7-1.2 3.5-3.7-.4L12 22l-2.4-2.8-3.7.4-1.2-3.5-3.3-1.7.8-3.6-2.1-3 2.1-3-.8-3.6 3.3-1.7 1.2-3.5 3.7.4L12 2zm-1.5 13.5l6-6-1.4-1.4-4.6 4.6-2.1-2.1-1.4 1.4 3.5 3.5z"></path></svg>`,
-  edit: `<svg class="inline-block flex-shrink-0" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>`
+  terminal: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>`,
+  schedule: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`,
+  palette: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.563-2.512 5.563-5.563C22 6.5 17.5 2 12 2z"></path></svg>`,
+  shield: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>`,
+  memory: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>`,
+  hub: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"></circle><circle cx="6" cy="19" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="12" y1="8" x2="12" y2="12"></line><path d="M6 16v-1a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3v1"></path></svg>`,
+  close: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`,
+  bolt: `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`,
+  check: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`,
+  visibility: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`,
+  code: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>`,
+  edit: `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>`
 };
 function getSettingsModalWebviewHtml(nonce, cspSource) {
   return `<!DOCTYPE html>
-<html class="dark" lang="en">
+<html lang="en">
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>DisCode Settings</title>
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${cspSource} https: data:; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src ${cspSource} https://fonts.gstatic.com; script-src 'nonce-${nonce}';"/>
-        <link href="https://fonts.googleapis.com" rel="preconnect"/>
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,600;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
+    <title>DisCode Settings & Live Preview</title>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${cspSource} https: data:; style-src 'unsafe-inline'; font-src 'none'; script-src 'nonce-${nonce}';"/>
     <style>
+        :root {
+            --bg-base: #111214;
+            --bg-sidebar: #141619;
+            --bg-card: #1e1f22;
+            --bg-input: #111214;
+            --bg-hover: #2b2d31;
+            --border-subtle: #2b2d31;
+            --border-focus: #e02444;
+            --accent: #e02444;
+            --accent-hover: #ff3b5c;
+            --blurple: #5865f2;
+            --blurple-hover: #4752c4;
+            --green: #23a55a;
+            --amber: #f0b232;
+            --text-normal: #dbdee1;
+            --text-muted: #949ba4;
+            --text-heading: #f2f3f5;
+            --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --font-mono: "Cascadia Code", Consolas, "Courier New", monospace;
+        }
 
-html, body { margin:0; padding:0; height:100%; overflow:hidden; }
-::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: #0d0e11; }
-::-webkit-scrollbar-thumb { background: #262a36; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: #d70028; }
-.font-headline-xl, .font-headline-lg, .font-headline-sm { font-family: "Noto Serif", serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-.font-code-inline, .font-body-md, .font-label-md, .font-label-sm { font-family: "Space Mono", monospace, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas; }
-*,:after,:before{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/*! tailwindcss v3.4.19 | MIT License | https://tailwindcss.com*/*,:after,:before{box-sizing:border-box;border:0 solid #e5e7eb}:after,:before{--tw-content:""}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;-o-tab-size:4;tab-size:4;font-family:ui-sans-serif,system-ui,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0}fieldset,legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::-moz-placeholder,textarea::-moz-placeholder{opacity:1;color:#9ca3af}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border-width:0}.visible{visibility:visible}.absolute{position:absolute}.relative{position:relative}.inset-0{inset:0}.-bottom-1{bottom:-.25rem}.-right-1{right:-.25rem}.bottom-0{bottom:0}.left-0{left:0}.right-0{right:0}.right-2{right:.5rem}.right-3{right:.75rem}.top-0{top:0}.top-2{top:.5rem}.z-50{z-index:50}.m-3{margin:.75rem}.-mt-8{margin-top:-2rem}.mb-2{margin-bottom:.5rem}.mb-2.5{margin-bottom:.625rem}.mb-5{margin-bottom:1.25rem}.mt-0.5{margin-top:.125rem}.mt-1{margin-top:.25rem}.mt-1.5{margin-top:.375rem}.mt-2{margin-top:.5rem}.mt-auto{margin-top:auto}.block{display:block}.flex{display:flex}.inline-flex{display:inline-flex}.grid{display:grid}.hidden{display:none}.h-1{height:.25rem}.h-1.5{height:.375rem}.h-10{height:2.5rem}.h-11{height:2.75rem}.h-14{height:3.5rem}.h-2{height:.5rem}.h-2.5{height:.625rem}.h-24{height:6rem}.h-3{height:.75rem}.h-3.5{height:.875rem}.h-4{height:1rem}.h-5{height:1.25rem}.h-8{height:2rem}.h-full{height:100%}.h-screen{height:100vh}.w-1.5{width:.375rem}.w-10{width:2.5rem}.w-11{width:2.75rem}.w-14{width:3.5rem}.w-2{width:.5rem}.w-2.5{width:.625rem}.w-3.5{width:.875rem}.w-3/4{width:75%}.w-4{width:1rem}.w-60{width:15rem}.w-8{width:2rem}.w-80{width:20rem}.w-9{width:2.25rem}.w-full{width:100%}.min-w-0{min-width:0}.max-w-[170px]{max-width:170px}.flex-1{flex:1 1 0%}.flex-shrink-0{flex-shrink:0}@keyframes ping{75%,to{transform:scale(2);opacity:0}}.animate-ping{animation:ping 1s cubic-bezier(0,0,.2,1) infinite}@keyframes pulse{50%{opacity:.5}}.animate-pulse{animation:pulse 2s cubic-bezier(.4,0,.6,1) infinite}.cursor-pointer{cursor:pointer}.select-none{-webkit-user-select:none;-moz-user-select:none;user-select:none}.grid-cols-1{grid-template-columns:repeat(1,minmax(0,1fr))}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.items-start{align-items:flex-start}.items-end{align-items:flex-end}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-0.5{gap:.125rem}.gap-1{gap:.25rem}.gap-1.5{gap:.375rem}.gap-2{gap:.5rem}.gap-2.5{gap:.625rem}.gap-3{gap:.75rem}.gap-4{gap:1rem}.gap-5{gap:1.25rem}.overflow-hidden{overflow:hidden}.overflow-y-auto{overflow-y:auto}.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rounded-full{border-radius:9999px}.border{border-width:1px}.border-4{border-width:4px}.border-b{border-bottom-width:1px}.border-l{border-left-width:1px}.border-l-2{border-left-width:2px}.border-r{border-right-width:1px}.border-t{border-top-width:1px}.border-[#18191c]{--tw-border-opacity:1;border-color:rgb(24 25 28/var(--tw-border-opacity,1))}.border-outline-variant/10{border-color:rgba(68,70,79,.1)}.border-outline-variant/20{border-color:rgba(68,70,79,.2)}.border-outline-variant/30{border-color:rgba(68,70,79,.3)}.border-outline-variant/40{border-color:rgba(68,70,79,.4)}.border-primary{--tw-border-opacity:1;border-color:rgb(255 180 171/var(--tw-border-opacity,1))}.border-transparent{border-color:transparent}.border-white/5{border-color:hsla(0,0%,100%,.05)}.bg-[#111214]{--tw-bg-opacity:1;background-color:rgb(17 18 20/var(--tw-bg-opacity,1))}.bg-[#18191c]{--tw-bg-opacity:1;background-color:rgb(24 25 28/var(--tw-bg-opacity,1))}.bg-[#1e1f22]{--tw-bg-opacity:1;background-color:rgb(30 31 34/var(--tw-bg-opacity,1))}.bg-[#23a55a]{--tw-bg-opacity:1;background-color:rgb(35 165 90/var(--tw-bg-opacity,1))}.bg-[#2b2d31]{--tw-bg-opacity:1;background-color:rgb(43 45 49/var(--tw-bg-opacity,1))}.bg-[#f0b232]{--tw-bg-opacity:1;background-color:rgb(240 178 50/var(--tw-bg-opacity,1))}.bg-primary{--tw-bg-opacity:1;background-color:rgb(255 180 171/var(--tw-bg-opacity,1))}.bg-secondary-container{--tw-bg-opacity:1;background-color:rgb(215 0 40/var(--tw-bg-opacity,1))}.bg-surface{--tw-bg-opacity:1;background-color:rgb(18 19 22/var(--tw-bg-opacity,1))}.bg-surface-bright{--tw-bg-opacity:1;background-color:rgb(56 57 60/var(--tw-bg-opacity,1))}.bg-surface-container{--tw-bg-opacity:1;background-color:rgb(31 31 35/var(--tw-bg-opacity,1))}.bg-surface-container-high{--tw-bg-opacity:1;background-color:rgb(41 42 45/var(--tw-bg-opacity,1))}.bg-surface-container-highest{--tw-bg-opacity:1;background-color:rgb(52 53 56/var(--tw-bg-opacity,1))}.bg-surface-container-low{--tw-bg-opacity:1;background-color:rgb(27 27 31/var(--tw-bg-opacity,1))}.bg-surface-container-low/40{background-color:rgba(27,27,31,.4)}.bg-surface-container-lowest{--tw-bg-opacity:1;background-color:rgb(13 14 17/var(--tw-bg-opacity,1))}.bg-surface-container-lowest/60{background-color:rgba(13,14,17,.6)}.bg-surface-container-lowest/80{background-color:rgba(13,14,17,.8)}.bg-transparent{background-color:transparent}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255/var(--tw-bg-opacity,1))}.bg-gradient-to-t{background-image:linear-gradient(to top,var(--tw-gradient-stops))}.from-[#18191c]{--tw-gradient-from:#18191c var(--tw-gradient-from-position);--tw-gradient-to:rgba(24,25,28,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.via-surface-container-lowest/60{--tw-gradient-to:rgba(13,14,17,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),rgba(13,14,17,.6) var(--tw-gradient-via-position),var(--tw-gradient-to)}.to-transparent{--tw-gradient-to:transparent var(--tw-gradient-to-position)}.object-cover{-o-object-fit:cover;object-fit:cover}.p-0.5{padding:.125rem}.p-1{padding:.25rem}.p-2{padding:.5rem}.p-2.5{padding:.625rem}.p-3{padding:.75rem}.p-4{padding:1rem}.px-0.5{padding-left:.125rem;padding-right:.125rem}.px-1.5{padding-left:.375rem;padding-right:.375rem}.px-2{padding-left:.5rem;padding-right:.5rem}.px-2.5{padding-left:.625rem;padding-right:.625rem}.px-3{padding-left:.75rem;padding-right:.75rem}.px-4{padding-left:1rem;padding-right:1rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.py-0.5{padding-top:.125rem;padding-bottom:.125rem}.py-1{padding-top:.25rem;padding-bottom:.25rem}.py-1.5{padding-top:.375rem;padding-bottom:.375rem}.py-2{padding-top:.5rem;padding-bottom:.5rem}.py-2.5{padding-top:.625rem;padding-bottom:.625rem}.py-5{padding-top:1.25rem;padding-bottom:1.25rem}.pb-2{padding-bottom:.5rem}.pb-3{padding-bottom:.75rem}.pb-4{padding-bottom:1rem}.pt-0{padding-top:0}.pt-1{padding-top:.25rem}.pt-3{padding-top:.75rem}.pt-4{padding-top:1rem}.text-left{text-align:left}.text-center{text-align:center}.font-mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace}.text-[10px]{font-size:10px}.text-[11px]{font-size:11px}.text-[12px]{font-size:12px}.text-[13px]{font-size:13px}.text-[15px]{font-size:15px}.text-[16px]{font-size:16px}.text-[18px]{font-size:18px}.text-[9px]{font-size:9px}.text-base{font-size:1rem;line-height:1.5rem}.text-sm{font-size:.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:.75rem;line-height:1rem}.font-bold{font-weight:700}.font-semibold{font-weight:600}.uppercase{text-transform:uppercase}.leading-none{line-height:1}.leading-snug{line-height:1.375}.leading-tight{line-height:1.25}.tracking-tighter{letter-spacing:-.05em}.tracking-wider{letter-spacing:.05em}.tracking-widest{letter-spacing:.1em}.text-[#007acc]{--tw-text-opacity:1;color:rgb(0 122 204/var(--tw-text-opacity,1))}.text-[#5865f2]{--tw-text-opacity:1;color:rgb(88 101 242/var(--tw-text-opacity,1))}.text-amber-400{--tw-text-opacity:1;color:rgb(251 191 36/var(--tw-text-opacity,1))}.text-emerald-400{--tw-text-opacity:1;color:rgb(52 211 153/var(--tw-text-opacity,1))}.text-on-surface{--tw-text-opacity:1;color:rgb(227 226 230/var(--tw-text-opacity,1))}.text-on-surface-variant{--tw-text-opacity:1;color:rgb(233 188 183/var(--tw-text-opacity,1))}.text-outline{--tw-text-opacity:1;color:rgb(140 142 152/var(--tw-text-opacity,1))}.text-outline-variant{--tw-text-opacity:1;color:rgb(68 70 79/var(--tw-text-opacity,1))}.text-primary{--tw-text-opacity:1;color:rgb(255 180 171/var(--tw-text-opacity,1))}.text-secondary-container{--tw-text-opacity:1;color:rgb(215 0 40/var(--tw-text-opacity,1))}.text-tertiary{--tw-text-opacity:1;color:rgb(140 142 152/var(--tw-text-opacity,1))}.text-tertiary-container{--tw-text-opacity:1;color:rgb(165 167 178/var(--tw-text-opacity,1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255/var(--tw-text-opacity,1))}.antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.opacity-0{opacity:0}.shadow{--tw-shadow:0 1px 3px 0 rgba(0,0,0,.1),0 1px 2px -1px rgba(0,0,0,.1);--tw-shadow-colored:0 1px 3px 0 var(--tw-shadow-color),0 1px 2px -1px var(--tw-shadow-color)}.shadow,.shadow-2xl{box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgba(0,0,0,.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color)}.shadow-inner{--tw-shadow:inset 0 2px 4px 0 rgba(0,0,0,.05);--tw-shadow-colored:inset 0 2px 4px 0 var(--tw-shadow-color)}.shadow-inner,.shadow-lg{box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color),0 4px 6px -4px var(--tw-shadow-color)}.shadow-md{--tw-shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1);--tw-shadow-colored:0 4px 6px -1px var(--tw-shadow-color),0 2px 4px -2px var(--tw-shadow-color)}.shadow-md,.shadow-sm{box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-sm{--tw-shadow:0 1px 2px 0 rgba(0,0,0,.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color)}.shadow-xl{--tw-shadow:0 20px 25px -5px rgba(0,0,0,.1),0 8px 10px -6px rgba(0,0,0,.1);--tw-shadow-colored:0 20px 25px -5px var(--tw-shadow-color),0 8px 10px -6px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.outline{outline-style:solid}.ring-2{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow,0 0 #0000)}.ring-[#18191c]{--tw-ring-opacity:1;--tw-ring-color:rgb(24 25 28/var(--tw-ring-opacity,1))}.transition-colors{transition-property:color,background-color,border-color,text-decoration-color,fill,stroke;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s}.transition-opacity{transition-property:opacity;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s}.transition-transform{transition-property:transform;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s}.hover:bg-[#35373c]:hover{--tw-bg-opacity:1;background-color:rgb(53 55 60/var(--tw-bg-opacity,1))}.hover:bg-primary-container:hover{--tw-bg-opacity:1;background-color:rgb(255 84 75/var(--tw-bg-opacity,1))}.hover:bg-secondary-container:hover{--tw-bg-opacity:1;background-color:rgb(215 0 40/var(--tw-bg-opacity,1))}.hover:bg-surface-bright:hover{--tw-bg-opacity:1;background-color:rgb(56 57 60/var(--tw-bg-opacity,1))}.hover:bg-surface-container:hover{--tw-bg-opacity:1;background-color:rgb(31 31 35/var(--tw-bg-opacity,1))}.hover:bg-surface-container-high:hover{--tw-bg-opacity:1;background-color:rgb(41 42 45/var(--tw-bg-opacity,1))}.hover:text-on-surface:hover{--tw-text-opacity:1;color:rgb(227 226 230/var(--tw-text-opacity,1))}.hover:text-primary:hover{--tw-text-opacity:1;color:rgb(255 180 171/var(--tw-text-opacity,1))}.hover:text-white:hover{--tw-text-opacity:1;color:rgb(255 255 255/var(--tw-text-opacity,1))}.focus:border-secondary-container:focus{--tw-border-opacity:1;border-color:rgb(215 0 40/var(--tw-border-opacity,1))}.focus:outline-none:focus{outline:2px solid transparent;outline-offset:2px}.active:translate-y-0.5:active{--tw-translate-y:0.125rem}.active:translate-y-0.5:active,.peer:checked~.peer-checked:translate-x-4{transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.peer:checked~.peer-checked:translate-x-4{--tw-translate-x:1rem}.peer:checked~.peer-checked:translate-x-5{--tw-translate-x:1.25rem;transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.peer:checked~.peer-checked:bg-secondary-container{--tw-bg-opacity:1;background-color:rgb(215 0 40/var(--tw-bg-opacity,1))}@media (min-width:640px){.sm:inline{display:inline}}@media (min-width:768px){.md:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}}@media (min-width:1280px){.xl:w-96{width:24rem}}
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100%; width: 100%; overflow: hidden; font-family: var(--font-ui); background: var(--bg-base); color: var(--text-normal); font-size: 13px; line-height: 1.5; }
+        
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-base); }
+        ::-webkit-scrollbar-thumb { background: #262a36; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+        .app-layout { display: flex; flex-direction: column; height: 100vh; }
+        
+        /* Top Navigation Bar */
+        .top-bar {
+            height: 48px;
+            background: #0d0e11;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            flex-shrink: 0;
+            user-select: none;
+        }
+        .brand-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .brand-icon {
+            width: 26px;
+            height: 26px;
+            background: var(--accent);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 800;
+            font-size: 13px;
+            box-shadow: 0 2px 6px rgba(224, 36, 68, 0.4);
+        }
+        .brand-name {
+            font-weight: 700;
+            color: var(--text-heading);
+            font-size: 14px;
+            letter-spacing: 0.3px;
+        }
+        .brand-version {
+            background: #202227;
+            color: var(--text-muted);
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-weight: 600;
+        }
+        .brand-tagline {
+            color: var(--text-muted);
+            font-size: 12px;
+            margin-left: 6px;
+            display: inline-block;
+        }
+        .top-right {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .connection-pill {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            background: #18191c;
+            padding: 4px 10px;
+            border-radius: 12px;
+            border: 1px solid var(--border-subtle);
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--amber);
+        }
+        .status-dot.online {
+            background: var(--green);
+            box-shadow: 0 0 6px rgba(35, 165, 90, 0.6);
+        }
+        .btn-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.15s, background 0.15s;
+        }
+        .btn-close:hover {
+            color: var(--text-heading);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* 3-Column Main Body */
+        .main-container {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Left Sidebar Tabs */
+        .sidebar {
+            width: 220px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border-subtle);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            flex-shrink: 0;
+            padding: 12px 8px;
+            user-select: none;
+        }
+        .nav-tabs {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .nav-tab-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.15s ease;
+        }
+        .nav-tab-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-heading);
+        }
+        .nav-tab-btn.active {
+            background: #252830;
+            color: #fff;
+            font-weight: 600;
+            box-shadow: inset 3px 0 0 var(--accent);
+        }
+        .sidebar-footer {
+            background: #111214;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border-subtle);
+            font-size: 11px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .sidebar-footer-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .sidebar-footer-row .lbl { color: var(--text-muted); }
+        .sidebar-footer-row .val { color: var(--green); font-weight: 600; font-family: var(--font-mono); }
+
+        /* Middle Configuration Canvas */
+        .canvas {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            min-width: 0;
+        }
+        .section-header {
+            margin-bottom: 6px;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-heading);
+            margin-bottom: 4px;
+        }
+        .section-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 18px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .field-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .field-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-heading);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .field-sub {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: normal;
+        }
+        .input-text {
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            color: var(--text-heading);
+            padding: 8px 12px;
+            font-size: 13px;
+            font-family: var(--font-mono);
+            outline: none;
+            transition: border-color 0.15s;
+            width: 100%;
+        }
+        .input-text:focus {
+            border-color: var(--accent);
+        }
+        .select-input {
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            color: var(--text-heading);
+            padding: 8px 12px;
+            font-size: 13px;
+            outline: none;
+            cursor: pointer;
+            width: 100%;
+        }
+        .select-input:focus {
+            border-color: var(--accent);
+        }
+
+        /* Token buttons row */
+        .token-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 2px;
+        }
+        .token-btn {
+            background: #252830;
+            border: 1px solid #353942;
+            color: #d1d5db;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.12s;
+        }
+        .token-btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+        /* Toggle switches */
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 4px 0;
+        }
+        .toggle-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .toggle-title {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-heading);
+        }
+        .toggle-desc {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 42px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background-color: #353942;
+            transition: .2s;
+            border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .2s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: var(--accent);
+        }
+        input:checked + .slider:before {
+            transform: translateX(18px);
+        }
+
+        /* Quick offset buttons */
+        .quick-btn-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 4px;
+        }
+        .btn-quick {
+            flex: 1;
+            padding: 7px 10px;
+            background: #252830;
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            color: var(--text-heading);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn-quick:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+        .btn-apply-instant {
+            width: 100%;
+            padding: 9px;
+            background: #23272e;
+            border: 1px solid #3c424d;
+            border-radius: 6px;
+            color: var(--text-heading);
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.15s;
+        }
+        .btn-apply-instant:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+
+        /* Canvas Footer */
+        .canvas-footer {
+            margin-top: auto;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-subtle);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--border-subtle);
+            color: var(--text-muted);
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.15s;
+        }
+        .btn-secondary:hover {
+            background: var(--bg-hover);
+            color: var(--text-heading);
+        }
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .save-status {
+            font-size: 12px;
+            color: var(--green);
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .btn-primary {
+            background: var(--accent);
+            border: none;
+            color: #fff;
+            padding: 9px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.15s, transform 0.1s;
+            box-shadow: 0 2px 8px rgba(224, 36, 68, 0.4);
+        }
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        /* Right Live Preview Column */
+        .preview-col {
+            width: 340px;
+            background: var(--bg-sidebar);
+            border-left: 1px solid var(--border-subtle);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            padding: 20px 16px;
+            gap: 16px;
+            overflow-y: auto;
+        }
+        .preview-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            user-select: none;
+        }
+        .preview-heading {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-weight: 700;
+            font-size: 12px;
+            color: var(--text-heading);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .preview-sync-pill {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: #18191c;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--green);
+        }
+        .pulse-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--green);
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.5; transform: scale(0.9); }
+            50% { opacity: 1; transform: scale(1.2); }
+            100% { opacity: 0.5; transform: scale(0.9); }
+        }
+
+        /* Authentic Discord Profile Card */
+        .discord-card {
+            background: #18191c;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            border: 1px solid #232428;
+            display: flex;
+            flex-direction: column;
+        }
+        .discord-banner {
+            height: 64px;
+            background: linear-gradient(135deg, #2b0b14 0%, #7d1024 100%);
+            position: relative;
+        }
+        .discord-profile-body {
+            padding: 0 14px 14px 14px;
+            display: flex;
+            flex-direction: column;
+        }
+        .discord-avatar-row {
+            margin-top: -34px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+        }
+        .discord-avatar-wrap {
+            position: relative;
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            border: 5px solid #18191c;
+            background: #2b2d31;
+            overflow: visible;
+        }
+        .discord-avatar-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+        }
+        .discord-avatar-fallback {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: #313338;
+            color: #fff;
+        }
+        .discord-online-dot {
+            position: absolute;
+            bottom: 0px;
+            right: 0px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--green);
+            border: 3px solid #18191c;
+        }
+        .discord-badges {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: #111214;
+            padding: 3px 6px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            color: var(--blurple);
+        }
+        .discord-user-details {
+            margin-bottom: 12px;
+        }
+        .discord-display-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.2;
+            word-break: break-all;
+        }
+        .discord-username {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        
+        .discord-divider {
+            height: 1px;
+            background: #2b2d31;
+            margin-bottom: 12px;
+        }
+
+        /* Activity Section inside Profile Card */
+        .discord-activity-box {
+            background: #1e1f22;
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .discord-act-header {
+            font-size: 11px;
+            font-weight: 700;
+            color: #b5bac1;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+        }
+        .discord-act-main {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .discord-icon-container {
+            position: relative;
+            width: 48px;
+            height: 48px;
+            flex-shrink: 0;
+            border-radius: 8px;
+            background: #2b2d31;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: visible;
+        }
+        .discord-large-badge {
+            font-weight: 800;
+            color: #fff;
+            font-size: 15px;
+            font-family: var(--font-mono);
+        }
+        .discord-small-badge {
+            position: absolute;
+            bottom: -3px;
+            right: -3px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--accent);
+            border: 2px solid #1e1f22;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+        .discord-act-text {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.35;
+        }
+        .discord-act-app {
+            font-size: 13px;
+            font-weight: 700;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .discord-act-line1 {
+            font-size: 12px;
+            color: #dbdee1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .discord-act-line2 {
+            font-size: 11px;
+            color: #949ba4;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .discord-act-timer {
+            font-size: 11px;
+            color: #949ba4;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 2px;
+        }
+        .discord-btn-action {
+            width: 100%;
+            padding: 7px 12px;
+            background: #2b2d31;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .discord-btn-action:hover {
+            background: #35373c;
+        }
+
+        /* Viewport Mode Switch & Telemetry */
+        .preview-telemetry {
+            background: #111214;
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            padding: 10px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 11px;
+        }
+        .telemetry-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .telemetry-row .lbl { color: var(--text-muted); }
+        .telemetry-row .val { color: var(--text-heading); font-family: var(--font-mono); }
+        
+        .mode-switch-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--text-muted);
+            user-select: none;
+        }
+        .mode-btn-group {
+            display: flex;
+            background: #111214;
+            border-radius: 4px;
+            padding: 2px;
+            border: 1px solid var(--border-subtle);
+        }
+        .btn-mode {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 10px;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .btn-mode.active {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .hidden { display: none !important; }
     </style>
 </head>
-<body class="bg-surface-container-lowest text-on-surface font-body-md text-xs antialiased h-screen flex flex-col select-none">
-
-    <!-- Top Telemetry Header Bar -->
-    <header class="h-10 bg-surface-container-lowest border-b border-outline-variant/40 flex items-center justify-between px-4 flex-shrink-0 z-50">
-        <div class="flex items-center gap-3">
-            <div class="flex items-center gap-1.5">
-                <div class="w-2.5 h-2.5 rounded-full bg-secondary-container" title="Crimson Node"></div>
-                <div class="w-2.5 h-2.5 rounded-full bg-surface-variant"></div>
-                <div class="w-2.5 h-2.5 rounded-full bg-surface-bright"></div>
-            </div>
-            <span class="font-code-inline text-outline-variant">|</span>
-            <div class="flex items-center gap-2">
-                <span class="text-primary text-[15px] flex items-center">${ICONS.terminal}</span>
-                <span class="font-label-sm uppercase tracking-wider text-on-surface font-bold">SYS.EXT // DISCODE_BRIDGE</span>
-                <span class="font-label-sm text-tertiary-container hidden sm:inline">(0x8F91)</span>
-            </div>
-        </div>
-        <div class="flex items-center gap-4">
-            <div class="flex items-center gap-1.5 text-outline font-code-inline text-[11px]">
-                <span class="w-2 h-2 rounded-full bg-secondary-container animate-pulse"></span>
-                <span class="text-primary font-bold" id="topConnStatus">RPC: CONNECTED</span>
-            </div>
-            <button id="topBtnClose" aria-label="Close modal" class="text-outline hover:text-primary transition-colors flex items-center justify-center p-1">
-                ${ICONS.close}
-            </button>
-        </div>
-    </header>
-
-    <!-- Main 3-Column Layout -->
-    <div class="flex-1 flex overflow-hidden">
-
-        <!-- COLUMN 1: Left Navigation Sidebar -->
-        <aside class="w-60 bg-surface-container-low border-r border-outline-variant/30 flex flex-col justify-between flex-shrink-0">
-            <div class="flex flex-col">
-                <!-- Monogram Crest -->
-                <div class="p-3 border-b border-outline-variant/20 flex items-center justify-between bg-surface-container-lowest/60">
-                    <div class="flex items-center gap-2.5">
-                        <div class="w-8 h-8 bg-secondary-container flex items-center justify-center text-white font-headline-sm font-bold shadow-md">
-                            <span class="font-code-inline text-[13px] tracking-tighter">\u96F6\u58F1</span>
-                        </div>
-                        <div class="flex flex-col">
-                            <span class="font-headline-sm text-sm text-on-surface tracking-wider leading-none font-bold">DisCode</span>
-                            <span class="font-label-sm text-[9px] text-outline-variant mt-0.5 tracking-widest">VSCODE RPC</span>
-                        </div>
-                    </div>
-                    <span class="bg-surface-container-highest px-1.5 py-0.5 text-on-surface-variant font-code-inline text-[10px]">v1.3.0</span>
+<body>
+    <div class="app-layout">
+        
+        <!-- Top App Header -->
+        <header class="top-bar">
+            <div class="brand-badge">
+                <div class="brand-icon">D</div>
+                <div>
+                    <span class="brand-name">DisCode</span>
+                    <span class="brand-version">v1.3.1</span>
+                    <span class="brand-tagline">Discord Rich Presence</span>
                 </div>
+            </div>
+            <div class="top-right">
+                <div class="connection-pill">
+                    <span class="status-dot" id="topStatusDot"></span>
+                    <span id="topConnStatus">Connecting to Discord...</span>
+                </div>
+                <button id="topBtnClose" class="btn-close" title="Close" aria-label="Close">
+                    ${ICONS.close}
+                </button>
+            </div>
+        </header>
 
-                <!-- Navigation Tabs -->
-                <nav class="flex flex-col py-2 gap-0.5" id="navTabs">
-                    <button class="nav-tab-btn w-full text-left px-3 py-2 bg-surface-container-high text-on-surface font-label-md flex items-center justify-between border-l-2 border-primary shadow-sm" data-section="activity" type="button">
-                        <span class="flex items-center gap-2">
-                            <span class="text-primary text-[15px] flex items-center">${ICONS.terminal}</span>
-                            01. ACTIVITY
-                        </span>
-                        <span class="w-1.5 h-1.5 bg-primary"></span>
+        <!-- Main Body Workspace -->
+        <div class="main-container">
+
+            <!-- Column 1: Left Navigation Sidebar -->
+            <aside class="sidebar">
+                <nav class="nav-tabs" id="navTabs">
+                    <button class="nav-tab-btn active" data-section="activity" type="button">
+                        ${ICONS.terminal}
+                        <span>Activity Format</span>
                     </button>
-
-                    <button class="nav-tab-btn w-full text-left px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md transition-colors flex items-center justify-between border-l-2 border-transparent" data-section="timer" type="button">
-                        <span class="flex items-center gap-2">
-                            <span class="text-outline text-[15px] flex items-center">${ICONS.schedule}</span>
-                            02. TIMERS
-                        </span>
-                        <span class="font-code-inline text-[9px] text-outline">OFFSET</span>
+                    <button class="nav-tab-btn" data-section="timer" type="button">
+                        ${ICONS.schedule}
+                        <span>Elapsed Timers</span>
                     </button>
-
-                    <button class="nav-tab-btn w-full text-left px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md transition-colors flex items-center justify-between border-l-2 border-transparent" data-section="appearance" type="button">
-                        <span class="flex items-center gap-2">
-                            <span class="text-outline text-[15px] flex items-center">${ICONS.palette}</span>
-                            03. APPEARANCE
-                        </span>
-                        <span class="font-code-inline text-[9px] text-outline">UI</span>
+                    <button class="nav-tab-btn" data-section="appearance" type="button">
+                        ${ICONS.palette}
+                        <span>Appearance & Icons</span>
                     </button>
-
-                    <button class="nav-tab-btn w-full text-left px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md transition-colors flex items-center justify-between border-l-2 border-transparent" data-section="privacy" type="button">
-                        <span class="flex items-center gap-2">
-                            <span class="text-outline text-[15px] flex items-center">${ICONS.shield}</span>
-                            04. PRIVACY
-                        </span>
-                        <span class="font-code-inline text-[9px] text-outline">SEC</span>
+                    <button class="nav-tab-btn" data-section="privacy" type="button">
+                        ${ICONS.shield}
+                        <span>Privacy Controls</span>
                     </button>
-
-                    <button class="nav-tab-btn w-full text-left px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md transition-colors flex items-center justify-between border-l-2 border-transparent" data-section="behavior" type="button">
-                        <span class="flex items-center gap-2">
-                            <span class="text-outline text-[15px] flex items-center">${ICONS.memory}</span>
-                            05. BEHAVIOR
-                        </span>
-                        <span class="font-code-inline text-[9px] text-outline">DAE</span>
+                    <button class="nav-tab-btn" data-section="behavior" type="button">
+                        ${ICONS.memory}
+                        <span>Behavior & Idle</span>
                     </button>
-
-                    <button class="nav-tab-btn w-full text-left px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md transition-colors flex items-center justify-between border-l-2 border-transparent" data-section="general" type="button">
-                        <span class="flex items-center gap-2">
-                            <span class="text-outline text-[15px] flex items-center">${ICONS.hub}</span>
-                            06. CONNECTION
-                        </span>
-                        <span class="font-code-inline text-[9px] text-outline">IPC</span>
+                    <button class="nav-tab-btn" data-section="general" type="button">
+                        ${ICONS.hub}
+                        <span>Connection & Client ID</span>
                     </button>
                 </nav>
 
-                <!-- Kyoto Relay Badge -->
-                <div class="m-3 p-2.5 bg-surface-container border border-outline-variant/30 flex flex-col gap-1">
-                    <div class="flex items-center justify-between">
-                        <span class="font-label-sm text-[9px] text-outline-variant">KYOTO RELAY</span>
-                        <span class="font-code-inline text-[9px] text-secondary-container font-bold">JP-EAST</span>
+                <div class="sidebar-footer">
+                    <div class="sidebar-footer-row">
+                        <span class="lbl">Discord IPC</span>
+                        <span class="val" id="kyotoRelayStatus">ONLINE</span>
                     </div>
-                    <span class="font-body-md text-[11px] text-tertiary">\u58A8\u7D75\u8ABF\u306E\u4EEE\u60F3\u7AEF\u672B\u8A2D\u5B9A</span>
-                    <div class="w-full bg-surface-container-lowest h-1 mt-1 overflow-hidden">
-                        <div class="bg-secondary-container h-full w-3/4"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Socket Footer Diagnostic -->
-            <div class="p-3 bg-surface-container-lowest border-t border-outline-variant/20 flex flex-col gap-1">
-                <div class="flex items-center justify-between font-code-inline text-[10px]">
-                    <span class="text-tertiary">SOCKET STREAM</span>
-                    <span class="text-primary font-bold flex items-center gap-1">
-                        <span class="w-1.5 h-1.5 rounded-full bg-secondary-container animate-ping"></span>
-                        LIVE
-                    </span>
-                </div>
-                <div class="flex items-center justify-between font-code-inline text-[10px]">
-                    <span class="text-tertiary-container">IPC LATENCY</span>
-                    <span class="text-primary font-bold">14 ms</span>
-                </div>
-            </div>
-        </aside>
-
-        <!-- COLUMN 2: Center Configuration Canvas -->
-        <main class="flex-1 bg-surface flex flex-col overflow-y-auto px-6 py-5 min-w-0">
-            
-            <!-- Header Module -->
-            <header class="flex flex-col gap-1 pb-4 bg-surface-container-low/40 p-4 border border-outline-variant/20 mb-5 flex-shrink-0">
-                <div class="flex items-center justify-between">
-                    <h1 class="font-headline-lg text-xl text-on-surface font-semibold">
-                        Discord Rich Presence
-                    </h1>
-                    <span class="font-label-sm text-[10px] text-outline bg-surface-container-highest px-2 py-0.5">
-                        ACTIVE_PROFILE: DEV_NIGHT
-                    </span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <span class="font-headline-sm text-xs text-primary tracking-widest font-bold">\u5916\u90E8\u30A2\u30AF\u30C6\u30A3\u30D3\u30C6\u30A3\u9023\u643A\u8A2D\u5B9A</span>
-                    <span class="text-outline">/</span>
-                    <span class="font-body-md text-xs text-tertiary">Presence Tokens, Timers & Safeguards</span>
-                </div>
-                <p class="font-body-md text-[11px] text-tertiary-container mt-1">
-                    Configure real-time activity strings, elapsed timestamp offsets, and sensitive workspace metadata masking for the Discord IPC daemon.
-                </p>
-            </header>
-
-            <!-- SECTION: ACTIVITY (Default View) -->
-            <div class="setting-section flex flex-col gap-5" data-section="activity">
-                <div class="bg-surface-container-low p-4 border border-outline-variant/30 flex flex-col gap-4 shadow-sm">
-                    <div class="flex items-center justify-between border-b border-outline-variant/20 pb-2">
-                        <div class="flex items-center gap-2">
-                            <span class="w-1.5 h-3 bg-secondary-container"></span>
-                            <span class="font-label-md text-on-surface uppercase tracking-wider font-bold">01. Presence Display Pattern</span>
-                        </div>
-                        <span class="font-label-sm text-[10px] text-outline font-code-inline">STR_PATTERN_V2</span>
-                    </div>
-
-                    <!-- Details Input -->
-                    <div class="flex flex-col gap-1.5">
-                        <label class="font-label-sm text-on-surface-variant flex items-center justify-between text-[11px]" for="detailsEditing">
-                            <span>DETAILS FORMAT STRING</span>
-                            <span class="font-code-inline text-[10px] text-tertiary-container">DEFAULT: "Editing {fileName}"</span>
-                        </label>
-                        <div class="relative flex items-center">
-                            <input class="w-full bg-surface-container-lowest text-on-surface font-body-md text-xs px-3 py-2 border border-outline-variant/40 focus:border-secondary-container focus:outline-none transition-colors" id="detailsEditing" type="text" value="Editing {fileName}"/>
-                            <span class="absolute right-3 font-code-inline text-[10px] text-primary">LINE_1</span>
-                        </div>
-                    </div>
-
-                    <!-- Token Cloud -->
-                    <div class="flex flex-col gap-1.5">
-                        <span class="font-label-sm text-outline uppercase tracking-wider text-[10px]">AVAILABLE METADATA TOKENS (CLICK TO APPEND)</span>
-                        <div class="flex flex-wrap gap-1.5" id="tokenContainer">
-                            <button class="token-btn bg-surface-container hover:bg-secondary-container hover:text-white px-2 py-1 font-code-inline text-[11px] text-on-surface border border-outline-variant/30 transition-colors flex items-center gap-1" data-token="{fileName}" data-target="detailsEditing" type="button">
-                                <span>{fileName}</span>
-                                <span class="text-primary font-bold">+</span>
-                            </button>
-                            <button class="token-btn bg-surface-container hover:bg-secondary-container hover:text-white px-2 py-1 font-code-inline text-[11px] text-on-surface border border-outline-variant/30 transition-colors flex items-center gap-1" data-token="{workspace}" data-target="detailsEditing" type="button">
-                                <span>{workspace}</span>
-                                <span class="text-primary font-bold">+</span>
-                            </button>
-                            <button class="token-btn bg-surface-container hover:bg-secondary-container hover:text-white px-2 py-1 font-code-inline text-[11px] text-on-surface border border-outline-variant/30 transition-colors flex items-center gap-1" data-token="{gitBranch}" data-target="detailsEditing" type="button">
-                                <span>{gitBranch}</span>
-                                <span class="text-primary font-bold">+</span>
-                            </button>
-                            <button class="token-btn bg-surface-container hover:bg-secondary-container hover:text-white px-2 py-1 font-code-inline text-[11px] text-on-surface border border-outline-variant/30 transition-colors flex items-center gap-1" data-token="{lineCount}" data-target="detailsEditing" type="button">
-                                <span>{lineCount}</span>
-                                <span class="text-primary font-bold">+</span>
-                            </button>
-                            <button class="token-btn bg-surface-container hover:bg-secondary-container hover:text-white px-2 py-1 font-code-inline text-[11px] text-on-surface border border-outline-variant/30 transition-colors flex items-center gap-1" data-token="{language}" data-target="detailsEditing" type="button">
-                                <span>{language}</span>
-                                <span class="text-primary font-bold">+</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- State Input -->
-                    <div class="flex flex-col gap-1.5 mt-2">
-                        <label class="font-label-sm text-on-surface-variant flex items-center justify-between text-[11px]" for="stateEditing">
-                            <span>STATE FORMAT STRING</span>
-                            <span class="font-code-inline text-[10px] text-tertiary-container">DEFAULT: "Workspace: {workspace}"</span>
-                        </label>
-                        <div class="relative flex items-center">
-                            <input class="w-full bg-surface-container-lowest text-on-surface font-body-md text-xs px-3 py-2 border border-outline-variant/40 focus:border-secondary-container focus:outline-none transition-colors" id="stateEditing" type="text" value="Workspace: {workspace}"/>
-                            <span class="absolute right-3 font-code-inline text-[10px] text-outline">LINE_2</span>
-                        </div>
-                    </div>
-
-                    <!-- Idle Details & State -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-1">
-                        <div class="flex flex-col gap-1">
-                            <label class="font-label-sm text-[10px] text-outline" for="detailsIdle">IDLE DETAILS LINE</label>
-                            <input class="bg-surface-container-lowest text-on-surface font-body-md text-xs px-2.5 py-1.5 border border-outline-variant/30 focus:border-secondary-container focus:outline-none" id="detailsIdle" type="text" value="Idling"/>
-                        </div>
-                        <div class="flex flex-col gap-1">
-                            <label class="font-label-sm text-[10px] text-outline" for="stateIdle">IDLE STATE LINE</label>
-                            <input class="bg-surface-container-lowest text-on-surface font-body-md text-xs px-2.5 py-1.5 border border-outline-variant/30 focus:border-secondary-container focus:outline-none" id="stateIdle" type="text" value="Taking a break"/>
-                        </div>
+                    <div class="sidebar-footer-row">
+                        <span class="lbl">Socket Gateway</span>
+                        <span class="val" style="color: var(--text-normal);">Local Pipe</span>
                     </div>
                 </div>
-            </div>
+            </aside>
 
-            <!-- SECTION: TIMERS -->
-            <div class="setting-section flex flex-col gap-5" data-section="timer" style="display:none;">
-                <div class="bg-surface-container-low p-4 border border-outline-variant/30 flex flex-col gap-4 shadow-sm">
-                    <div class="flex items-center justify-between border-b border-outline-variant/20 pb-2">
-                        <div class="flex items-center gap-2">
-                            <span class="w-1.5 h-3 bg-secondary-container"></span>
-                            <span class="font-label-md text-on-surface uppercase tracking-wider font-bold">02. Time Elapsed & Customizer</span>
-                        </div>
-                        <span class="font-label-sm text-[10px] text-outline font-code-inline">EPOCH_SYNC</span>
-                    </div>
-
-                    <!-- Toggle Show Elapsed -->
-                    <div class="flex items-center justify-between bg-surface-container-lowest/80 p-3 border border-outline-variant/30">
-                        <div class="flex flex-col">
-                            <span class="font-body-md text-on-surface font-bold">Show Elapsed Session Time</span>
-                            <span class="font-label-sm text-[10px] text-tertiary">Renders Discord timestamp telemetry counter under status.</span>
-                        </div>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input checked class="sr-only peer" id="showElapsedTime" type="checkbox"/>
-                            <div class="w-10 h-5 bg-surface-container-highest peer-checked:bg-secondary-container transition-colors relative flex items-center px-0.5 rounded-full">
-                                <div class="w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-5"></div>
-                            </div>
-                        </label>
-                    </div>
-
-                    <!-- Timer Mode & Custom Duration -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="flex flex-col gap-1.5">
-                            <label class="font-label-sm text-[10px] text-outline" for="timerMode">TIMESTAMP LOGIC (TIMER MODE)</label>
-                            <select class="w-full bg-surface-container-lowest text-on-surface font-body-md text-xs px-3 py-2 border border-outline-variant/30 focus:border-secondary-container focus:outline-none" id="timerMode">
-                                <option value="session">Elapsed since VS Code launch</option>
-                                <option value="file">File switch reset counter</option>
-                                <option value="manual">Manual offset duration</option>
-                            </select>
-                        </div>
-                        <div class="flex flex-col gap-1.5">
-                            <label class="font-label-sm text-[10px] text-outline">INITIAL DURATION OFFSET</label>
-                            <div class="flex items-center gap-2">
-                                <div class="flex-1 flex items-center bg-surface-container-lowest border border-outline-variant/30 px-2 py-1">
-                                    <input class="w-full bg-transparent text-on-surface font-code-inline text-xs focus:outline-none" id="timerHours" min="0" max="999" type="number" value="0"/>
-                                    <span class="text-tertiary font-code-inline text-[10px]">hrs</span>
-                                </div>
-                                <div class="flex-1 flex items-center bg-surface-container-lowest border border-outline-variant/30 px-2 py-1">
-                                    <input class="w-full bg-transparent text-on-surface font-code-inline text-xs focus:outline-none" id="timerMinutes" min="0" max="59" type="number" value="0"/>
-                                    <span class="text-tertiary font-code-inline text-[10px]">min</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Quick Offset Buttons + Dedicated Apply Button -->
-                    <div class="flex flex-col gap-2 mt-1">
-                        <span class="font-label-sm text-[10px] text-outline">QUICK OFFSET ACTIONS</span>
-                        <div class="flex items-center gap-2">
-                            <button class="flex-1 bg-surface-container hover:bg-secondary-container hover:text-white font-code-inline text-xs py-2 text-on-surface border border-outline-variant/30 transition-colors" id="btnPlus1" type="button">+1h</button>
-                            <button class="flex-1 bg-surface-container hover:bg-secondary-container hover:text-white font-code-inline text-xs py-2 text-on-surface border border-outline-variant/30 transition-colors" id="btnPlus2" type="button">+2h</button>
-                            <button class="flex-1 bg-surface-container hover:bg-secondary-container hover:text-white font-code-inline text-xs py-2 text-on-surface border border-outline-variant/30 transition-colors" id="btnPlus3" type="button">+3.5h</button>
-                            <button class="flex-1 bg-surface-container-highest hover:bg-surface-bright font-code-inline text-xs py-2 text-outline hover:text-on-surface border border-outline-variant/30 transition-colors" id="btnResetTimer" type="button">Reset</button>
-                        </div>
-                        <div class="mt-2">
-                            <button class="w-full bg-secondary-container hover:bg-primary-container text-white font-code-inline text-xs py-2.5 flex items-center justify-center gap-2 uppercase tracking-wider font-bold shadow-lg transition-transform active:translate-y-0.5" id="btnApplyTimer" type="button">
-                                <span class="text-[16px] flex items-center">${ICONS.bolt}</span>
-                                <span>Apply Timer Instantly (Bypass Buffer)</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SECTION: APPEARANCE -->
-            <div class="setting-section flex flex-col gap-5" data-section="appearance" style="display:none;">
-                <div class="bg-surface-container-low p-4 border border-outline-variant/30 flex flex-col gap-4 shadow-sm">
-                    <div class="flex items-center justify-between border-b border-outline-variant/20 pb-2">
-                        <div class="flex items-center gap-2">
-                            <span class="w-1.5 h-3 bg-secondary-container"></span>
-                            <span class="font-label-md text-on-surface uppercase tracking-wider font-bold">03. Appearance & Visual Assets</span>
-                        </div>
-                        <span class="font-label-sm text-[10px] text-outline font-code-inline">ASSET_BRAND</span>
-                    </div>
-
-                    <div class="flex flex-col gap-1.5">
-                        <label class="font-label-sm text-[10px] text-outline" for="largeImageStyle">PRIMARY LARGE ICON STYLE</label>
-                        <select class="w-full bg-surface-container-lowest text-on-surface font-body-md text-xs px-3 py-2 border border-outline-variant/30 focus:border-secondary-container focus:outline-none" id="largeImageStyle">
-                            <option value="fileIcon">Dynamic File or Programming Language (React, TS, Py, Go, etc.)</option>
-                            <option value="editorIcon">Official Visual Studio Code Logo</option>
-                        </select>
-                        <span class="text-[10px] text-tertiary-container mt-0.5">Determines whether the prominent square badge shows the file language icon or editor logo.</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SECTION: PRIVACY -->
-            <div class="setting-section flex flex-col gap-5" data-section="privacy" style="display:none;">
-                <div class="bg-surface-container-low p-4 border border-outline-variant/30 flex flex-col gap-3 shadow-sm">
-                    <div class="flex items-center justify-between border-b border-outline-variant/20 pb-2">
-                        <div class="flex items-center gap-2">
-                            <span class="w-1.5 h-3 bg-secondary-container"></span>
-                            <span class="font-label-md text-on-surface uppercase tracking-wider font-bold">04. Privacy & Telemetry Safeguards</span>
-                        </div>
-                        <span class="font-label-sm text-[10px] text-primary font-code-inline">ANONYMIZER</span>
-                    </div>
-
-                    <!-- Toggles -->
-                    <div class="flex items-center justify-between py-2 border-b border-outline-variant/10">
-                        <div class="flex flex-col">
-                            <span class="font-body-md text-on-surface">Display Active File Name</span>
-                            <span class="font-label-sm text-[10px] text-tertiary">Uncheck to mask document names as "a file".</span>
-                        </div>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input checked class="sr-only peer" id="showFileName" type="checkbox"/>
-                            <div class="w-9 h-5 bg-surface-container-highest peer-checked:bg-secondary-container transition-colors relative flex items-center px-0.5 rounded-full">
-                                <div class="w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-4"></div>
-                            </div>
-                        </label>
-                    </div>
-
-                    <div class="flex items-center justify-between py-2 border-b border-outline-variant/10">
-                        <div class="flex flex-col">
-                            <span class="font-body-md text-on-surface">Display Workspace Folder Name</span>
-                            <span class="font-label-sm text-[10px] text-tertiary">Uncheck to mask project directories as "Confidential Project".</span>
-                        </div>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input checked class="sr-only peer" id="showWorkspaceName" type="checkbox"/>
-                            <div class="w-9 h-5 bg-surface-container-highest peer-checked:bg-secondary-container transition-colors relative flex items-center px-0.5 rounded-full">
-                                <div class="w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-4"></div>
-                            </div>
-                        </label>
-                    </div>
-
-                    <div class="flex items-center justify-between py-2 border-b border-outline-variant/10">
-                        <div class="flex flex-col">
-                            <span class="font-body-md text-on-surface">Display Git Branch Name</span>
-                            <span class="font-label-sm text-[10px] text-tertiary">Show the checked-out branch name (e.g. main*, dev).</span>
-                        </div>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input class="sr-only peer" id="showGitBranch" type="checkbox"/>
-                            <div class="w-9 h-5 bg-surface-container-highest peer-checked:bg-secondary-container transition-colors relative flex items-center px-0.5 rounded-full">
-                                <div class="w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-4"></div>
-                            </div>
-                        </label>
-                    </div>
-
-                    <div class="flex items-center justify-between py-2">
-                        <div class="flex flex-col">
-                            <span class="font-body-md text-on-surface">Debug Session Telemetry</span>
-                            <span class="font-label-sm text-[10px] text-tertiary">Show active debugging status when F5 session begins.</span>
-                        </div>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input checked class="sr-only peer" id="showDebugStatus" type="checkbox"/>
-                            <div class="w-9 h-5 bg-surface-container-highest peer-checked:bg-secondary-container transition-colors relative flex items-center px-0.5 rounded-full">
-                                <div class="w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-4"></div>
-                            </div>
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SECTION: BEHAVIOR -->
-            <div class="setting-section flex flex-col gap-5" data-section="behavior" style="display:none;">
-                <div class="bg-surface-container-low p-4 border border-outline-variant/30 flex flex-col gap-4 shadow-sm">
-                    <div class="flex items-center justify-between border-b border-outline-variant/20 pb-2">
-                        <div class="flex items-center gap-2">
-                            <span class="w-1.5 h-3 bg-secondary-container"></span>
-                            <span class="font-label-md text-on-surface uppercase tracking-wider font-bold">05. Daemon Behavior & Idle Limits</span>
-                        </div>
-                        <span class="font-label-sm text-[10px] text-outline font-code-inline">DAEMON_RULES</span>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="flex flex-col gap-1.5">
-                            <label class="font-label-sm text-[10px] text-outline" for="whenNoFileOpen">WHEN NO FILE IS OPEN</label>
-                            <select class="w-full bg-surface-container-lowest text-on-surface font-body-md text-xs px-3 py-2 border border-outline-variant/30 focus:border-secondary-container focus:outline-none" id="whenNoFileOpen">
-                                <option value="keepLastFile">Keep last active file visible</option>
-                                <option value="showWorkspace">Show workspace name only</option>
-                                <option value="idle">Display idle status</option>
-                                <option value="clear">Clear presence from Discord</option>
-                            </select>
-                        </div>
-
-                        <div class="flex flex-col gap-1.5">
-                            <label class="font-label-sm text-[10px] text-outline" for="idleAction">WHEN USER IS IDLE</label>
-                            <select class="w-full bg-surface-container-lowest text-on-surface font-body-md text-xs px-3 py-2 border border-outline-variant/30 focus:border-secondary-container focus:outline-none" id="idleAction">
-                                <option value="showIdle">Display idle status</option>
-                                <option value="keepFile">Keep active file</option>
-                                <option value="clear">Clear presence</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="flex flex-col gap-1.5">
-                        <label class="font-label-sm text-[10px] text-outline" for="idleTimeoutSeconds">IDLE TIMEOUT THRESHOLD (SECONDS)</label>
-                        <input class="bg-surface-container-lowest text-on-surface font-body-md text-xs px-3 py-2 border border-outline-variant/30 focus:border-secondary-container focus:outline-none" id="idleTimeoutSeconds" min="30" max="86400" type="number" value="300"/>
-                        <span class="text-[10px] text-tertiary-container">Minimum 30 seconds before Discord presence switches to Idle mode.</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SECTION: CONNECTION -->
-            <div class="setting-section flex flex-col gap-5" data-section="general" style="display:none;">
-                <div class="bg-surface-container-low p-4 border border-outline-variant/30 flex flex-col gap-4 shadow-sm">
-                    <div class="flex items-center justify-between border-b border-outline-variant/20 pb-2">
-                        <div class="flex items-center gap-2">
-                            <span class="w-1.5 h-3 bg-secondary-container"></span>
-                            <span class="font-label-md text-on-surface uppercase tracking-wider font-bold">06. Discord IPC Connection</span>
-                        </div>
-                        <span class="font-label-sm text-[10px] text-outline font-code-inline">IPC_CLIENT</span>
-                    </div>
-
-                    <div class="flex items-center justify-between bg-surface-container-lowest/80 p-3 border border-outline-variant/30">
-                        <div class="flex flex-col">
-                            <span class="font-body-md text-on-surface font-bold">Enable Rich Presence Service</span>
-                            <span class="font-label-sm text-[10px] text-tertiary">Transmit VS Code activity over local named pipe socket.</span>
-                        </div>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input checked class="sr-only peer" id="enabled" type="checkbox"/>
-                            <div class="w-10 h-5 bg-surface-container-highest peer-checked:bg-secondary-container transition-colors relative flex items-center px-0.5 rounded-full">
-                                <div class="w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-5"></div>
-                            </div>
-                        </label>
-                    </div>
-
-                    <div class="flex flex-col gap-1.5">
-                        <label class="font-label-sm text-[10px] text-outline" for="clientId">CUSTOM DISCORD APPLICATION CLIENT ID</label>
-                        <input class="bg-surface-container-lowest text-on-surface font-body-md text-xs px-3 py-2 border border-outline-variant/30 focus:border-secondary-container focus:outline-none font-code-inline" id="clientId" placeholder="Leave blank for official DisCode default ID" type="text" value=""/>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Sticky Bottom Toolbar -->
-            <footer class="mt-auto pt-4 flex items-center justify-between border-t border-outline-variant/20 bg-surface-container-lowest p-3 shadow-md">
-                <div class="flex items-center gap-2">
-                    <button class="px-3 py-2 bg-surface-container hover:bg-surface-container-high text-tertiary hover:text-on-surface font-code-inline text-[11px] uppercase transition-colors border border-outline-variant/30" id="btnResetDefaults" type="button">
-                        Reset to Defaults
-                    </button>
-                    <span class="font-label-sm text-[10px] text-outline-variant hidden sm:inline">NO UNSAVED LOCKS</span>
-                </div>
-                <div class="flex items-center gap-3">
-                    <span class="font-code-inline text-[11px] text-primary opacity-0 transition-opacity" id="saveStatus">CHANGES_COMMITTED</span>
-                    <button class="px-6 py-2.5 bg-secondary-container hover:bg-primary-container text-white font-code-inline text-xs uppercase tracking-widest flex items-center gap-2 shadow-lg transition-transform active:translate-y-0.5 font-bold" id="btnSave" type="button">
-                        <span class="text-[16px] flex items-center">${ICONS.check}</span>
-                        <span>Save Changes</span>
-                    </button>
-                </div>
-            </footer>
-        </main>
-
-        <!-- COLUMN 3: Right Live Discord Preview Panel -->
-        <aside class="w-80 xl:w-96 bg-surface-container-low border-l border-outline-variant/30 p-4 flex flex-col justify-between flex-shrink-0 overflow-y-auto">
-            <div class="flex flex-col gap-3">
+            <!-- Column 2: Center Configuration Canvas -->
+            <main class="canvas">
                 
-                <!-- Section Badge & Sync Indicator -->
-                <div class="flex items-center justify-between pb-2 bg-surface-container-lowest/60 p-2.5 border border-outline-variant/30">
-                    <div class="flex items-center gap-2">
-                        <span class="text-primary text-[16px] flex items-center">${ICONS.visibility}</span>
-                        <span class="font-label-md text-[11px] text-on-surface tracking-wider font-bold">LIVE PREVIEW / \u30D7\u30EC\u30D3\u30E5\u30FC</span>
+                <!-- SECTION 1: ACTIVITY -->
+                <div class="setting-section" data-section="activity">
+                    <div class="section-header">
+                        <h2 class="section-title">Activity Format Strings</h2>
+                        <p class="section-desc">Customize how your currently open workspace and file appear on your Discord profile.</p>
                     </div>
-                    <div class="flex items-center gap-1.5 bg-surface-container px-2 py-0.5">
-                        <span class="w-1.5 h-1.5 rounded-full bg-secondary-container animate-pulse"></span>
-                        <span class="font-code-inline text-[10px] text-primary font-bold">SYNC: ACTIVE</span>
-                    </div>
-                </div>
 
-                <!-- Japanese Framing Outer Card -->
-                <div class="relative bg-surface-container-lowest p-3 border border-outline-variant/30 shadow-2xl overflow-hidden">
-                    <!-- Red corner accents -->
-                    <div class="absolute top-0 left-0 w-2.5 h-2.5 bg-secondary-container"></div>
-                    <div class="absolute top-0 right-0 w-2.5 h-2.5 bg-secondary-container"></div>
-                    <div class="absolute bottom-0 left-0 w-2.5 h-2.5 bg-secondary-container"></div>
-                    <div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-secondary-container"></div>
-
-                    <!-- Mini Discord Profile Card -->
-                    <div class="w-full bg-[#18191c] text-on-surface overflow-hidden shadow-xl flex flex-col">
-                        
-                        <!-- Header Banner with Japanese Sunset fallback -->
-                        <div class="relative h-24 w-full overflow-hidden" style="background: linear-gradient(135deg, #1b0206 0%, #7d0016 50%, #111215 100%); background-size: cover; background-position: center;">
-                            <div class="absolute inset-0 bg-gradient-to-t from-[#18191c] via-surface-container-lowest/60 to-transparent"></div>
-                            <div class="absolute top-2 right-2 px-1.5 py-0.5 bg-secondary-container text-white font-code-inline text-[9px] font-bold shadow">
-                                \u795E\u697D
+                    <div class="card">
+                        <div class="field-group">
+                            <label class="field-label" for="detailsEditing">
+                                <span>Details Format (Line 1)</span>
+                                <span class="field-sub">Default: Cooking {fileName}</span>
+                            </label>
+                            <input type="text" id="detailsEditing" class="input-text" placeholder="Cooking {fileName}"/>
+                            <div class="token-row">
+                                <button type="button" class="token-btn" data-target="detailsEditing" data-token="{fileName}">+ {fileName}</button>
+                                <button type="button" class="token-btn" data-target="detailsEditing" data-token="{workspace}">+ {workspace}</button>
+                                <button type="button" class="token-btn" data-target="detailsEditing" data-token="{gitBranch}">+ {gitBranch}</button>
+                                <button type="button" class="token-btn" data-target="detailsEditing" data-token="{lineCount}">+ {lineCount}</button>
+                                <button type="button" class="token-btn" data-target="detailsEditing" data-token="{currentLine}">+ {currentLine}</button>
+                                <button type="button" class="token-btn" data-target="detailsEditing" data-token="{language}">+ {language}</button>
                             </div>
                         </div>
 
-                        <!-- Profile Info -->
-                        <div class="px-3 pb-3 pt-0 relative flex flex-col">
-                            
-                            <!-- Avatar Offset -->
-                            <div class="relative -mt-8 mb-2 flex items-end justify-between">
-                                <div class="relative">
-                                    <div class="w-14 h-14 rounded-full border-4 border-[#18191c] bg-surface-container-high overflow-hidden shadow-lg flex items-center justify-center font-bold text-white text-base relative" style="background: linear-gradient(135deg, #7d0016, #1b0206);">
-                                        <img class="w-full h-full object-cover" id="previewAvatarImg" onerror="this.style.display='none'; document.getElementById('previewAvatarFallback').style.display='block';" src="" alt="Avatar"/>
-                                        <span id="previewAvatarFallback" class="text-xs font-bold font-code-inline">\u2694</span>
-                                    </div>
-                                    <div id="previewStatusDot" class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-[#23a55a] rounded-full ring-2 ring-[#18191c]"></div>
-                                </div>
-                                <div class="flex items-center gap-1 bg-[#111214] px-1.5 py-0.5">
-                                    <span class="text-primary text-[12px] flex items-center" title="Developer">${ICONS.code}</span><span class="text-[#5865f2] text-[12px] flex items-center" title="Nitro / Boost">${ICONS.bolt}</span><span class="text-secondary-container text-[12px] flex items-center" title="Verified Presence">${ICONS.verified}</span>
-                                </div>
+                        <div class="field-group">
+                            <label class="field-label" for="stateEditing">
+                                <span>State Format (Line 2)</span>
+                                <span class="field-sub">Default: Workspace: {workspace}</span>
+                            </label>
+                            <input type="text" id="stateEditing" class="input-text" placeholder="Workspace: {workspace}"/>
+                            <div class="token-row">
+                                <button type="button" class="token-btn" data-target="stateEditing" data-token="{workspace}">+ {workspace}</button>
+                                <button type="button" class="token-btn" data-target="stateEditing" data-token="{gitBranch}">+ {gitBranch}</button>
+                                <button type="button" class="token-btn" data-target="stateEditing" data-token="{fileName}">+ {fileName}</button>
+                                <button type="button" class="token-btn" data-target="stateEditing" data-token="{language}">+ {language}</button>
                             </div>
+                        </div>
 
-                            <!-- Name -->
-                            <div class="flex flex-col mb-2.5">
-                                <div class="flex items-center gap-1.5">
-                                    <span class="font-headline-sm text-sm text-on-surface font-bold leading-tight truncate max-w-[170px]" id="previewProfileName">Connecting to Discord...</span>
-                                </div>
-                                <span class="font-code-inline text-[10px] text-outline truncate" id="previewUserTag">@detecting...</span>
-                            </div>
+                        <div class="field-group">
+                            <label class="field-label" for="detailsIdle">
+                                <span>Idle Details Format</span>
+                                <span class="field-sub">Displayed when AFK</span>
+                            </label>
+                            <input type="text" id="detailsIdle" class="input-text" placeholder="Idling"/>
+                        </div>
 
-                            <!-- Activity Box -->
-                            <div class="bg-[#1e1f22] p-2.5 flex flex-col gap-1.5 shadow-inner border border-white/5">
-                                <div class="flex items-center justify-between text-[10px] font-code-inline font-bold tracking-wider text-outline uppercase">
-                                    <span>PLAYING A GAME</span>
-                                    <span class="text-primary font-code-inline text-[9px]">RICH RPC</span>
-                                </div>
-
-                                <div class="flex items-start gap-2.5 mt-0.5">
-                                    <!-- App Icon Badge -->
-                                    <div class="relative flex-shrink-0">
-                                        <div class="w-11 h-11 bg-surface-container-highest flex items-center justify-center text-[#007acc] shadow-sm font-bold text-xs" id="previewAppIconWrap">
-                                            <span class="font-code-inline text-primary font-bold" id="previewBadgeIcon">TS</span>
-                                        </div>
-                                        <div class="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-secondary-container flex items-center justify-center text-white shadow-sm">
-                                            ${ICONS.edit}
-                                        </div>
-                                    </div>
-
-                                    <!-- Strings -->
-                                    <div class="flex flex-col min-w-0 flex-1 leading-snug">
-                                        <span class="font-headline-sm text-xs font-bold text-on-surface truncate">
-                                            DisCode</span>
-                                        <span class="font-body-md text-[11px] text-on-surface-variant truncate mt-0.5" id="previewLine1">
-                                            Editing index.tsx
-                                        </span>
-                                        <span class="font-body-md text-[10px] text-tertiary truncate" id="previewLine2">
-                                            In DisCode-Core (main*)
-                                        </span>
-                                        <div class="flex items-center gap-1 mt-1 text-tertiary-container font-code-inline text-[10px]" id="previewTimerRow">
-                                            <span class="text-primary text-[12px] flex items-center">${ICONS.schedule}</span>
-                                            <span id="previewTimerDigits">00:00:00 elapsed</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="mt-1.5 pt-1 flex flex-col">
-                                    <button class="w-full bg-[#2b2d31] hover:bg-[#35373c] text-on-surface font-code-inline text-[10px] py-1 text-center transition-colors" type="button">
-                                        View Repository
-                                    </button>
-                                </div>
-                            </div>
+                        <div class="field-group">
+                            <label class="field-label" for="stateIdle">
+                                <span>Idle State Format</span>
+                            </label>
+                            <input type="text" id="stateIdle" class="input-text" placeholder="Workspace: {workspace}"/>
                         </div>
                     </div>
                 </div>
 
-                <!-- Preview Mode Toggle Toolbar -->
-                <div class="bg-surface-container p-2 flex items-center justify-between border border-outline-variant/30">
-                    <span class="font-label-sm text-[10px] text-outline">VIEWPORT MODE</span>
-                    <div class="flex items-center gap-1 bg-surface-container-lowest p-0.5">
-                        <button class="px-2 py-0.5 bg-secondary-container text-white font-code-inline text-[9px]" id="btnModeDetailed" type="button">
-                            DETAILED
-                        </button>
-                        <button class="px-2 py-0.5 text-outline hover:text-on-surface font-code-inline text-[9px]" id="btnModeCompact" type="button">
-                            COMPACT
+                <!-- SECTION 2: TIMERS -->
+                <div class="setting-section hidden" data-section="timer">
+                    <div class="section-header">
+                        <h2 class="section-title">Elapsed Time & Timers</h2>
+                        <p class="section-desc">Manage duration calculations and inject quick manual time offsets.</p>
+                    </div>
+
+                    <div class="card">
+                        <div class="field-group">
+                            <label class="field-label" for="timerMode">Calculation Mode</label>
+                            <select id="timerMode" class="select-input">
+                                <option value="session">Session - Count duration since VS Code was opened</option>
+                                <option value="file">Per-File - Reset duration every time you switch files</option>
+                                <option value="manual">Manual - Persistent timer controlled manually</option>
+                            </select>
+                        </div>
+
+                        <div class="field-group">
+                            <label class="field-label">Add Manual Offset</label>
+                            <div style="display: flex; gap: 10px;">
+                                <div style="flex: 1;">
+                                    <span style="font-size: 11px; color: var(--text-muted);">Hours</span>
+                                    <input type="number" id="timerHours" class="input-text" min="0" max="99" value="0"/>
+                                </div>
+                                <div style="flex: 1;">
+                                    <span style="font-size: 11px; color: var(--text-muted);">Minutes</span>
+                                    <input type="number" id="timerMinutes" class="input-text" min="0" max="59" value="0"/>
+                                </div>
+                            </div>
+                            <div class="quick-btn-row">
+                                <button type="button" id="btnPlus1" class="btn-quick">+1h</button>
+                                <button type="button" id="btnPlus2" class="btn-quick">+2h</button>
+                                <button type="button" id="btnPlus3" class="btn-quick">+3.5h</button>
+                                <button type="button" id="btnResetTimer" class="btn-quick" style="background: #353942;">Reset to 00:00</button>
+                            </div>
+                        </div>
+
+                        <button type="button" id="btnApplyTimer" class="btn-apply-instant">
+                            ${ICONS.bolt}
+                            <span>Apply Timer Instantly to Discord</span>
                         </button>
                     </div>
                 </div>
 
-                <!-- Telemetry Readout -->
-                <div class="bg-surface-container-lowest p-2 flex flex-col gap-1 border border-outline-variant/20">
-                    <div class="flex items-center justify-between font-code-inline text-[9px] text-tertiary">
-                        <span>DISCORD_CLIENT</span>
-                        <span class="text-on-surface font-bold" id="previewFooterClient">IPC: DETECTING...</span>
+                <!-- SECTION 3: APPEARANCE -->
+                <div class="setting-section hidden" data-section="appearance">
+                    <div class="section-header">
+                        <h2 class="section-title">Visual Appearance</h2>
+                        <p class="section-desc">Configure icons, badges, and presence timestamps.</p>
                     </div>
-                    <div class="flex items-center justify-between font-code-inline text-[9px] text-tertiary">
-                        <span>USER_ID</span>
-                        <span class="text-primary font-mono" id="previewFooterUserId">--</span>
+
+                    <div class="card">
+                        <div class="field-group">
+                            <label class="field-label" for="largeImageStyle">Large Image Display Style</label>
+                            <select id="largeImageStyle" class="select-input">
+                                <option value="fileIcon">Language File Icon (JavaScript, TypeScript, Python, etc.)</option>
+                                <option value="editorIcon">DisCode Application Logo</option>
+                            </select>
+                        </div>
+
+                        <div class="toggle-row">
+                            <div class="toggle-info">
+                                <span class="toggle-title">Show Elapsed Timestamp</span>
+                                <span class="toggle-desc">Displays "XX:XX:XX elapsed" on your Discord Rich Presence card.</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="showElapsedTime" checked/>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
                     </div>
                 </div>
 
-            </div>
+                <!-- SECTION 4: PRIVACY -->
+                <div class="setting-section hidden" data-section="privacy">
+                    <div class="section-header">
+                        <h2 class="section-title">Privacy Controls</h2>
+                        <p class="section-desc">Mask confidential file names, repos, or branches from public view.</p>
+                    </div>
 
-            <!-- Footer Seal -->
-            <div class="pt-3 flex items-center justify-between text-outline-variant font-label-sm text-[10px]">
-                <span>\u4F1D\u7D71\u3068\u96FB\u8133\u306E\u8ABF\u548C</span>
-                <span>DISCODE KYOTO \xA9 2026</span>
-            </div>
-        </aside>
+                    <div class="card">
+                        <div class="toggle-row">
+                            <div class="toggle-info">
+                                <span class="toggle-title">Show Active File Name</span>
+                                <span class="toggle-desc">If disabled, file names are masked as "a file".</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="showFileName" checked/>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
 
+                        <div class="toggle-row">
+                            <div class="toggle-info">
+                                <span class="toggle-title">Show Workspace / Folder Name</span>
+                                <span class="toggle-desc">If disabled, workspace names are masked as "Confidential Project".</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="showWorkspaceName" checked/>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="toggle-row">
+                            <div class="toggle-info">
+                                <span class="toggle-title">Show Git Branch</span>
+                                <span class="toggle-desc">Display active git branch in templates.</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="showGitBranch"/>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="toggle-row">
+                            <div class="toggle-info">
+                                <span class="toggle-title">Show Debugging Session Status</span>
+                                <span class="toggle-desc">Automatically display active debug sessions when running debuggers.</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="showDebugStatus" checked/>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 5: BEHAVIOR -->
+                <div class="setting-section hidden" data-section="behavior">
+                    <div class="section-header">
+                        <h2 class="section-title">Behavior & Idle Detection</h2>
+                        <p class="section-desc">Configure presence behavior when closing files or stepping away from your desk.</p>
+                    </div>
+
+                    <div class="card">
+                        <div class="field-group">
+                            <label class="field-label" for="whenNoFileOpen">When No File is Open</label>
+                            <select id="whenNoFileOpen" class="select-input">
+                                <option value="keepLastFile">Keep Last Active File</option>
+                                <option value="idle">Switch to Idle Status</option>
+                                <option value="noFile">Show Workspace with No File</option>
+                                <option value="clear">Clear Presence Completely</option>
+                            </select>
+                        </div>
+
+                        <div class="field-group">
+                            <label class="field-label" for="idleAction">When User Goes Idle (AFK)</label>
+                            <select id="idleAction" class="select-input">
+                                <option value="showIdle">Show Idle Status</option>
+                                <option value="keepLastFile">Keep Last File Presence</option>
+                                <option value="clear">Clear Presence</option>
+                            </select>
+                        </div>
+
+                        <div class="field-group">
+                            <label class="field-label" for="idleTimeoutSeconds">Idle Threshold (Seconds)</label>
+                            <input type="number" id="idleTimeoutSeconds" class="input-text" min="30" max="3600" value="300"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 6: CONNECTION -->
+                <div class="setting-section hidden" data-section="general">
+                    <div class="section-header">
+                        <h2 class="section-title">Connection & Application ID</h2>
+                        <p class="section-desc">Manage the Discord IPC gateway connection and application identity.</p>
+                    </div>
+
+                    <div class="card">
+                        <div class="toggle-row">
+                            <div class="toggle-info">
+                                <span class="toggle-title">Enable Discord Rich Presence</span>
+                                <span class="toggle-desc">Toggle the connection to the Discord desktop client on or off.</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="enabled" checked/>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="field-group">
+                            <label class="field-label" for="clientId">
+                                <span>Custom Discord Client ID</span>
+                                <span class="field-sub">Leave blank to use official DisCode application</span>
+                            </label>
+                            <input type="text" id="clientId" class="input-text" placeholder="Default: 1565769356619554887 (Official DisCode)"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Sticky Footer Actions -->
+                <footer class="canvas-footer">
+                    <button id="btnResetDefaults" class="btn-secondary" type="button">Reset to Defaults</button>
+                    <div class="footer-right">
+                        <span id="saveStatus" class="save-status">Settings Saved</span>
+                        <button id="btnSave" class="btn-primary" type="button">
+                            ${ICONS.check}
+                            <span>Save Settings</span>
+                        </button>
+                    </div>
+                </footer>
+            </main>
+
+            <!-- Column 3: Right Live Preview Column -->
+            <aside class="preview-col">
+                <div class="preview-header">
+                    <div class="preview-heading">
+                        ${ICONS.visibility}
+                        <span>Live Discord Preview</span>
+                    </div>
+                    <div class="preview-sync-pill">
+                        <span class="pulse-dot"></span>
+                        <span>Synced</span>
+                    </div>
+                </div>
+
+                <!-- Authentic Discord User Profile Card -->
+                <div class="discord-card">
+                    <div class="discord-banner"></div>
+                    <div class="discord-profile-body">
+                        <div class="discord-avatar-row">
+                            <div class="discord-avatar-wrap">
+                                <img id="previewAvatarImg" class="discord-avatar-img" src="" alt="Avatar" onerror="this.style.display='none'; document.getElementById('previewAvatarFallback').style.display='flex';"/>
+                                <div id="previewAvatarFallback" class="discord-avatar-fallback">\u{1F464}</div>
+                                <div id="previewStatusDot" class="discord-online-dot"></div>
+                            </div>
+                            <div class="discord-badges">
+                                ${ICONS.code}
+                                ${ICONS.bolt}
+                            </div>
+                        </div>
+
+                        <div class="discord-user-details">
+                            <div class="discord-display-name" id="previewProfileName">Detecting user...</div>
+                            <div class="discord-username" id="previewUserTag">@discord</div>
+                        </div>
+
+                        <div class="discord-divider"></div>
+
+                        <!-- Activity Box -->
+                        <div class="discord-activity-box">
+                            <div class="discord-act-header">PLAYING A GAME</div>
+                            <div class="discord-act-main">
+                                <div class="discord-icon-container" id="previewAppIconWrap">
+                                    <span id="previewBadgeIcon" class="discord-large-badge">TS</span>
+                                    <div class="discord-small-badge" title="DisCode">
+                                        ${ICONS.edit}
+                                    </div>
+                                </div>
+                                <div class="discord-act-text">
+                                    <div class="discord-act-app" id="previewAppName">DisCode</div>
+                                    <div class="discord-act-line1" id="previewLine1">Cooking Cantarella.js</div>
+                                    <div class="discord-act-line2" id="previewLine2">Workspace: Pemrograman Web I</div>
+                                    <div class="discord-act-timer" id="previewTimerRow">
+                                        ${ICONS.schedule}
+                                        <span id="previewTimerDigits">00:00:00 elapsed</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="discord-btn-action">View Repository</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preview Controls & Telemetry -->
+                <div class="mode-switch-row">
+                    <span>Card View:</span>
+                    <div class="mode-btn-group">
+                        <button type="button" id="btnModeDetailed" class="btn-mode active">Detailed</button>
+                        <button type="button" id="btnModeCompact" class="btn-mode">Compact</button>
+                    </div>
+                </div>
+
+                <div class="preview-telemetry">
+                    <div class="telemetry-row">
+                        <span class="lbl">Discord Client</span>
+                        <span class="val" id="previewFooterClient">IPC: Live</span>
+                    </div>
+                    <div class="telemetry-row">
+                        <span class="lbl">Account ID</span>
+                        <span class="val" id="previewFooterUserId">--</span>
+                    </div>
+                </div>
+            </aside>
+        </div>
     </div>
 
-    <!-- Client Script -->
+    <!-- Script Logic -->
     <script nonce="${nonce}">
         (function () {
             const vscode = acquireVsCodeApi();
@@ -8767,21 +9317,22 @@ html, body { margin:0; padding:0; height:100%; overflow:hidden; }
             const previewFooterClient = document.getElementById('previewFooterClient');
             const previewFooterUserId = document.getElementById('previewFooterUserId');
             const previewBadgeIcon = document.getElementById('previewBadgeIcon');
+            const topStatusDot = document.getElementById('topStatusDot');
+            const topConnStatus = document.getElementById('topConnStatus');
             const kyotoRelayStatus = document.getElementById('kyotoRelayStatus');
 
             let currentDiscordUser = null;
-            let currentPresence = null;
             let realStartTimestamp = null;
             let livePreviewData = {
-                fileName: 'App.tsx',
-                workspace: 'my-project',
+                fileName: 'Cantarella.js',
+                workspace: 'Pemrograman Web I',
                 gitBranch: 'main',
                 lineCount: '128 lines',
-                language: 'TypeScript'
+                language: 'JavaScript'
             };
 
             function getLangBadge(lang) {
-                if (!lang) return 'TS';
+                if (!lang) return 'JS';
                 const l = lang.toLowerCase();
                 if (l.includes('react') && (l.includes('type') || l.includes('tsx'))) return 'TSX';
                 if (l.includes('react') || l.includes('jsx')) return 'JSX';
@@ -8793,8 +9344,9 @@ html, body { margin:0; padding:0; height:100%; overflow:hidden; }
                 if (l.includes('css')) return 'CSS';
                 if (l.includes('json')) return 'JSON';
                 if (l.includes('shell') || l.includes('bash')) return 'SH';
-                return lang.substring(0, 2).toUpperCase();
+                return lang.substring(0, 3).toUpperCase();
             }
+
             function formatTime(totalSec) {
                 const hrs = String(Math.floor(totalSec / 3600)).padStart(2, '0');
                 const mins = String(Math.floor((totalSec % 3600) / 60)).padStart(2, '0');
@@ -8812,40 +9364,39 @@ html, body { margin:0; padding:0; height:100%; overflow:hidden; }
                         previewAvatarImg.style.display = 'block';
                         previewAvatarFallback.style.display = 'none';
                     }
-                    previewStatusDot.className = 'absolute bottom-0 right-0 w-3.5 h-3.5 bg-[#23a55a] rounded-full ring-2 ring-[#18191c]';
-                    previewFooterClient.textContent = 'IPC: ' + user.username.toUpperCase() + ' // LIVE';
+                    previewStatusDot.style.background = 'var(--green)';
+                    topStatusDot.className = 'status-dot online';
+                    topConnStatus.textContent = 'Connected: ' + (user.globalName || user.username);
+                    previewFooterClient.textContent = 'IPC: ' + user.username.toUpperCase();
                     previewFooterUserId.textContent = user.id;
-                    if (kyotoRelayStatus) {
-                        kyotoRelayStatus.textContent = 'CONNECTED: ' + user.username;
-                        kyotoRelayStatus.className = 'text-xs text-emerald-400 font-bold';
-                    }
+                    if (kyotoRelayStatus) kyotoRelayStatus.textContent = 'ONLINE';
                 } else if (connState && connState.isConnected) {
                     previewProfileName.textContent = connState.user || 'Discord User';
                     previewUserTag.textContent = '@connected';
-                    previewStatusDot.className = 'absolute bottom-0 right-0 w-3.5 h-3.5 bg-[#23a55a] rounded-full ring-2 ring-[#18191c]';
-                    previewFooterClient.textContent = 'IPC: CONNECTED';
-                    previewFooterUserId.textContent = 'ACTIVE';
+                    topStatusDot.className = 'status-dot online';
+                    topConnStatus.textContent = 'Connected to Discord';
+                    previewFooterClient.textContent = 'IPC: Connected';
+                    previewFooterUserId.textContent = 'Active';
+                    if (kyotoRelayStatus) kyotoRelayStatus.textContent = 'ONLINE';
                 } else {
                     previewProfileName.textContent = 'Discord Offline';
                     previewUserTag.textContent = '@not-connected';
                     previewAvatarImg.style.display = 'none';
-                    previewAvatarFallback.style.display = 'block';
-                    previewStatusDot.className = 'absolute bottom-0 right-0 w-3.5 h-3.5 bg-[#f0b232] rounded-full ring-2 ring-[#18191c]';
-                    previewFooterClient.textContent = 'IPC: DISCONNECTED';
-                    previewFooterUserId.textContent = 'OFFLINE';
-                    if (kyotoRelayStatus) {
-                        kyotoRelayStatus.textContent = 'CONNECTING...';
-                        kyotoRelayStatus.className = 'text-xs text-amber-400 font-bold';
-                    }
+                    previewAvatarFallback.style.display = 'flex';
+                    topStatusDot.className = 'status-dot';
+                    topConnStatus.textContent = 'Connecting to Discord...';
+                    previewFooterClient.textContent = 'IPC: Offline';
+                    previewFooterUserId.textContent = '--';
+                    if (kyotoRelayStatus) kyotoRelayStatus.textContent = 'CONNECTING';
                 }
             }
 
             function syncPreview() {
-                let dVal = detailsInput.value || 'Editing {fileName}';
+                let dVal = detailsInput.value || 'Cooking {fileName}';
                 let sVal = stateInput.value || 'Workspace: {workspace}';
 
-                const curFile = showFileName.checked ? (livePreviewData.fileName || 'App.tsx') : 'a file';
-                const curWs = showWorkspaceName.checked ? (livePreviewData.workspace || 'my-project') : 'Confidential Project';
+                const curFile = showFileName.checked ? (livePreviewData.fileName || 'Cantarella.js') : 'a file';
+                const curWs = showWorkspaceName.checked ? (livePreviewData.workspace || 'Pemrograman Web I') : 'Confidential Project';
                 const curBranch = showGitBranch.checked ? (livePreviewData.gitBranch || 'main') : '';
 
                 dVal = dVal
@@ -8854,7 +9405,7 @@ html, body { margin:0; padding:0; height:100%; overflow:hidden; }
                     .replace(/{gitBranch}/g, curBranch)
                     .replace(/{lineCount}/g, livePreviewData.lineCount || '128 lines')
                     .replace(/{currentLine}/g, livePreviewData.currentLine || '1')
-                    .replace(/{language}/g, livePreviewData.language || 'TypeScript');
+                    .replace(/{language}/g, livePreviewData.language || 'JavaScript');
 
                 sVal = sVal
                     .replace(/{fileName}/g, curFile)
@@ -8862,7 +9413,7 @@ html, body { margin:0; padding:0; height:100%; overflow:hidden; }
                     .replace(/{gitBranch}/g, curBranch)
                     .replace(/{lineCount}/g, livePreviewData.lineCount || '128 lines')
                     .replace(/{currentLine}/g, livePreviewData.currentLine || '1')
-                    .replace(/{language}/g, livePreviewData.language || 'TypeScript');
+                    .replace(/{language}/g, livePreviewData.language || 'JavaScript');
 
                 previewLine1.textContent = dVal;
                 previewLine2.textContent = sVal;
@@ -8888,14 +9439,17 @@ html, body { margin:0; padding:0; height:100%; overflow:hidden; }
             // Tab Switching
             function activateSection(secId) {
                 document.querySelectorAll('.setting-section').forEach(sec => {
-                    sec.style.display = sec.dataset.section === secId ? 'flex' : 'none';
+                    if (sec.dataset.section === secId) {
+                        sec.classList.remove('hidden');
+                    } else {
+                        sec.classList.add('hidden');
+                    }
                 });
                 document.querySelectorAll('.nav-tab-btn').forEach(btn => {
-                    const isActive = btn.dataset.section === secId;
-                    if (isActive) {
-                        btn.className = 'nav-tab-btn w-full text-left px-3 py-2 bg-surface-container-high text-on-surface font-label-md flex items-center justify-between border-l-2 border-primary shadow-sm';
+                    if (btn.dataset.section === secId) {
+                        btn.classList.add('active');
                     } else {
-                        btn.className = 'nav-tab-btn w-full text-left px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md transition-colors flex items-center justify-between border-l-2 border-transparent';
+                        btn.classList.remove('active');
                     }
                 });
             }
@@ -8931,7 +9485,7 @@ html, body { margin:0; padding:0; height:100%; overflow:hidden; }
                 const cur = parseInt(timerHours.value || '0', 10);
                 timerHours.value = cur + 1;
                 if (!realStartTimestamp) realStartTimestamp = Math.floor(Date.now() / 1000);
-                realStartTimestamp -= 3600;
+                realStartTimestamp = Math.max(0, realStartTimestamp - 3600);
                 tickTimer();
             });
 
@@ -8939,17 +9493,18 @@ html, body { margin:0; padding:0; height:100%; overflow:hidden; }
                 const cur = parseInt(timerHours.value || '0', 10);
                 timerHours.value = cur + 2;
                 if (!realStartTimestamp) realStartTimestamp = Math.floor(Date.now() / 1000);
-                realStartTimestamp -= 7200;
+                realStartTimestamp = Math.max(0, realStartTimestamp - 7200);
                 tickTimer();
             });
 
             document.getElementById('btnPlus3').addEventListener('click', () => {
                 const curH = parseInt(timerHours.value || '0', 10);
                 const curM = parseInt(timerMinutes.value || '0', 10);
-                timerHours.value = curH + 3;
-                timerMinutes.value = (curM + 30) % 60;
+                const totalM = curM + 30;
+                timerHours.value = curH + 3 + Math.floor(totalM / 60);
+                timerMinutes.value = totalM % 60;
                 if (!realStartTimestamp) realStartTimestamp = Math.floor(Date.now() / 1000);
-                realStartTimestamp -= 12600;
+                realStartTimestamp = Math.max(0, realStartTimestamp - (3.5 * 3600));
                 tickTimer();
             });
 
@@ -8959,21 +9514,19 @@ html, body { margin:0; padding:0; height:100%; overflow:hidden; }
                 realStartTimestamp = Math.floor(Date.now() / 1000);
                 tickTimer();
                 vscode.postMessage({ command: 'resetTimer' });
-                showStatusBadge('TIMER_RESET_OK');
+                showStatusBadge('Timer Reset to 00:00');
             });
 
-            // Instant Apply Timer
             document.getElementById('btnApplyTimer').addEventListener('click', () => {
                 const totalMinutes = (parseInt(timerHours.value || '0', 10) * 60) + parseInt(timerMinutes.value || '0', 10);
                 vscode.postMessage({
                     command: 'applyTimer',
                     settings: {
                         'timer.mode': timerMode.value,
-                        'timer.customOffsetMinutes': totalMinutes,
-                        'appearance.showElapsedTime': showElapsedTime.checked
+                        'timer.customOffsetMinutes': totalMinutes
                     }
                 });
-                showStatusBadge('TIMER_APPLIED_INSTANT');
+                showStatusBadge('Timer Applied');
             });
 
             function showStatusBadge(text) {
@@ -9007,13 +9560,13 @@ html, body { margin:0; padding:0; height:100%; overflow:hidden; }
                     clientId: document.getElementById('clientId').value.trim()
                 };
                 vscode.postMessage({ command: 'saveSettings', settings: newSettings });
-                showStatusBadge('CHANGES_COMMITTED');
+                showStatusBadge('Settings Saved!');
             });
 
             // Reset to defaults
             document.getElementById('btnResetDefaults').addEventListener('click', () => {
                 vscode.postMessage({ command: 'resetDefaults' });
-                showStatusBadge('DEFAULTS_RESTORED');
+                showStatusBadge('Defaults Restored');
             });
 
             // Close
@@ -9025,15 +9578,15 @@ html, body { margin:0; padding:0; height:100%; overflow:hidden; }
             const btnDetailed = document.getElementById('btnModeDetailed');
             const btnCompact = document.getElementById('btnModeCompact');
             btnDetailed.addEventListener('click', () => {
-                btnDetailed.className = 'px-2 py-0.5 bg-secondary-container text-white font-code-inline text-[9px]';
-                btnCompact.className = 'px-2 py-0.5 text-outline hover:text-on-surface font-code-inline text-[9px]';
+                btnDetailed.classList.add('active');
+                btnCompact.classList.remove('active');
                 previewLine2.style.display = 'block';
                 if (showElapsedTime.checked) previewTimerRow.style.display = 'flex';
             });
 
             btnCompact.addEventListener('click', () => {
-                btnCompact.className = 'px-2 py-0.5 bg-secondary-container text-white font-code-inline text-[9px]';
-                btnDetailed.className = 'px-2 py-0.5 text-outline hover:text-on-surface font-code-inline text-[9px]';
+                btnCompact.classList.add('active');
+                btnDetailed.classList.remove('active');
                 previewLine2.style.display = 'none';
                 previewTimerRow.style.display = 'none';
             });
@@ -9103,7 +9656,7 @@ html, body { margin:0; padding:0; height:100%; overflow:hidden; }
                 } else if (message.command === 'connectionUpdate') {
                     updateDiscordAccount(message.discordUser, message.connectionState);
                 } else if (message.command === 'actionResult') {
-                    showStatusBadge(message.ok ? 'SYNC_COMPLETE' : 'ERROR_OCCURRED');
+                    showStatusBadge(message.ok ? (message.message || 'Updated') : 'Error occurred');
                 }
             });
 

@@ -8,6 +8,7 @@ graphify-out/**
 tsconfig.json
 tailwind.config.js
 assets/flora-generated-*
+**/*.svg
 *.vsix
 *.log
 .gitignore

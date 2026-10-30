@@ -1169,7 +1169,7 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = '') {
                 <!-- Authentic Discord User Profile Card -->
                 <div class="discord-card">
                     <div class="discord-banner">
-                        \${bannerUri ? \`<img src="\${bannerUri}" alt="Japanese Landscape Banner" class="discord-banner-img"/>\` : ''}
+                        ${bannerUri ? `<img src="${bannerUri}" alt="Japanese Landscape Banner" class="discord-banner-img"/>` : ''}
                         <div class="discord-banner-overlay"></div>
                     </div>
                     <div class="discord-profile-body">

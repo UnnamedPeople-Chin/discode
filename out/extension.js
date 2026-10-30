@@ -8081,6 +8081,7 @@ var DiscordRpcManager = class _DiscordRpcManager {
 };
 
 // src/ui/SettingsWebviewPanel.ts
+var fs = __toESM(require("fs"));
 var vscode3 = __toESM(require("vscode"));
 
 // src/ui/settingsModalWebviewHtml.ts
@@ -9252,7 +9253,7 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = "") {
                 <!-- Authentic Discord User Profile Card -->
                 <div class="discord-card">
                     <div class="discord-banner">
-                        \${bannerUri ? \`<img src="\${bannerUri}" alt="Japanese Landscape Banner" class="discord-banner-img"/>\` : ''}
+                        ${bannerUri ? `<img src="${bannerUri}" alt="Japanese Landscape Banner" class="discord-banner-img"/>` : ""}
                         <div class="discord-banner-overlay"></div>
                     </div>
                     <div class="discord-profile-body">
@@ -9802,7 +9803,10 @@ var SettingsWebviewPanel = class _SettingsWebviewPanel {
       vscode3.ViewColumn.One,
       {
         enableScripts: true,
-        retainContextWhenHidden: true
+        retainContextWhenHidden: true,
+        localResourceRoots: [
+          vscode3.Uri.joinPath(extensionUri, "assets")
+        ]
       }
     );
     _SettingsWebviewPanel.currentPanel = new _SettingsWebviewPanel(panel, extensionUri, configHandler, activityDetector, rpcManager);
@@ -9886,9 +9890,18 @@ var SettingsWebviewPanel = class _SettingsWebviewPanel {
   }
   getHtmlContent() {
     const nonce = this.getNonce();
-    const bannerUri = this.panel.webview.asWebviewUri(
-      vscode3.Uri.joinPath(this.extensionUri, "assets", "banner.jpg")
-    ).toString();
+    let bannerUri = "";
+    try {
+      const bannerPath = vscode3.Uri.joinPath(this.extensionUri, "assets", "banner.jpg").fsPath;
+      if (fs.existsSync(bannerPath)) {
+        const base64 = fs.readFileSync(bannerPath).toString("base64");
+        bannerUri = `data:image/jpeg;base64,${base64}`;
+      }
+    } catch {
+      bannerUri = this.panel.webview.asWebviewUri(
+        vscode3.Uri.joinPath(this.extensionUri, "assets", "banner.jpg")
+      ).toString();
+    }
     return getSettingsModalWebviewHtml(nonce, this.panel.webview.cspSource, bannerUri);
   }
   getNonce() {

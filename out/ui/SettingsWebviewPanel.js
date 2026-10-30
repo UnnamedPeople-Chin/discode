@@ -34,6 +34,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SettingsWebviewPanel = void 0;
+const fs = __importStar(require("fs"));
 const vscode = __importStar(require("vscode"));
 const settingsModalWebviewHtml_1 = require("./settingsModalWebviewHtml");
 class SettingsWebviewPanel {
@@ -113,7 +114,10 @@ class SettingsWebviewPanel {
         }
         const panel = vscode.window.createWebviewPanel('discordPresenceSettings', 'Discord Presence: Settings & Preview', vscode.ViewColumn.One, {
             enableScripts: true,
-            retainContextWhenHidden: true
+            retainContextWhenHidden: true,
+            localResourceRoots: [
+                vscode.Uri.joinPath(extensionUri, 'assets')
+            ]
         });
         SettingsWebviewPanel.currentPanel = new SettingsWebviewPanel(panel, extensionUri, configHandler, activityDetector, rpcManager);
         return SettingsWebviewPanel.currentPanel;
@@ -198,7 +202,17 @@ class SettingsWebviewPanel {
     }
     getHtmlContent() {
         const nonce = this.getNonce();
-        const bannerUri = this.panel.webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'assets', 'banner.jpg')).toString();
+        let bannerUri = '';
+        try {
+            const bannerPath = vscode.Uri.joinPath(this.extensionUri, 'assets', 'banner.jpg').fsPath;
+            if (fs.existsSync(bannerPath)) {
+                const base64 = fs.readFileSync(bannerPath).toString('base64');
+                bannerUri = `data:image/jpeg;base64,${base64}`;
+            }
+        }
+        catch {
+            bannerUri = this.panel.webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'assets', 'banner.jpg')).toString();
+        }
         return (0, settingsModalWebviewHtml_1.getSettingsModalWebviewHtml)(nonce, this.panel.webview.cspSource, bannerUri);
     }
     getNonce() {

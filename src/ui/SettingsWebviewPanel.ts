@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import * as vscode from 'vscode';
 import { ActivityDetector } from '../activity/ActivityDetector';
 import { ConfigurationHandler } from '../config/ConfigurationHandler';
@@ -101,7 +102,10 @@ export class SettingsWebviewPanel {
             vscode.ViewColumn.One,
             {
                 enableScripts: true,
-                retainContextWhenHidden: true
+                retainContextWhenHidden: true,
+                localResourceRoots: [
+                    vscode.Uri.joinPath(extensionUri, 'assets')
+                ]
             }
         );
 
@@ -196,9 +200,18 @@ export class SettingsWebviewPanel {
 
     private getHtmlContent(): string {
         const nonce = this.getNonce();
-        const bannerUri = this.panel.webview.asWebviewUri(
-            vscode.Uri.joinPath(this.extensionUri, 'assets', 'banner.jpg')
-        ).toString();
+        let bannerUri = '';
+        try {
+            const bannerPath = vscode.Uri.joinPath(this.extensionUri, 'assets', 'banner.jpg').fsPath;
+            if (fs.existsSync(bannerPath)) {
+                const base64 = fs.readFileSync(bannerPath).toString('base64');
+                bannerUri = `data:image/jpeg;base64,${base64}`;
+            }
+        } catch {
+            bannerUri = this.panel.webview.asWebviewUri(
+                vscode.Uri.joinPath(this.extensionUri, 'assets', 'banner.jpg')
+            ).toString();
+        }
         return getSettingsModalWebviewHtml(nonce, this.panel.webview.cspSource, bannerUri);
     }
 

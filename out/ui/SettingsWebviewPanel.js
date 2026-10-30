@@ -37,13 +37,15 @@ exports.SettingsWebviewPanel = void 0;
 const vscode = __importStar(require("vscode"));
 const settingsModalWebviewHtml_1 = require("./settingsModalWebviewHtml");
 class SettingsWebviewPanel {
+    extensionUri;
     configHandler;
     activityDetector;
     rpcManager;
     static currentPanel;
     panel;
     disposables = [];
-    constructor(panel, configHandler, activityDetector, rpcManager) {
+    constructor(panel, extensionUri, configHandler, activityDetector, rpcManager) {
+        this.extensionUri = extensionUri;
         this.configHandler = configHandler;
         this.activityDetector = activityDetector;
         this.rpcManager = rpcManager;
@@ -113,7 +115,7 @@ class SettingsWebviewPanel {
             enableScripts: true,
             retainContextWhenHidden: true
         });
-        SettingsWebviewPanel.currentPanel = new SettingsWebviewPanel(panel, configHandler, activityDetector, rpcManager);
+        SettingsWebviewPanel.currentPanel = new SettingsWebviewPanel(panel, extensionUri, configHandler, activityDetector, rpcManager);
         return SettingsWebviewPanel.currentPanel;
     }
     sendInitialData() {
@@ -196,7 +198,8 @@ class SettingsWebviewPanel {
     }
     getHtmlContent() {
         const nonce = this.getNonce();
-        return (0, settingsModalWebviewHtml_1.getSettingsModalWebviewHtml)(nonce, this.panel.webview.cspSource);
+        const bannerUri = this.panel.webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'assets', 'banner.jpg')).toString();
+        return (0, settingsModalWebviewHtml_1.getSettingsModalWebviewHtml)(nonce, this.panel.webview.cspSource, bannerUri);
     }
     getNonce() {
         let text = '';

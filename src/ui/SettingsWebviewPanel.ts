@@ -11,6 +11,7 @@ export class SettingsWebviewPanel {
 
     private constructor(
         panel: vscode.WebviewPanel,
+        private readonly extensionUri: vscode.Uri,
         private readonly configHandler: ConfigurationHandler,
         private readonly activityDetector: ActivityDetector,
         private readonly rpcManager: DiscordRpcManager
@@ -104,7 +105,7 @@ export class SettingsWebviewPanel {
             }
         );
 
-        SettingsWebviewPanel.currentPanel = new SettingsWebviewPanel(panel, configHandler, activityDetector, rpcManager);
+        SettingsWebviewPanel.currentPanel = new SettingsWebviewPanel(panel, extensionUri, configHandler, activityDetector, rpcManager);
         return SettingsWebviewPanel.currentPanel;
     }
 
@@ -195,7 +196,10 @@ export class SettingsWebviewPanel {
 
     private getHtmlContent(): string {
         const nonce = this.getNonce();
-        return getSettingsModalWebviewHtml(nonce, this.panel.webview.cspSource);
+        const bannerUri = this.panel.webview.asWebviewUri(
+            vscode.Uri.joinPath(this.extensionUri, 'assets', 'banner.jpg')
+        ).toString();
+        return getSettingsModalWebviewHtml(nonce, this.panel.webview.cspSource, bannerUri);
     }
 
     private getNonce(): string {

@@ -13,7 +13,7 @@ const ICONS = {
     edit: `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>`
 };
 
-export function getSettingsModalWebviewHtml(nonce: string, cspSource: string): string {
+export function getSettingsModalWebviewHtml(nonce: string, cspSource: string, bannerUri = ''): string {
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -241,12 +241,17 @@ export function getSettingsModalWebviewHtml(nonce: string, cspSource: string): s
 
         .card {
             background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            border-radius: 8px;
-            padding: 18px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px 22px;
             display: flex;
             flex-direction: column;
             gap: 16px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+            transition: border-color 0.2s ease;
+        }
+        .card:hover {
+            border-color: rgba(255, 255, 255, 0.1);
         }
         .field-group {
             display: flex;
@@ -268,32 +273,35 @@ export function getSettingsModalWebviewHtml(nonce: string, cspSource: string): s
         }
         .input-text {
             background: var(--bg-input);
-            border: 1px solid var(--border-subtle);
-            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
             color: var(--text-heading);
-            padding: 8px 12px;
+            padding: 9px 13px;
             font-size: 13px;
             font-family: var(--font-mono);
             outline: none;
-            transition: border-color 0.15s;
+            transition: all 0.15s ease;
             width: 100%;
         }
         .input-text:focus {
             border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(255, 82, 93, 0.2);
         }
         .select-input {
             background: var(--bg-input);
-            border: 1px solid var(--border-subtle);
-            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
             color: var(--text-heading);
-            padding: 8px 12px;
+            padding: 9px 13px;
             font-size: 13px;
             outline: none;
             cursor: pointer;
             width: 100%;
+            transition: all 0.15s ease;
         }
         .select-input:focus {
             border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(255, 82, 93, 0.2);
         }
 
         /* Token buttons row */
@@ -301,24 +309,29 @@ export function getSettingsModalWebviewHtml(nonce: string, cspSource: string): s
             display: flex;
             flex-wrap: wrap;
             gap: 6px;
-            margin-top: 2px;
+            margin-top: 4px;
         }
         .token-btn {
-            background: #252830;
-            border: 1px solid #353942;
-            color: #d1d5db;
+            background: #1e2025;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-normal);
             font-family: var(--font-mono);
             font-size: 11px;
-            padding: 3px 8px;
-            border-radius: 4px;
+            padding: 4px 10px;
+            border-radius: 9999px;
             cursor: pointer;
-            transition: all 0.12s;
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
         }
         .token-btn:hover {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: #fff;
+            background: rgba(255, 82, 93, 0.15);
+            border-color: rgba(255, 82, 93, 0.5);
+            color: #ffb3b2;
             transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(255, 82, 93, 0.2);
+        }
+        .token-btn:active {
+            transform: scale(0.96);
         }
 
         /* Toggle switches */
@@ -432,19 +445,23 @@ export function getSettingsModalWebviewHtml(nonce: string, cspSource: string): s
             flex-shrink: 0;
         }
         .btn-secondary {
-            background: transparent;
-            border: 1px solid var(--border-subtle);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             color: var(--text-muted);
-            padding: 8px 14px;
-            border-radius: 6px;
+            padding: 9px 16px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 12px;
             font-weight: 500;
-            transition: all 0.15s;
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .btn-secondary:hover {
-            background: var(--bg-hover);
+            background: rgba(255, 255, 255, 0.08);
             color: var(--text-heading);
+            transform: translateY(-1px);
+        }
+        .btn-secondary:active {
+            transform: scale(0.98);
         }
         .footer-right {
             display: flex;
@@ -459,26 +476,27 @@ export function getSettingsModalWebviewHtml(nonce: string, cspSource: string): s
             transition: opacity 0.2s;
         }
         .btn-primary {
-            background: var(--accent);
+            background: linear-gradient(135deg, #ff525d 0%, #b20024 100%);
             border: none;
             color: #fff;
-            padding: 9px 20px;
-            border-radius: 6px;
+            padding: 9px 22px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 13px;
             font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 6px;
-            transition: background 0.15s, transform 0.1s;
-            box-shadow: 0 2px 8px rgba(224, 36, 68, 0.4);
+            gap: 8px;
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 14px rgba(224, 36, 68, 0.35);
         }
         .btn-primary:hover {
-            background: var(--accent-hover);
+            background: linear-gradient(135deg, #ff6b75 0%, #c9002a 100%);
             transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(255, 82, 93, 0.45);
         }
         .btn-primary:active {
-            transform: translateY(0);
+            transform: scale(0.98);
         }
 
         /* Right Live Preview Column */
@@ -544,9 +562,25 @@ export function getSettingsModalWebviewHtml(nonce: string, cspSource: string): s
             flex-direction: column;
         }
         .discord-banner {
-            height: 64px;
-            background: linear-gradient(135deg, #2b0b14 0%, #7d1024 100%);
+            height: 88px;
+            background: linear-gradient(135deg, #190509 0%, #4a0d18 100%);
             position: relative;
+            overflow: hidden;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+        .discord-banner-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center 25%;
+            display: block;
+            filter: brightness(0.95);
+        }
+        .discord-banner-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.05) 0%, rgba(24, 25, 28, 0.8) 100%);
         }
         .discord-profile-body {
             padding: 0 14px 14px 14px;
@@ -1132,7 +1166,10 @@ export function getSettingsModalWebviewHtml(nonce: string, cspSource: string): s
 
                 <!-- Authentic Discord User Profile Card -->
                 <div class="discord-card">
-                    <div class="discord-banner"></div>
+                    <div class="discord-banner">
+                        \${bannerUri ? \`<img src="\${bannerUri}" alt="Japanese Landscape Banner" class="discord-banner-img"/>\` : ''}
+                        <div class="discord-banner-overlay"></div>
+                    </div>
                     <div class="discord-profile-body">
                         <div class="discord-avatar-row">
                             <div class="discord-avatar-wrap">

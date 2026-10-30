@@ -870,7 +870,7 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = '') {
                 </div>
                 <div>
                     <span class="brand-name">DisCode</span>
-                    <span class="brand-version">v1.3.1</span>
+                    <span class="brand-version">v1.3.2</span>
                     <span class="brand-tagline">Discord Rich Presence</span>
                 </div>
             </div>
@@ -1234,6 +1234,7 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = '') {
                             <div class="discord-act-header">PLAYING A GAME</div>
                             <div class="discord-act-main">
                                 <div class="discord-icon-container" id="previewAppIconWrap">
+                                    <img id="previewLargeIconImg" class="discord-large-icon-img" src="" alt="Icon" style="display:none; width: 100%; height: 100%; object-fit: contain; padding: 6px; box-sizing: border-box; border-radius: 8px;" />
                                     <span id="previewBadgeIcon" class="discord-large-badge">TS</span>
                                     <div class="discord-small-badge" title="DisCode Official">
                                         ${ICONS.discodeLogo}
@@ -1308,9 +1309,31 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = '') {
             const previewFooterClient = document.getElementById('previewFooterClient');
             const previewFooterUserId = document.getElementById('previewFooterUserId');
             const previewBadgeIcon = document.getElementById('previewBadgeIcon');
+            const previewLargeIconImg = document.getElementById('previewLargeIconImg');
             const topStatusDot = document.getElementById('topStatusDot');
             const topConnStatus = document.getElementById('topConnStatus');
             const kyotoRelayStatus = document.getElementById('kyotoRelayStatus');
+
+            if (previewLargeIconImg) {
+                previewLargeIconImg.onerror = function() {
+                    previewLargeIconImg.style.display = 'none';
+                    if (previewBadgeIcon) previewBadgeIcon.style.display = 'inline';
+                };
+            }
+
+            function updatePreviewIcon(iconUrl, lang) {
+                if (previewLargeIconImg && iconUrl) {
+                    previewLargeIconImg.src = iconUrl;
+                    previewLargeIconImg.style.display = 'block';
+                    if (previewBadgeIcon) previewBadgeIcon.style.display = 'none';
+                } else {
+                    if (previewLargeIconImg) previewLargeIconImg.style.display = 'none';
+                    if (previewBadgeIcon) {
+                        previewBadgeIcon.style.display = 'inline';
+                        previewBadgeIcon.textContent = getLangBadge(lang);
+                    }
+                }
+            }
 
             let currentDiscordUser = null;
             let realStartTimestamp = null;
@@ -1319,12 +1342,14 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = '') {
                 workspace: 'Pemrograman Web I',
                 gitBranch: 'main',
                 lineCount: '128 lines',
-                language: 'JavaScript'
+                language: 'JavaScript',
+                iconUrl: ''
             };
 
             function getLangBadge(lang) {
                 if (!lang) return 'JS';
                 const l = lang.toLowerCase();
+                if (l.includes('dart')) return 'DART';
                 if (l.includes('react') && (l.includes('type') || l.includes('tsx'))) return 'TSX';
                 if (l.includes('react') || l.includes('jsx')) return 'JSX';
                 if (l.includes('typescript')) return 'TS';
@@ -1335,7 +1360,7 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = '') {
                 if (l.includes('css')) return 'CSS';
                 if (l.includes('json')) return 'JSON';
                 if (l.includes('shell') || l.includes('bash')) return 'SH';
-                return lang.substring(0, 3).toUpperCase();
+                return lang.substring(0, 4).toUpperCase();
             }
 
             function formatTime(totalSec) {
@@ -1611,9 +1636,7 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = '') {
 
                     if (message.previewData) {
                         livePreviewData = Object.assign(livePreviewData, message.previewData);
-                        if (livePreviewData.language) {
-                            previewBadgeIcon.textContent = getLangBadge(livePreviewData.language);
-                        }
+                        updatePreviewIcon(livePreviewData.iconUrl, livePreviewData.language);
                         if (livePreviewData.startTimestamp) {
                             realStartTimestamp = livePreviewData.startTimestamp;
                         }
@@ -1632,9 +1655,7 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = '') {
                     }
                     if (message.previewData) {
                         livePreviewData = Object.assign(livePreviewData, message.previewData);
-                        if (livePreviewData.language) {
-                            previewBadgeIcon.textContent = getLangBadge(livePreviewData.language);
-                        }
+                        updatePreviewIcon(livePreviewData.iconUrl, livePreviewData.language);
                         if (livePreviewData.startTimestamp) {
                             realStartTimestamp = livePreviewData.startTimestamp;
                         }

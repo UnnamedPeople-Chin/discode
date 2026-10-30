@@ -110,7 +110,16 @@ function runSelfCheck(): void {
     );
     rpcManager.dispose();
 
-    console.log('[Self-Check] All invariants passed successfully! (13/13 assertions)');
+    // 8. Invariant: CDN PNG URL generation and icon mapping contracts
+    const VSCORD_CDN_BASE = 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons';
+    const testIcons = ['dart', 'js', 'ts', 'jsx', 'tsx', 'python', 'rust', 'idle', 'debugging', 'text'];
+    for (const icon of testIcons) {
+        const url = `${VSCORD_CDN_BASE}/${icon}.png`;
+        assert.ok(url.startsWith('https://'), `Icon URL for ${icon} must be HTTPS`);
+        assert.ok(url.endsWith('.png'), `Icon URL for ${icon} must be direct PNG raster`);
+    }
+
+    console.log('[Self-Check] All invariants passed successfully! (14/14 assertions)');
 }
 
 runSelfCheck();

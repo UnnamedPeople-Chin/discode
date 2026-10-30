@@ -7244,37 +7244,152 @@ var vscode4 = __toESM(require("vscode"));
 var path = __toESM(require("path"));
 var vscode = __toESM(require("vscode"));
 var DISCODE_OFFICIAL_ICON = "https://cdn.discordapp.com/app-icons/1565769356619554887/281d28bf86d74667d7721cc09711f77f.png";
-var DEVICON_CDN_BASE = "https://cdn.jsdelivr.net/gh/devicons/devicon/icons";
-var LANGUAGE_CDN_ICONS = {
-  js: `${DEVICON_CDN_BASE}/javascript/javascript-original.png`,
-  ts: `${DEVICON_CDN_BASE}/typescript/typescript-original.png`,
-  jsx: `${DEVICON_CDN_BASE}/react/react-original.png`,
-  tsx: `${DEVICON_CDN_BASE}/react/react-original.png`,
-  python: `${DEVICON_CDN_BASE}/python/python-original.png`,
-  rust: `${DEVICON_CDN_BASE}/rust/rust-original.png`,
-  go: `${DEVICON_CDN_BASE}/go/go-original.png`,
-  cpp: `${DEVICON_CDN_BASE}/cplusplus/cplusplus-original.png`,
-  c: `${DEVICON_CDN_BASE}/c/c-original.png`,
-  csharp: `${DEVICON_CDN_BASE}/csharp/csharp-original.png`,
-  html: `${DEVICON_CDN_BASE}/html5/html5-original.png`,
-  css: `${DEVICON_CDN_BASE}/css3/css3-original.png`,
-  scss: `${DEVICON_CDN_BASE}/sass/sass-original.png`,
-  vue: `${DEVICON_CDN_BASE}/vuejs/vuejs-original.png`,
-  svelte: `${DEVICON_CDN_BASE}/svelte/svelte-original.png`,
-  json: `${DEVICON_CDN_BASE}/json/json-original.png`,
-  markdown: `${DEVICON_CDN_BASE}/markdown/markdown-original.png`,
-  php: `${DEVICON_CDN_BASE}/php/php-original.png`,
-  ruby: `${DEVICON_CDN_BASE}/ruby/ruby-original.png`,
-  java: `${DEVICON_CDN_BASE}/java/java-original.png`,
-  kotlin: `${DEVICON_CDN_BASE}/kotlin/kotlin-original.png`,
-  swift: `${DEVICON_CDN_BASE}/swift/swift-original.png`,
-  dart: `${DEVICON_CDN_BASE}/dart/dart-original.png`,
-  lua: `${DEVICON_CDN_BASE}/lua/lua-original.png`,
-  sql: `${DEVICON_CDN_BASE}/postgresql/postgresql-original.png`,
-  shell: `${DEVICON_CDN_BASE}/bash/bash-original.png`,
-  docker: `${DEVICON_CDN_BASE}/docker/docker-original.png`,
-  yaml: `${DEVICON_CDN_BASE}/yaml/yaml-original.png`
-};
+var VSCORD_CDN_BASE = "https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons";
+var KNOWN_CDN_ICONS = /* @__PURE__ */ new Set([
+  "agda",
+  "ahk",
+  "android",
+  "angular",
+  "ansible",
+  "antigravity",
+  "applescript",
+  "appveyor",
+  "arduino",
+  "asciidoc",
+  "asp",
+  "assembly",
+  "astro",
+  "astroconfig",
+  "autoit",
+  "babel",
+  "bat",
+  "bazel",
+  "bower",
+  "brainfuck",
+  "c",
+  "c3",
+  "cargo",
+  "circleci",
+  "clojure",
+  "cmake",
+  "cobol",
+  "coffee",
+  "cpp",
+  "crystal",
+  "csharp",
+  "css",
+  "cuda",
+  "cursor",
+  "cython",
+  "d",
+  "dart",
+  "debugging",
+  "delphi",
+  "docker",
+  "editorconfig",
+  "ejs",
+  "elixir",
+  "elm",
+  "env",
+  "erlang",
+  "eslint",
+  "firebase",
+  "fortran",
+  "fsharp",
+  "gatsbyjs",
+  "git",
+  "gitlab",
+  "gleam",
+  "glsl",
+  "go",
+  "godot",
+  "gradle",
+  "graphql",
+  "groovy",
+  "gulp",
+  "handlebars",
+  "haskell",
+  "haxe",
+  "html",
+  "http",
+  "idle",
+  "jar",
+  "java",
+  "jest",
+  "jinja",
+  "js",
+  "json",
+  "jsx",
+  "julia",
+  "jupyter",
+  "kivy",
+  "kotlin",
+  "laravel",
+  "less",
+  "lisp",
+  "log",
+  "lua",
+  "makefile",
+  "markdown",
+  "matlab",
+  "metal",
+  "mojo",
+  "nim",
+  "nix",
+  "nodemon",
+  "npm",
+  "objective-c",
+  "ocaml",
+  "odin",
+  "pascal",
+  "perl",
+  "php",
+  "plantuml",
+  "postcss",
+  "powershell",
+  "prettier",
+  "prisma",
+  "processing",
+  "pug",
+  "purescript",
+  "python",
+  "qml",
+  "r",
+  "racket",
+  "razor",
+  "renpy",
+  "ruby",
+  "rust",
+  "scala",
+  "scss",
+  "shell",
+  "solidity",
+  "sql",
+  "svelte",
+  "svg",
+  "swift",
+  "tailwind",
+  "terraform",
+  "tex",
+  "text",
+  "toml",
+  "ts",
+  "tsx",
+  "turbo",
+  "twig",
+  "typst",
+  "v",
+  "vala",
+  "vb",
+  "vercel",
+  "vue",
+  "wasm",
+  "webpack",
+  "xml",
+  "yaml",
+  "yarn",
+  "zig"
+]);
 var ActivityDetector = class {
   constructor(rpcManager, configHandler) {
     this.rpcManager = rpcManager;
@@ -7418,7 +7533,7 @@ var ActivityDetector = class {
           startTimestamp,
           largeImageKey: this.resolvePresenceImage(editorInfo.icon, true),
           largeImageText: editorInfo.label,
-          smallImageKey: "idle",
+          smallImageKey: this.resolvePresenceImage("idle", false),
           smallImageText: "Idle",
           instance: false
         });
@@ -7439,7 +7554,7 @@ var ActivityDetector = class {
         startTimestamp,
         largeImageKey: this.resolvePresenceImage(editorInfo.icon, true),
         largeImageText: editorInfo.label,
-        smallImageKey: "debugging",
+        smallImageKey: this.resolvePresenceImage("debugging", false),
         smallImageText: `Debugging: ${debugSession.name}`,
         instance: false
       });
@@ -7502,7 +7617,7 @@ var ActivityDetector = class {
         startTimestamp,
         largeImageKey: this.resolvePresenceImage(editorInfo.icon, true),
         largeImageText: editorInfo.label,
-        smallImageKey: "idle",
+        smallImageKey: this.resolvePresenceImage("idle", false),
         smallImageText: "Idle",
         instance: false
       });
@@ -7521,20 +7636,28 @@ var ActivityDetector = class {
     });
   }
   resolvePresenceImage(key, isEditor = false) {
+    if (!key) {
+      return isEditor ? DISCODE_OFFICIAL_ICON : `${VSCORD_CDN_BASE}/text.png`;
+    }
     if (this.configHandler.customClientId) {
+      return key;
+    }
+    if (key.startsWith("http://") || key.startsWith("https://")) {
       return key;
     }
     if (isEditor || key === "vscode" || key === "vscodium" || key === "vscode-insiders") {
       return DISCODE_OFFICIAL_ICON;
     }
-    if (LANGUAGE_CDN_ICONS[key]) {
-      return LANGUAGE_CDN_ICONS[key];
+    const normalized = key.toLowerCase();
+    if (KNOWN_CDN_ICONS.has(normalized)) {
+      return `${VSCORD_CDN_BASE}/${normalized}.png`;
     }
-    return DISCODE_OFFICIAL_ICON;
+    return `${VSCORD_CDN_BASE}/text.png`;
   }
   resolveFileIcon(languageId, ext, fileName) {
     const lowerName = fileName.toLowerCase();
-    const lowerExt = ext.toLowerCase();
+    const lowerExt = ext.toLowerCase().replace(/^\./, "");
+    const lowerLang = (languageId || "").toLowerCase();
     if (lowerName === "dockerfile" || lowerName.startsWith("dockerfile.")) {
       return { iconKey: "docker", label: "Docker" };
     }
@@ -7543,6 +7666,12 @@ var ActivityDetector = class {
     }
     if (lowerName.includes(".git") || lowerName === ".gitignore") {
       return { iconKey: "git", label: "Git" };
+    }
+    if (lowerName === "cargo.toml") {
+      return { iconKey: "cargo", label: "Cargo Manifest" };
+    }
+    if (lowerName.startsWith("readme")) {
+      return { iconKey: "markdown", label: "Markdown" };
     }
     const map = {
       typescript: { iconKey: "ts", label: "TypeScript" },
@@ -7563,6 +7692,7 @@ var ActivityDetector = class {
       vue: { iconKey: "vue", label: "Vue" },
       svelte: { iconKey: "svelte", label: "Svelte" },
       json: { iconKey: "json", label: "JSON" },
+      jsonc: { iconKey: "json", label: "JSON with Comments" },
       markdown: { iconKey: "markdown", label: "Markdown" },
       php: { iconKey: "php", label: "PHP" },
       ruby: { iconKey: "ruby", label: "Ruby" },
@@ -7577,16 +7707,54 @@ var ActivityDetector = class {
       dockerfile: { iconKey: "docker", label: "Docker" },
       yaml: { iconKey: "yaml", label: "YAML" },
       xml: { iconKey: "xml", label: "XML" },
-      // Extension mappings
-      js: { iconKey: "js", label: "JavaScript" },
-      jsx: { iconKey: "jsx", label: "React (JavaScript)" },
+      toml: { iconKey: "toml", label: "TOML" },
+      graphql: { iconKey: "graphql", label: "GraphQL" },
+      astro: { iconKey: "astro", label: "Astro" },
+      prisma: { iconKey: "prisma", label: "Prisma" },
+      solidity: { iconKey: "solidity", label: "Solidity" },
+      bat: { iconKey: "bat", label: "Batch" },
+      // Extension mappings & aliases
       ts: { iconKey: "ts", label: "TypeScript" },
       tsx: { iconKey: "tsx", label: "React (TypeScript)" },
+      js: { iconKey: "js", label: "JavaScript" },
+      mjs: { iconKey: "js", label: "JavaScript" },
+      cjs: { iconKey: "js", label: "JavaScript" },
+      jsx: { iconKey: "jsx", label: "React (JavaScript)" },
+      py: { iconKey: "python", label: "Python" },
+      pyw: { iconKey: "python", label: "Python" },
+      rs: { iconKey: "rust", label: "Rust" },
+      cc: { iconKey: "cpp", label: "C++" },
+      cxx: { iconKey: "cpp", label: "C++" },
+      hpp: { iconKey: "cpp", label: "C++ Header" },
+      h: { iconKey: "c", label: "C Header" },
+      cs: { iconKey: "csharp", label: "C#" },
+      htm: { iconKey: "html", label: "HTML" },
+      md: { iconKey: "markdown", label: "Markdown" },
+      rb: { iconKey: "ruby", label: "Ruby" },
+      kt: { iconKey: "kotlin", label: "Kotlin" },
+      kts: { iconKey: "kotlin", label: "Kotlin Script" },
       sh: { iconKey: "shell", label: "Shell" },
       bash: { iconKey: "shell", label: "Bash" },
-      zsh: { iconKey: "shell", label: "Zsh" }
+      zsh: { iconKey: "shell", label: "Zsh" },
+      ps1: { iconKey: "powershell", label: "PowerShell" },
+      psm1: { iconKey: "powershell", label: "PowerShell Module" },
+      yml: { iconKey: "yaml", label: "YAML" },
+      svg: { iconKey: "svg", label: "SVG" },
+      env: { iconKey: "env", label: "Environment" },
+      cmd: { iconKey: "bat", label: "Command Script" },
+      txt: { iconKey: "text", label: "Plain Text" },
+      log: { iconKey: "log", label: "Log" }
     };
-    return map[languageId] || map[lowerExt] || { iconKey: "text", label: languageId || "File" };
+    if (map[lowerLang]) {
+      return map[lowerLang];
+    }
+    if (map[lowerExt]) {
+      return map[lowerExt];
+    }
+    if (KNOWN_CDN_ICONS.has(lowerExt)) {
+      return { iconKey: lowerExt, label: lowerExt.toUpperCase() };
+    }
+    return { iconKey: "text", label: languageId || "File" };
   }
   getEditorAppInfo() {
     const appName = vscode.env.appName;
@@ -7625,6 +7793,8 @@ var ActivityDetector = class {
     const fileName = doc ? path.basename(doc.fileName) : "App.tsx";
     const ext = path.extname(fileName).replace(".", "") || "tsx";
     const fileInfo = this.resolveFileIcon(doc?.languageId || "typescriptreact", ext, fileName);
+    const isFileIconLarge = this.configHandler.appearance.largeImageStyle === "fileIcon";
+    const iconUrl = isFileIconLarge ? this.resolvePresenceImage(fileInfo.iconKey, false) : DISCODE_OFFICIAL_ICON;
     return {
       fileName,
       language: fileInfo.label,
@@ -7632,6 +7802,7 @@ var ActivityDetector = class {
       gitBranch: this.getGitBranch() || "main",
       lineCount: String(doc?.lineCount || 128),
       currentLine: String((vscode.window.activeTextEditor?.selection.active.line || 0) + 1),
+      iconUrl,
       startTimestamp: this.resolveStartTimestamp()
     };
   }
@@ -8954,7 +9125,7 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = "") {
                 </div>
                 <div>
                     <span class="brand-name">DisCode</span>
-                    <span class="brand-version">v1.3.1</span>
+                    <span class="brand-version">v1.3.2</span>
                     <span class="brand-tagline">Discord Rich Presence</span>
                 </div>
             </div>
@@ -9318,6 +9489,7 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = "") {
                             <div class="discord-act-header">PLAYING A GAME</div>
                             <div class="discord-act-main">
                                 <div class="discord-icon-container" id="previewAppIconWrap">
+                                    <img id="previewLargeIconImg" class="discord-large-icon-img" src="" alt="Icon" style="display:none; width: 100%; height: 100%; object-fit: contain; padding: 6px; box-sizing: border-box; border-radius: 8px;" />
                                     <span id="previewBadgeIcon" class="discord-large-badge">TS</span>
                                     <div class="discord-small-badge" title="DisCode Official">
                                         ${ICONS.discodeLogo}
@@ -9392,9 +9564,31 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = "") {
             const previewFooterClient = document.getElementById('previewFooterClient');
             const previewFooterUserId = document.getElementById('previewFooterUserId');
             const previewBadgeIcon = document.getElementById('previewBadgeIcon');
+            const previewLargeIconImg = document.getElementById('previewLargeIconImg');
             const topStatusDot = document.getElementById('topStatusDot');
             const topConnStatus = document.getElementById('topConnStatus');
             const kyotoRelayStatus = document.getElementById('kyotoRelayStatus');
+
+            if (previewLargeIconImg) {
+                previewLargeIconImg.onerror = function() {
+                    previewLargeIconImg.style.display = 'none';
+                    if (previewBadgeIcon) previewBadgeIcon.style.display = 'inline';
+                };
+            }
+
+            function updatePreviewIcon(iconUrl, lang) {
+                if (previewLargeIconImg && iconUrl) {
+                    previewLargeIconImg.src = iconUrl;
+                    previewLargeIconImg.style.display = 'block';
+                    if (previewBadgeIcon) previewBadgeIcon.style.display = 'none';
+                } else {
+                    if (previewLargeIconImg) previewLargeIconImg.style.display = 'none';
+                    if (previewBadgeIcon) {
+                        previewBadgeIcon.style.display = 'inline';
+                        previewBadgeIcon.textContent = getLangBadge(lang);
+                    }
+                }
+            }
 
             let currentDiscordUser = null;
             let realStartTimestamp = null;
@@ -9403,12 +9597,14 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = "") {
                 workspace: 'Pemrograman Web I',
                 gitBranch: 'main',
                 lineCount: '128 lines',
-                language: 'JavaScript'
+                language: 'JavaScript',
+                iconUrl: ''
             };
 
             function getLangBadge(lang) {
                 if (!lang) return 'JS';
                 const l = lang.toLowerCase();
+                if (l.includes('dart')) return 'DART';
                 if (l.includes('react') && (l.includes('type') || l.includes('tsx'))) return 'TSX';
                 if (l.includes('react') || l.includes('jsx')) return 'JSX';
                 if (l.includes('typescript')) return 'TS';
@@ -9419,7 +9615,7 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = "") {
                 if (l.includes('css')) return 'CSS';
                 if (l.includes('json')) return 'JSON';
                 if (l.includes('shell') || l.includes('bash')) return 'SH';
-                return lang.substring(0, 3).toUpperCase();
+                return lang.substring(0, 4).toUpperCase();
             }
 
             function formatTime(totalSec) {
@@ -9695,9 +9891,7 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = "") {
 
                     if (message.previewData) {
                         livePreviewData = Object.assign(livePreviewData, message.previewData);
-                        if (livePreviewData.language) {
-                            previewBadgeIcon.textContent = getLangBadge(livePreviewData.language);
-                        }
+                        updatePreviewIcon(livePreviewData.iconUrl, livePreviewData.language);
                         if (livePreviewData.startTimestamp) {
                             realStartTimestamp = livePreviewData.startTimestamp;
                         }
@@ -9716,9 +9910,7 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = "") {
                     }
                     if (message.previewData) {
                         livePreviewData = Object.assign(livePreviewData, message.previewData);
-                        if (livePreviewData.language) {
-                            previewBadgeIcon.textContent = getLangBadge(livePreviewData.language);
-                        }
+                        updatePreviewIcon(livePreviewData.iconUrl, livePreviewData.language);
                         if (livePreviewData.startTimestamp) {
                             realStartTimestamp = livePreviewData.startTimestamp;
                         }

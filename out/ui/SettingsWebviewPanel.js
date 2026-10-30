@@ -195,7 +195,16 @@ class SettingsWebviewPanel {
         this.disposables = [];
     }
     getHtmlContent() {
-        return (0, settingsModalWebviewHtml_1.getSettingsModalWebviewHtml)();
+        const nonce = this.getNonce();
+        return (0, settingsModalWebviewHtml_1.getSettingsModalWebviewHtml)(nonce, this.panel.webview.cspSource);
+    }
+    getNonce() {
+        let text = '';
+        const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        for (let i = 0; i < 32; i++) {
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+        }
+        return text;
     }
 }
 exports.SettingsWebviewPanel = SettingsWebviewPanel;

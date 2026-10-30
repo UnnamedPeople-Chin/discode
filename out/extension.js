@@ -7407,7 +7407,7 @@ var ActivityDetector = class {
         startTimestamp,
         largeImageKey: editorInfo.icon,
         largeImageText: editorInfo.label,
-        smallImageKey: "debug",
+        smallImageKey: "debugging",
         smallImageText: `Debugging: ${debugSession.name}`,
         instance: false
       });
@@ -7499,10 +7499,10 @@ var ActivityDetector = class {
       return { iconKey: "git", label: "Git" };
     }
     const map = {
-      typescript: { iconKey: "typescript", label: "TypeScript" },
-      typescriptreact: { iconKey: "react", label: "React (TypeScript)" },
-      javascript: { iconKey: "javascript", label: "JavaScript" },
-      javascriptreact: { iconKey: "react", label: "React (JavaScript)" },
+      typescript: { iconKey: "ts", label: "TypeScript" },
+      typescriptreact: { iconKey: "tsx", label: "React (TypeScript)" },
+      javascript: { iconKey: "js", label: "JavaScript" },
+      javascriptreact: { iconKey: "jsx", label: "React (JavaScript)" },
       python: { iconKey: "python", label: "Python" },
       rust: { iconKey: "rust", label: "Rust" },
       go: { iconKey: "go", label: "Go" },
@@ -7511,9 +7511,9 @@ var ActivityDetector = class {
       csharp: { iconKey: "csharp", label: "C#" },
       html: { iconKey: "html", label: "HTML" },
       css: { iconKey: "css", label: "CSS" },
-      scss: { iconKey: "sass", label: "SCSS" },
-      sass: { iconKey: "sass", label: "Sass" },
-      less: { iconKey: "css", label: "Less" },
+      scss: { iconKey: "scss", label: "SCSS" },
+      sass: { iconKey: "scss", label: "Sass" },
+      less: { iconKey: "less", label: "Less" },
       vue: { iconKey: "vue", label: "Vue" },
       svelte: { iconKey: "svelte", label: "Svelte" },
       json: { iconKey: "json", label: "JSON" },
@@ -7526,11 +7526,19 @@ var ActivityDetector = class {
       dart: { iconKey: "dart", label: "Dart" },
       lua: { iconKey: "lua", label: "Lua" },
       sql: { iconKey: "sql", label: "SQL" },
-      shellscript: { iconKey: "bash", label: "Shell" },
+      shellscript: { iconKey: "shell", label: "Shell" },
       powershell: { iconKey: "powershell", label: "PowerShell" },
       dockerfile: { iconKey: "docker", label: "Docker" },
       yaml: { iconKey: "yaml", label: "YAML" },
-      xml: { iconKey: "xml", label: "XML" }
+      xml: { iconKey: "xml", label: "XML" },
+      // Extension mappings
+      js: { iconKey: "js", label: "JavaScript" },
+      jsx: { iconKey: "jsx", label: "React (JavaScript)" },
+      ts: { iconKey: "ts", label: "TypeScript" },
+      tsx: { iconKey: "tsx", label: "React (TypeScript)" },
+      sh: { iconKey: "shell", label: "Shell" },
+      bash: { iconKey: "shell", label: "Bash" },
+      zsh: { iconKey: "shell", label: "Zsh" }
     };
     return map[languageId] || map[lowerExt] || { iconKey: "text", label: languageId || "File" };
   }

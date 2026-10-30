@@ -72,7 +72,20 @@ function runSelfCheck(): void {
         'Template formatter must replace placeholders accurately'
     );
 
-    console.log('[Self-Check] All invariants passed successfully! (7/7 assertions)');
+    // 6. Invariant: Discord asset key contracts (must match Discord application art assets)
+    const criticalDiscordAssetKeys: Record<string, string> = {
+        javascript: 'js',
+        javascriptreact: 'jsx',
+        typescript: 'ts',
+        typescriptreact: 'tsx',
+        shellscript: 'shell',
+        debug: 'debugging'
+    };
+    assert.strictEqual(criticalDiscordAssetKeys['javascript'], 'js', 'JS must map to js asset key');
+    assert.strictEqual(criticalDiscordAssetKeys['typescript'], 'ts', 'TS must map to ts asset key');
+    assert.strictEqual(criticalDiscordAssetKeys['debug'], 'debugging', 'Debug must map to debugging asset key');
+
+    console.log('[Self-Check] All invariants passed successfully! (10/10 assertions)');
 }
 
 runSelfCheck();

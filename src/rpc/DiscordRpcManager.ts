@@ -36,6 +36,7 @@ export class DiscordRpcManager implements vscode.Disposable {
     private lastSendTimestamp = 0;
     private pendingPayload: ActivityPayload | null = null;
     private throttleTimer: NodeJS.Timeout | null = null;
+    private lastSentPayload: ActivityPayload | null = null;
 
     private readonly events = new EventEmitter();
     private outputChannel?: { appendLine: (msg: string) => void };
@@ -195,6 +196,7 @@ export class DiscordRpcManager implements vscode.Disposable {
         this.isConnecting = false;
         this.discordUser = null;
         this.currentUserInfo = null;
+        this.lastSentPayload = null;
         this.emitState();
         this.cleanupClient();
         this.scheduleReconnect();
@@ -213,7 +215,41 @@ export class DiscordRpcManager implements vscode.Disposable {
         }, delay);
     }
 
+    public arePayloadsEqual(a: ActivityPayload | null, b: ActivityPayload | null): boolean {
+        if (!a && !b) return true;
+        if (!a || !b) return false;
+        if (a.details !== b.details) return false;
+        if (a.state !== b.state) return false;
+        if (a.startTimestamp !== b.startTimestamp) return false;
+        if (a.endTimestamp !== b.endTimestamp) return false;
+        if (a.largeImageKey !== b.largeImageKey) return false;
+        if (a.largeImageText !== b.largeImageText) return false;
+        if (a.smallImageKey !== b.smallImageKey) return false;
+        if (a.smallImageText !== b.smallImageText) return false;
+        if (a.instance !== b.instance) return false;
+
+        const aButtons = (a as unknown as { buttons?: Array<{ label: string; url: string }> }).buttons;
+        const bButtons = (b as unknown as { buttons?: Array<{ label: string; url: string }> }).buttons;
+        const aLen = aButtons?.length || 0;
+        const bLen = bButtons?.length || 0;
+        if (aLen !== bLen) return false;
+        if (aButtons && bButtons) {
+            for (let i = 0; i < aLen; i++) {
+                if (aButtons[i].label !== bButtons[i].label || aButtons[i].url !== bButtons[i].url) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     public updateActivity(payload: ActivityPayload): void {
+        if (this.arePayloadsEqual(this.lastSentPayload, payload)) {
+            // Deduplicate: same activity is already live on Discord
+            this.pendingPayload = null;
+            return;
+        }
+
         this.pendingPayload = payload;
 
         if (!this.isConnected || !this.client) {
@@ -257,11 +293,16 @@ export class DiscordRpcManager implements vscode.Disposable {
 
     private async executeSend(payload: ActivityPayload): Promise<void> {
         if (!this.client || !this.isConnected) return;
+        if (this.arePayloadsEqual(this.lastSentPayload, payload)) {
+            this.pendingPayload = null;
+            return;
+        }
 
         try {
             this.log(`Sending Activity to Discord -> Details: "${payload.details || ''}" | State: "${payload.state || ''}" | Icon: "${payload.largeImageKey || ''}"`);
             await this.client.setActivity(payload);
             this.lastSendTimestamp = Date.now();
+            this.lastSentPayload = { ...payload };
             this.pendingPayload = null;
         } catch (err) {
             this.log(`Failed to set activity: ${String(err)}`);
@@ -271,6 +312,7 @@ export class DiscordRpcManager implements vscode.Disposable {
 
     public async clearActivity(): Promise<void> {
         this.pendingPayload = null;
+        this.lastSentPayload = null;
         if (this.throttleTimer) {
             clearTimeout(this.throttleTimer);
             this.throttleTimer = null;
@@ -307,6 +349,7 @@ export class DiscordRpcManager implements vscode.Disposable {
     private disconnectAndClean(): void {
         this.isConnected = false;
         this.isConnecting = false;
+        this.lastSentPayload = null;
         this.clearReconnectTimer();
         if (this.throttleTimer) {
             clearTimeout(this.throttleTimer);

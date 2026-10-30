@@ -85,7 +85,32 @@ function runSelfCheck(): void {
     assert.strictEqual(criticalDiscordAssetKeys['typescript'], 'ts', 'TS must map to ts asset key');
     assert.strictEqual(criticalDiscordAssetKeys['debug'], 'debugging', 'Debug must map to debugging asset key');
 
-    console.log('[Self-Check] All invariants passed successfully! (10/10 assertions)');
+    // 7. Invariant: Payload deduplication
+    const rpcManager = DiscordRpcManager.getInstance('test-app');
+    assert.strictEqual(
+        rpcManager.arePayloadsEqual(
+            { details: 'Coding', state: 'Active' },
+            { details: 'Coding', state: 'Active' }
+        ),
+        true,
+        'Identical payloads must be considered equal'
+    );
+    assert.strictEqual(
+        rpcManager.arePayloadsEqual(
+            { details: 'Coding', state: 'Active' },
+            { details: 'Idling', state: 'Active' }
+        ),
+        false,
+        'Different details must not be equal'
+    );
+    assert.strictEqual(
+        rpcManager.arePayloadsEqual(null, null),
+        true,
+        'Both null payloads must be equal'
+    );
+    rpcManager.dispose();
+
+    console.log('[Self-Check] All invariants passed successfully! (13/13 assertions)');
 }
 
 runSelfCheck();

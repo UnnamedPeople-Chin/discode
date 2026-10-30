@@ -17,6 +17,7 @@ class DiscordRpcManager {
     lastSendTimestamp = 0;
     pendingPayload = null;
     throttleTimer = null;
+    lastSentPayload = null;
     events = new events_1.EventEmitter();
     outputChannel;
     constructor(clientId) {
@@ -146,6 +147,7 @@ class DiscordRpcManager {
         this.isConnecting = false;
         this.discordUser = null;
         this.currentUserInfo = null;
+        this.lastSentPayload = null;
         this.emitState();
         this.cleanupClient();
         this.scheduleReconnect();
@@ -160,7 +162,50 @@ class DiscordRpcManager {
             this.connect();
         }, delay);
     }
+    arePayloadsEqual(a, b) {
+        if (!a && !b)
+            return true;
+        if (!a || !b)
+            return false;
+        if (a.details !== b.details)
+            return false;
+        if (a.state !== b.state)
+            return false;
+        if (a.startTimestamp !== b.startTimestamp)
+            return false;
+        if (a.endTimestamp !== b.endTimestamp)
+            return false;
+        if (a.largeImageKey !== b.largeImageKey)
+            return false;
+        if (a.largeImageText !== b.largeImageText)
+            return false;
+        if (a.smallImageKey !== b.smallImageKey)
+            return false;
+        if (a.smallImageText !== b.smallImageText)
+            return false;
+        if (a.instance !== b.instance)
+            return false;
+        const aButtons = a.buttons;
+        const bButtons = b.buttons;
+        const aLen = aButtons?.length || 0;
+        const bLen = bButtons?.length || 0;
+        if (aLen !== bLen)
+            return false;
+        if (aButtons && bButtons) {
+            for (let i = 0; i < aLen; i++) {
+                if (aButtons[i].label !== bButtons[i].label || aButtons[i].url !== bButtons[i].url) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
     updateActivity(payload) {
+        if (this.arePayloadsEqual(this.lastSentPayload, payload)) {
+            // Deduplicate: same activity is already live on Discord
+            this.pendingPayload = null;
+            return;
+        }
         this.pendingPayload = payload;
         if (!this.isConnected || !this.client) {
             this.log(`Activity queued (offline): ${payload.details || 'No details'} | ${payload.state || 'No state'}`);
@@ -201,10 +246,15 @@ class DiscordRpcManager {
     async executeSend(payload) {
         if (!this.client || !this.isConnected)
             return;
+        if (this.arePayloadsEqual(this.lastSentPayload, payload)) {
+            this.pendingPayload = null;
+            return;
+        }
         try {
             this.log(`Sending Activity to Discord -> Details: "${payload.details || ''}" | State: "${payload.state || ''}" | Icon: "${payload.largeImageKey || ''}"`);
             await this.client.setActivity(payload);
             this.lastSendTimestamp = Date.now();
+            this.lastSentPayload = { ...payload };
             this.pendingPayload = null;
         }
         catch (err) {
@@ -214,6 +264,7 @@ class DiscordRpcManager {
     }
     async clearActivity() {
         this.pendingPayload = null;
+        this.lastSentPayload = null;
         if (this.throttleTimer) {
             clearTimeout(this.throttleTimer);
             this.throttleTimer = null;
@@ -248,6 +299,7 @@ class DiscordRpcManager {
     disconnectAndClean() {
         this.isConnected = false;
         this.isConnecting = false;
+        this.lastSentPayload = null;
         this.clearReconnectTimer();
         if (this.throttleTimer) {
             clearTimeout(this.throttleTimer);

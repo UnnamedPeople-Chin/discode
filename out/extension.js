@@ -7243,6 +7243,38 @@ var vscode4 = __toESM(require("vscode"));
 // src/activity/ActivityDetector.ts
 var path = __toESM(require("path"));
 var vscode = __toESM(require("vscode"));
+var DISCODE_OFFICIAL_ICON = "https://cdn.discordapp.com/app-icons/1565769356619554887/281d28bf86d74667d7721cc09711f77f.png";
+var DEVICON_CDN_BASE = "https://cdn.jsdelivr.net/gh/devicons/devicon/icons";
+var LANGUAGE_CDN_ICONS = {
+  js: `${DEVICON_CDN_BASE}/javascript/javascript-original.png`,
+  ts: `${DEVICON_CDN_BASE}/typescript/typescript-original.png`,
+  jsx: `${DEVICON_CDN_BASE}/react/react-original.png`,
+  tsx: `${DEVICON_CDN_BASE}/react/react-original.png`,
+  python: `${DEVICON_CDN_BASE}/python/python-original.png`,
+  rust: `${DEVICON_CDN_BASE}/rust/rust-original.png`,
+  go: `${DEVICON_CDN_BASE}/go/go-original.png`,
+  cpp: `${DEVICON_CDN_BASE}/cplusplus/cplusplus-original.png`,
+  c: `${DEVICON_CDN_BASE}/c/c-original.png`,
+  csharp: `${DEVICON_CDN_BASE}/csharp/csharp-original.png`,
+  html: `${DEVICON_CDN_BASE}/html5/html5-original.png`,
+  css: `${DEVICON_CDN_BASE}/css3/css3-original.png`,
+  scss: `${DEVICON_CDN_BASE}/sass/sass-original.png`,
+  vue: `${DEVICON_CDN_BASE}/vuejs/vuejs-original.png`,
+  svelte: `${DEVICON_CDN_BASE}/svelte/svelte-original.png`,
+  json: `${DEVICON_CDN_BASE}/json/json-original.png`,
+  markdown: `${DEVICON_CDN_BASE}/markdown/markdown-original.png`,
+  php: `${DEVICON_CDN_BASE}/php/php-original.png`,
+  ruby: `${DEVICON_CDN_BASE}/ruby/ruby-original.png`,
+  java: `${DEVICON_CDN_BASE}/java/java-original.png`,
+  kotlin: `${DEVICON_CDN_BASE}/kotlin/kotlin-original.png`,
+  swift: `${DEVICON_CDN_BASE}/swift/swift-original.png`,
+  dart: `${DEVICON_CDN_BASE}/dart/dart-original.png`,
+  lua: `${DEVICON_CDN_BASE}/lua/lua-original.png`,
+  sql: `${DEVICON_CDN_BASE}/postgresql/postgresql-original.png`,
+  shell: `${DEVICON_CDN_BASE}/bash/bash-original.png`,
+  docker: `${DEVICON_CDN_BASE}/docker/docker-original.png`,
+  yaml: `${DEVICON_CDN_BASE}/yaml/yaml-original.png`
+};
 var ActivityDetector = class {
   constructor(rpcManager, configHandler) {
     this.rpcManager = rpcManager;
@@ -7384,7 +7416,7 @@ var ActivityDetector = class {
           details: details2 || void 0,
           state: state2 || void 0,
           startTimestamp,
-          largeImageKey: editorInfo.icon,
+          largeImageKey: this.resolvePresenceImage(editorInfo.icon, true),
           largeImageText: editorInfo.label,
           smallImageKey: "idle",
           smallImageText: "Idle",
@@ -7405,7 +7437,7 @@ var ActivityDetector = class {
         details: details2 || void 0,
         state: state2 || void 0,
         startTimestamp,
-        largeImageKey: editorInfo.icon,
+        largeImageKey: this.resolvePresenceImage(editorInfo.icon, true),
         largeImageText: editorInfo.label,
         smallImageKey: "debugging",
         smallImageText: `Debugging: ${debugSession.name}`,
@@ -7431,9 +7463,11 @@ var ActivityDetector = class {
       const details2 = this.formatTemplate(this.configHandler.formatting.detailsEditing, templateVars2);
       const state2 = this.formatTemplate(this.configHandler.formatting.stateEditing, templateVars2);
       const isFileIconLarge = this.configHandler.appearance.largeImageStyle === "fileIcon";
-      const largeKey = isFileIconLarge ? fileInfo.iconKey : editorInfo.icon;
+      const rawLarge = isFileIconLarge ? fileInfo.iconKey : editorInfo.icon;
+      const rawSmall = isFileIconLarge ? editorInfo.icon : fileInfo.iconKey;
+      const largeKey = this.resolvePresenceImage(rawLarge, !isFileIconLarge);
+      const smallKey = this.resolvePresenceImage(rawSmall, isFileIconLarge);
       const largeText = isFileIconLarge ? fileInfo.label : editorInfo.label;
-      const smallKey = isFileIconLarge ? editorInfo.icon : fileInfo.iconKey;
       const smallText = isFileIconLarge ? editorInfo.label : fileInfo.label;
       const payload = {
         details: details2 || void 0,
@@ -7466,7 +7500,7 @@ var ActivityDetector = class {
         details: details2 || void 0,
         state: state2 || void 0,
         startTimestamp,
-        largeImageKey: editorInfo.icon,
+        largeImageKey: this.resolvePresenceImage(editorInfo.icon, true),
         largeImageText: editorInfo.label,
         smallImageKey: "idle",
         smallImageText: "Idle",
@@ -7481,10 +7515,22 @@ var ActivityDetector = class {
       details: details || void 0,
       state: state || void 0,
       startTimestamp,
-      largeImageKey: editorInfo.icon,
+      largeImageKey: this.resolvePresenceImage(editorInfo.icon, true),
       largeImageText: editorInfo.label,
       instance: false
     });
+  }
+  resolvePresenceImage(key, isEditor = false) {
+    if (this.configHandler.customClientId) {
+      return key;
+    }
+    if (isEditor || key === "vscode" || key === "vscodium" || key === "vscode-insiders") {
+      return DISCODE_OFFICIAL_ICON;
+    }
+    if (LANGUAGE_CDN_ICONS[key]) {
+      return LANGUAGE_CDN_ICONS[key];
+    }
+    return DISCODE_OFFICIAL_ICON;
   }
   resolveFileIcon(languageId, ext, fileName) {
     const lowerName = fileName.toLowerCase();
@@ -7751,6 +7797,7 @@ var DiscordRpcManager = class _DiscordRpcManager {
   lastSendTimestamp = 0;
   pendingPayload = null;
   throttleTimer = null;
+  lastSentPayload = null;
   events = new import_events.EventEmitter();
   outputChannel;
   constructor(clientId) {
@@ -7870,6 +7917,7 @@ var DiscordRpcManager = class _DiscordRpcManager {
     this.isConnecting = false;
     this.discordUser = null;
     this.currentUserInfo = null;
+    this.lastSentPayload = null;
     this.emitState();
     this.cleanupClient();
     this.scheduleReconnect();
@@ -7884,7 +7932,37 @@ var DiscordRpcManager = class _DiscordRpcManager {
       this.connect();
     }, delay);
   }
+  arePayloadsEqual(a, b) {
+    if (!a && !b) return true;
+    if (!a || !b) return false;
+    if (a.details !== b.details) return false;
+    if (a.state !== b.state) return false;
+    if (a.startTimestamp !== b.startTimestamp) return false;
+    if (a.endTimestamp !== b.endTimestamp) return false;
+    if (a.largeImageKey !== b.largeImageKey) return false;
+    if (a.largeImageText !== b.largeImageText) return false;
+    if (a.smallImageKey !== b.smallImageKey) return false;
+    if (a.smallImageText !== b.smallImageText) return false;
+    if (a.instance !== b.instance) return false;
+    const aButtons = a.buttons;
+    const bButtons = b.buttons;
+    const aLen = aButtons?.length || 0;
+    const bLen = bButtons?.length || 0;
+    if (aLen !== bLen) return false;
+    if (aButtons && bButtons) {
+      for (let i = 0; i < aLen; i++) {
+        if (aButtons[i].label !== bButtons[i].label || aButtons[i].url !== bButtons[i].url) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
   updateActivity(payload) {
+    if (this.arePayloadsEqual(this.lastSentPayload, payload)) {
+      this.pendingPayload = null;
+      return;
+    }
     this.pendingPayload = payload;
     if (!this.isConnected || !this.client) {
       this.log(`Activity queued (offline): ${payload.details || "No details"} | ${payload.state || "No state"}`);
@@ -7923,10 +8001,15 @@ var DiscordRpcManager = class _DiscordRpcManager {
   }
   async executeSend(payload) {
     if (!this.client || !this.isConnected) return;
+    if (this.arePayloadsEqual(this.lastSentPayload, payload)) {
+      this.pendingPayload = null;
+      return;
+    }
     try {
       this.log(`Sending Activity to Discord -> Details: "${payload.details || ""}" | State: "${payload.state || ""}" | Icon: "${payload.largeImageKey || ""}"`);
       await this.client.setActivity(payload);
       this.lastSendTimestamp = Date.now();
+      this.lastSentPayload = { ...payload };
       this.pendingPayload = null;
     } catch (err) {
       this.log(`Failed to set activity: ${String(err)}`);
@@ -7935,6 +8018,7 @@ var DiscordRpcManager = class _DiscordRpcManager {
   }
   async clearActivity() {
     this.pendingPayload = null;
+    this.lastSentPayload = null;
     if (this.throttleTimer) {
       clearTimeout(this.throttleTimer);
       this.throttleTimer = null;
@@ -7965,6 +8049,7 @@ var DiscordRpcManager = class _DiscordRpcManager {
   disconnectAndClean() {
     this.isConnected = false;
     this.isConnecting = false;
+    this.lastSentPayload = null;
     this.clearReconnectTimer();
     if (this.throttleTimer) {
       clearTimeout(this.throttleTimer);
@@ -7999,6 +8084,21 @@ var DiscordRpcManager = class _DiscordRpcManager {
 var vscode3 = __toESM(require("vscode"));
 
 // src/ui/settingsModalWebviewHtml.ts
+var ICONS = {
+  terminal: `<svg class="inline-block flex-shrink-0" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>`,
+  schedule: `<svg class="inline-block flex-shrink-0" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`,
+  palette: `<svg class="inline-block flex-shrink-0" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.563-2.512 5.563-5.563C22 6.5 17.5 2 12 2z"></path></svg>`,
+  shield: `<svg class="inline-block flex-shrink-0" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>`,
+  memory: `<svg class="inline-block flex-shrink-0" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>`,
+  hub: `<svg class="inline-block flex-shrink-0" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"></circle><circle cx="6" cy="19" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="12" y1="8" x2="12" y2="12"></line><path d="M6 16v-1a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3v1"></path></svg>`,
+  close: `<svg class="inline-block flex-shrink-0" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`,
+  bolt: `<svg class="inline-block flex-shrink-0" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`,
+  check: `<svg class="inline-block flex-shrink-0" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`,
+  visibility: `<svg class="inline-block flex-shrink-0" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`,
+  code: `<svg class="inline-block flex-shrink-0" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>`,
+  verified: `<svg class="inline-block flex-shrink-0" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 2.8 3.7-.4 1.2 3.5 3.3 1.7-.8 3.6 2.1 3-2.1 3 .8 3.6-3.3 1.7-1.2 3.5-3.7-.4L12 22l-2.4-2.8-3.7.4-1.2-3.5-3.3-1.7.8-3.6-2.1-3 2.1-3-.8-3.6 3.3-1.7 1.2-3.5 3.7.4L12 2zm-1.5 13.5l6-6-1.4-1.4-4.6 4.6-2.1-2.1-1.4 1.4 3.5 3.5z"></path></svg>`,
+  edit: `<svg class="inline-block flex-shrink-0" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>`
+};
 function getSettingsModalWebviewHtml(nonce, cspSource) {
   return `<!DOCTYPE html>
 <html class="dark" lang="en">
@@ -8007,8 +8107,7 @@ function getSettingsModalWebviewHtml(nonce, cspSource) {
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>DisCode Settings</title>
     <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${cspSource} https: data:; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src ${cspSource} https://fonts.gstatic.com; script-src 'nonce-${nonce}';"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+        <link href="https://fonts.googleapis.com" rel="preconnect"/>
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,600;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
     <style>
@@ -8020,20 +8119,6 @@ html, body { margin:0; padding:0; height:100%; overflow:hidden; }
 ::-webkit-scrollbar-thumb:hover { background: #d70028; }
 .font-headline-xl, .font-headline-lg, .font-headline-sm { font-family: "Noto Serif", serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
 .font-code-inline, .font-body-md, .font-label-md, .font-label-sm { font-family: "Space Mono", monospace, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas; }
-.material-symbols-outlined {
-    font-family: 'Material Symbols Outlined' !important;
-    font-weight: normal;
-    font-style: normal;
-    line-height: 1;
-    letter-spacing: normal;
-    text-transform: none;
-    display: inline-block;
-    white-space: nowrap;
-    word-wrap: normal;
-    direction: ltr;
-    -webkit-font-feature-settings: 'liga';
-    -webkit-font-smoothing: antialiased;
-}
 *,:after,:before{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/*! tailwindcss v3.4.19 | MIT License | https://tailwindcss.com*/*,:after,:before{box-sizing:border-box;border:0 solid #e5e7eb}:after,:before{--tw-content:""}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;-o-tab-size:4;tab-size:4;font-family:ui-sans-serif,system-ui,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0}fieldset,legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::-moz-placeholder,textarea::-moz-placeholder{opacity:1;color:#9ca3af}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border-width:0}.visible{visibility:visible}.absolute{position:absolute}.relative{position:relative}.inset-0{inset:0}.-bottom-1{bottom:-.25rem}.-right-1{right:-.25rem}.bottom-0{bottom:0}.left-0{left:0}.right-0{right:0}.right-2{right:.5rem}.right-3{right:.75rem}.top-0{top:0}.top-2{top:.5rem}.z-50{z-index:50}.m-3{margin:.75rem}.-mt-8{margin-top:-2rem}.mb-2{margin-bottom:.5rem}.mb-2.5{margin-bottom:.625rem}.mb-5{margin-bottom:1.25rem}.mt-0.5{margin-top:.125rem}.mt-1{margin-top:.25rem}.mt-1.5{margin-top:.375rem}.mt-2{margin-top:.5rem}.mt-auto{margin-top:auto}.block{display:block}.flex{display:flex}.inline-flex{display:inline-flex}.grid{display:grid}.hidden{display:none}.h-1{height:.25rem}.h-1.5{height:.375rem}.h-10{height:2.5rem}.h-11{height:2.75rem}.h-14{height:3.5rem}.h-2{height:.5rem}.h-2.5{height:.625rem}.h-24{height:6rem}.h-3{height:.75rem}.h-3.5{height:.875rem}.h-4{height:1rem}.h-5{height:1.25rem}.h-8{height:2rem}.h-full{height:100%}.h-screen{height:100vh}.w-1.5{width:.375rem}.w-10{width:2.5rem}.w-11{width:2.75rem}.w-14{width:3.5rem}.w-2{width:.5rem}.w-2.5{width:.625rem}.w-3.5{width:.875rem}.w-3/4{width:75%}.w-4{width:1rem}.w-60{width:15rem}.w-8{width:2rem}.w-80{width:20rem}.w-9{width:2.25rem}.w-full{width:100%}.min-w-0{min-width:0}.max-w-[170px]{max-width:170px}.flex-1{flex:1 1 0%}.flex-shrink-0{flex-shrink:0}@keyframes ping{75%,to{transform:scale(2);opacity:0}}.animate-ping{animation:ping 1s cubic-bezier(0,0,.2,1) infinite}@keyframes pulse{50%{opacity:.5}}.animate-pulse{animation:pulse 2s cubic-bezier(.4,0,.6,1) infinite}.cursor-pointer{cursor:pointer}.select-none{-webkit-user-select:none;-moz-user-select:none;user-select:none}.grid-cols-1{grid-template-columns:repeat(1,minmax(0,1fr))}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.items-start{align-items:flex-start}.items-end{align-items:flex-end}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-0.5{gap:.125rem}.gap-1{gap:.25rem}.gap-1.5{gap:.375rem}.gap-2{gap:.5rem}.gap-2.5{gap:.625rem}.gap-3{gap:.75rem}.gap-4{gap:1rem}.gap-5{gap:1.25rem}.overflow-hidden{overflow:hidden}.overflow-y-auto{overflow-y:auto}.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rounded-full{border-radius:9999px}.border{border-width:1px}.border-4{border-width:4px}.border-b{border-bottom-width:1px}.border-l{border-left-width:1px}.border-l-2{border-left-width:2px}.border-r{border-right-width:1px}.border-t{border-top-width:1px}.border-[#18191c]{--tw-border-opacity:1;border-color:rgb(24 25 28/var(--tw-border-opacity,1))}.border-outline-variant/10{border-color:rgba(68,70,79,.1)}.border-outline-variant/20{border-color:rgba(68,70,79,.2)}.border-outline-variant/30{border-color:rgba(68,70,79,.3)}.border-outline-variant/40{border-color:rgba(68,70,79,.4)}.border-primary{--tw-border-opacity:1;border-color:rgb(255 180 171/var(--tw-border-opacity,1))}.border-transparent{border-color:transparent}.border-white/5{border-color:hsla(0,0%,100%,.05)}.bg-[#111214]{--tw-bg-opacity:1;background-color:rgb(17 18 20/var(--tw-bg-opacity,1))}.bg-[#18191c]{--tw-bg-opacity:1;background-color:rgb(24 25 28/var(--tw-bg-opacity,1))}.bg-[#1e1f22]{--tw-bg-opacity:1;background-color:rgb(30 31 34/var(--tw-bg-opacity,1))}.bg-[#23a55a]{--tw-bg-opacity:1;background-color:rgb(35 165 90/var(--tw-bg-opacity,1))}.bg-[#2b2d31]{--tw-bg-opacity:1;background-color:rgb(43 45 49/var(--tw-bg-opacity,1))}.bg-[#f0b232]{--tw-bg-opacity:1;background-color:rgb(240 178 50/var(--tw-bg-opacity,1))}.bg-primary{--tw-bg-opacity:1;background-color:rgb(255 180 171/var(--tw-bg-opacity,1))}.bg-secondary-container{--tw-bg-opacity:1;background-color:rgb(215 0 40/var(--tw-bg-opacity,1))}.bg-surface{--tw-bg-opacity:1;background-color:rgb(18 19 22/var(--tw-bg-opacity,1))}.bg-surface-bright{--tw-bg-opacity:1;background-color:rgb(56 57 60/var(--tw-bg-opacity,1))}.bg-surface-container{--tw-bg-opacity:1;background-color:rgb(31 31 35/var(--tw-bg-opacity,1))}.bg-surface-container-high{--tw-bg-opacity:1;background-color:rgb(41 42 45/var(--tw-bg-opacity,1))}.bg-surface-container-highest{--tw-bg-opacity:1;background-color:rgb(52 53 56/var(--tw-bg-opacity,1))}.bg-surface-container-low{--tw-bg-opacity:1;background-color:rgb(27 27 31/var(--tw-bg-opacity,1))}.bg-surface-container-low/40{background-color:rgba(27,27,31,.4)}.bg-surface-container-lowest{--tw-bg-opacity:1;background-color:rgb(13 14 17/var(--tw-bg-opacity,1))}.bg-surface-container-lowest/60{background-color:rgba(13,14,17,.6)}.bg-surface-container-lowest/80{background-color:rgba(13,14,17,.8)}.bg-transparent{background-color:transparent}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255/var(--tw-bg-opacity,1))}.bg-gradient-to-t{background-image:linear-gradient(to top,var(--tw-gradient-stops))}.from-[#18191c]{--tw-gradient-from:#18191c var(--tw-gradient-from-position);--tw-gradient-to:rgba(24,25,28,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.via-surface-container-lowest/60{--tw-gradient-to:rgba(13,14,17,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),rgba(13,14,17,.6) var(--tw-gradient-via-position),var(--tw-gradient-to)}.to-transparent{--tw-gradient-to:transparent var(--tw-gradient-to-position)}.object-cover{-o-object-fit:cover;object-fit:cover}.p-0.5{padding:.125rem}.p-1{padding:.25rem}.p-2{padding:.5rem}.p-2.5{padding:.625rem}.p-3{padding:.75rem}.p-4{padding:1rem}.px-0.5{padding-left:.125rem;padding-right:.125rem}.px-1.5{padding-left:.375rem;padding-right:.375rem}.px-2{padding-left:.5rem;padding-right:.5rem}.px-2.5{padding-left:.625rem;padding-right:.625rem}.px-3{padding-left:.75rem;padding-right:.75rem}.px-4{padding-left:1rem;padding-right:1rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.py-0.5{padding-top:.125rem;padding-bottom:.125rem}.py-1{padding-top:.25rem;padding-bottom:.25rem}.py-1.5{padding-top:.375rem;padding-bottom:.375rem}.py-2{padding-top:.5rem;padding-bottom:.5rem}.py-2.5{padding-top:.625rem;padding-bottom:.625rem}.py-5{padding-top:1.25rem;padding-bottom:1.25rem}.pb-2{padding-bottom:.5rem}.pb-3{padding-bottom:.75rem}.pb-4{padding-bottom:1rem}.pt-0{padding-top:0}.pt-1{padding-top:.25rem}.pt-3{padding-top:.75rem}.pt-4{padding-top:1rem}.text-left{text-align:left}.text-center{text-align:center}.font-mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace}.text-[10px]{font-size:10px}.text-[11px]{font-size:11px}.text-[12px]{font-size:12px}.text-[13px]{font-size:13px}.text-[15px]{font-size:15px}.text-[16px]{font-size:16px}.text-[18px]{font-size:18px}.text-[9px]{font-size:9px}.text-base{font-size:1rem;line-height:1.5rem}.text-sm{font-size:.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:.75rem;line-height:1rem}.font-bold{font-weight:700}.font-semibold{font-weight:600}.uppercase{text-transform:uppercase}.leading-none{line-height:1}.leading-snug{line-height:1.375}.leading-tight{line-height:1.25}.tracking-tighter{letter-spacing:-.05em}.tracking-wider{letter-spacing:.05em}.tracking-widest{letter-spacing:.1em}.text-[#007acc]{--tw-text-opacity:1;color:rgb(0 122 204/var(--tw-text-opacity,1))}.text-[#5865f2]{--tw-text-opacity:1;color:rgb(88 101 242/var(--tw-text-opacity,1))}.text-amber-400{--tw-text-opacity:1;color:rgb(251 191 36/var(--tw-text-opacity,1))}.text-emerald-400{--tw-text-opacity:1;color:rgb(52 211 153/var(--tw-text-opacity,1))}.text-on-surface{--tw-text-opacity:1;color:rgb(227 226 230/var(--tw-text-opacity,1))}.text-on-surface-variant{--tw-text-opacity:1;color:rgb(233 188 183/var(--tw-text-opacity,1))}.text-outline{--tw-text-opacity:1;color:rgb(140 142 152/var(--tw-text-opacity,1))}.text-outline-variant{--tw-text-opacity:1;color:rgb(68 70 79/var(--tw-text-opacity,1))}.text-primary{--tw-text-opacity:1;color:rgb(255 180 171/var(--tw-text-opacity,1))}.text-secondary-container{--tw-text-opacity:1;color:rgb(215 0 40/var(--tw-text-opacity,1))}.text-tertiary{--tw-text-opacity:1;color:rgb(140 142 152/var(--tw-text-opacity,1))}.text-tertiary-container{--tw-text-opacity:1;color:rgb(165 167 178/var(--tw-text-opacity,1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255/var(--tw-text-opacity,1))}.antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.opacity-0{opacity:0}.shadow{--tw-shadow:0 1px 3px 0 rgba(0,0,0,.1),0 1px 2px -1px rgba(0,0,0,.1);--tw-shadow-colored:0 1px 3px 0 var(--tw-shadow-color),0 1px 2px -1px var(--tw-shadow-color)}.shadow,.shadow-2xl{box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgba(0,0,0,.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color)}.shadow-inner{--tw-shadow:inset 0 2px 4px 0 rgba(0,0,0,.05);--tw-shadow-colored:inset 0 2px 4px 0 var(--tw-shadow-color)}.shadow-inner,.shadow-lg{box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color),0 4px 6px -4px var(--tw-shadow-color)}.shadow-md{--tw-shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1);--tw-shadow-colored:0 4px 6px -1px var(--tw-shadow-color),0 2px 4px -2px var(--tw-shadow-color)}.shadow-md,.shadow-sm{box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-sm{--tw-shadow:0 1px 2px 0 rgba(0,0,0,.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color)}.shadow-xl{--tw-shadow:0 20px 25px -5px rgba(0,0,0,.1),0 8px 10px -6px rgba(0,0,0,.1);--tw-shadow-colored:0 20px 25px -5px var(--tw-shadow-color),0 8px 10px -6px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.outline{outline-style:solid}.ring-2{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow,0 0 #0000)}.ring-[#18191c]{--tw-ring-opacity:1;--tw-ring-color:rgb(24 25 28/var(--tw-ring-opacity,1))}.transition-colors{transition-property:color,background-color,border-color,text-decoration-color,fill,stroke;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s}.transition-opacity{transition-property:opacity;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s}.transition-transform{transition-property:transform;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s}.hover:bg-[#35373c]:hover{--tw-bg-opacity:1;background-color:rgb(53 55 60/var(--tw-bg-opacity,1))}.hover:bg-primary-container:hover{--tw-bg-opacity:1;background-color:rgb(255 84 75/var(--tw-bg-opacity,1))}.hover:bg-secondary-container:hover{--tw-bg-opacity:1;background-color:rgb(215 0 40/var(--tw-bg-opacity,1))}.hover:bg-surface-bright:hover{--tw-bg-opacity:1;background-color:rgb(56 57 60/var(--tw-bg-opacity,1))}.hover:bg-surface-container:hover{--tw-bg-opacity:1;background-color:rgb(31 31 35/var(--tw-bg-opacity,1))}.hover:bg-surface-container-high:hover{--tw-bg-opacity:1;background-color:rgb(41 42 45/var(--tw-bg-opacity,1))}.hover:text-on-surface:hover{--tw-text-opacity:1;color:rgb(227 226 230/var(--tw-text-opacity,1))}.hover:text-primary:hover{--tw-text-opacity:1;color:rgb(255 180 171/var(--tw-text-opacity,1))}.hover:text-white:hover{--tw-text-opacity:1;color:rgb(255 255 255/var(--tw-text-opacity,1))}.focus:border-secondary-container:focus{--tw-border-opacity:1;border-color:rgb(215 0 40/var(--tw-border-opacity,1))}.focus:outline-none:focus{outline:2px solid transparent;outline-offset:2px}.active:translate-y-0.5:active{--tw-translate-y:0.125rem}.active:translate-y-0.5:active,.peer:checked~.peer-checked:translate-x-4{transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.peer:checked~.peer-checked:translate-x-4{--tw-translate-x:1rem}.peer:checked~.peer-checked:translate-x-5{--tw-translate-x:1.25rem;transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.peer:checked~.peer-checked:bg-secondary-container{--tw-bg-opacity:1;background-color:rgb(215 0 40/var(--tw-bg-opacity,1))}@media (min-width:640px){.sm:inline{display:inline}}@media (min-width:768px){.md:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}}@media (min-width:1280px){.xl:w-96{width:24rem}}
     </style>
 </head>
@@ -8049,7 +8134,7 @@ html, body { margin:0; padding:0; height:100%; overflow:hidden; }
             </div>
             <span class="font-code-inline text-outline-variant">|</span>
             <div class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-primary text-[15px]">terminal</span>
+                <span class="text-primary text-[15px] flex items-center">${ICONS.terminal}</span>
                 <span class="font-label-sm uppercase tracking-wider text-on-surface font-bold">SYS.EXT // DISCODE_BRIDGE</span>
                 <span class="font-label-sm text-tertiary-container hidden sm:inline">(0x8F91)</span>
             </div>
@@ -8060,7 +8145,7 @@ html, body { margin:0; padding:0; height:100%; overflow:hidden; }
                 <span class="text-primary font-bold" id="topConnStatus">RPC: CONNECTED</span>
             </div>
             <button id="topBtnClose" aria-label="Close modal" class="text-outline hover:text-primary transition-colors flex items-center justify-center p-1">
-                <span class="material-symbols-outlined text-[18px]">close</span>
+                ${ICONS.close}
             </button>
         </div>
     </header>
@@ -8089,7 +8174,7 @@ html, body { margin:0; padding:0; height:100%; overflow:hidden; }
                 <nav class="flex flex-col py-2 gap-0.5" id="navTabs">
                     <button class="nav-tab-btn w-full text-left px-3 py-2 bg-surface-container-high text-on-surface font-label-md flex items-center justify-between border-l-2 border-primary shadow-sm" data-section="activity" type="button">
                         <span class="flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary text-[15px]">terminal</span>
+                            <span class="text-primary text-[15px] flex items-center">${ICONS.terminal}</span>
                             01. ACTIVITY
                         </span>
                         <span class="w-1.5 h-1.5 bg-primary"></span>
@@ -8097,7 +8182,7 @@ html, body { margin:0; padding:0; height:100%; overflow:hidden; }
 
                     <button class="nav-tab-btn w-full text-left px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md transition-colors flex items-center justify-between border-l-2 border-transparent" data-section="timer" type="button">
                         <span class="flex items-center gap-2">
-                            <span class="material-symbols-outlined text-outline text-[15px]">schedule</span>
+                            <span class="text-outline text-[15px] flex items-center">${ICONS.schedule}</span>
                             02. TIMERS
                         </span>
                         <span class="font-code-inline text-[9px] text-outline">OFFSET</span>
@@ -8105,7 +8190,7 @@ html, body { margin:0; padding:0; height:100%; overflow:hidden; }
 
                     <button class="nav-tab-btn w-full text-left px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md transition-colors flex items-center justify-between border-l-2 border-transparent" data-section="appearance" type="button">
                         <span class="flex items-center gap-2">
-                            <span class="material-symbols-outlined text-outline text-[15px]">palette</span>
+                            <span class="text-outline text-[15px] flex items-center">${ICONS.palette}</span>
                             03. APPEARANCE
                         </span>
                         <span class="font-code-inline text-[9px] text-outline">UI</span>
@@ -8113,7 +8198,7 @@ html, body { margin:0; padding:0; height:100%; overflow:hidden; }
 
                     <button class="nav-tab-btn w-full text-left px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md transition-colors flex items-center justify-between border-l-2 border-transparent" data-section="privacy" type="button">
                         <span class="flex items-center gap-2">
-                            <span class="material-symbols-outlined text-outline text-[15px]">shield</span>
+                            <span class="text-outline text-[15px] flex items-center">${ICONS.shield}</span>
                             04. PRIVACY
                         </span>
                         <span class="font-code-inline text-[9px] text-outline">SEC</span>
@@ -8121,7 +8206,7 @@ html, body { margin:0; padding:0; height:100%; overflow:hidden; }
 
                     <button class="nav-tab-btn w-full text-left px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md transition-colors flex items-center justify-between border-l-2 border-transparent" data-section="behavior" type="button">
                         <span class="flex items-center gap-2">
-                            <span class="material-symbols-outlined text-outline text-[15px]">memory</span>
+                            <span class="text-outline text-[15px] flex items-center">${ICONS.memory}</span>
                             05. BEHAVIOR
                         </span>
                         <span class="font-code-inline text-[9px] text-outline">DAE</span>
@@ -8129,7 +8214,7 @@ html, body { margin:0; padding:0; height:100%; overflow:hidden; }
 
                     <button class="nav-tab-btn w-full text-left px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md transition-colors flex items-center justify-between border-l-2 border-transparent" data-section="general" type="button">
                         <span class="flex items-center gap-2">
-                            <span class="material-symbols-outlined text-outline text-[15px]">hub</span>
+                            <span class="text-outline text-[15px] flex items-center">${ICONS.hub}</span>
                             06. CONNECTION
                         </span>
                         <span class="font-code-inline text-[9px] text-outline">IPC</span>
@@ -8325,7 +8410,7 @@ html, body { margin:0; padding:0; height:100%; overflow:hidden; }
                         </div>
                         <div class="mt-2">
                             <button class="w-full bg-secondary-container hover:bg-primary-container text-white font-code-inline text-xs py-2.5 flex items-center justify-center gap-2 uppercase tracking-wider font-bold shadow-lg transition-transform active:translate-y-0.5" id="btnApplyTimer" type="button">
-                                <span class="material-symbols-outlined text-[16px]">bolt</span>
+                                <span class="text-[16px] flex items-center">${ICONS.bolt}</span>
                                 <span>Apply Timer Instantly (Bypass Buffer)</span>
                             </button>
                         </div>
@@ -8503,7 +8588,7 @@ html, body { margin:0; padding:0; height:100%; overflow:hidden; }
                 <div class="flex items-center gap-3">
                     <span class="font-code-inline text-[11px] text-primary opacity-0 transition-opacity" id="saveStatus">CHANGES_COMMITTED</span>
                     <button class="px-6 py-2.5 bg-secondary-container hover:bg-primary-container text-white font-code-inline text-xs uppercase tracking-widest flex items-center gap-2 shadow-lg transition-transform active:translate-y-0.5 font-bold" id="btnSave" type="button">
-                        <span class="material-symbols-outlined text-[16px]">check</span>
+                        <span class="text-[16px] flex items-center">${ICONS.check}</span>
                         <span>Save Changes</span>
                     </button>
                 </div>
@@ -8517,7 +8602,7 @@ html, body { margin:0; padding:0; height:100%; overflow:hidden; }
                 <!-- Section Badge & Sync Indicator -->
                 <div class="flex items-center justify-between pb-2 bg-surface-container-lowest/60 p-2.5 border border-outline-variant/30">
                     <div class="flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary text-[16px]">visibility</span>
+                        <span class="text-primary text-[16px] flex items-center">${ICONS.visibility}</span>
                         <span class="font-label-md text-[11px] text-on-surface tracking-wider font-bold">LIVE PREVIEW / \u30D7\u30EC\u30D3\u30E5\u30FC</span>
                     </div>
                     <div class="flex items-center gap-1.5 bg-surface-container px-2 py-0.5">
@@ -8558,9 +8643,7 @@ html, body { margin:0; padding:0; height:100%; overflow:hidden; }
                                     <div id="previewStatusDot" class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-[#23a55a] rounded-full ring-2 ring-[#18191c]"></div>
                                 </div>
                                 <div class="flex items-center gap-1 bg-[#111214] px-1.5 py-0.5">
-                                    <span class="material-symbols-outlined text-primary text-[12px]">code</span>
-                                    <span class="material-symbols-outlined text-[#5865f2] text-[12px]">bolt</span>
-                                    <span class="material-symbols-outlined text-secondary-container text-[12px]">verified</span>
+                                    <span class="text-primary text-[12px] flex items-center" title="Developer">${ICONS.code}</span><span class="text-[#5865f2] text-[12px] flex items-center" title="Nitro / Boost">${ICONS.bolt}</span><span class="text-secondary-container text-[12px] flex items-center" title="Verified Presence">${ICONS.verified}</span>
                                 </div>
                             </div>
 
@@ -8586,15 +8669,14 @@ html, body { margin:0; padding:0; height:100%; overflow:hidden; }
                                             <span class="font-code-inline text-primary font-bold" id="previewBadgeIcon">TS</span>
                                         </div>
                                         <div class="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-secondary-container flex items-center justify-center text-white shadow-sm">
-                                            <span class="material-symbols-outlined text-[9px]">edit</span>
+                                            ${ICONS.edit}
                                         </div>
                                     </div>
 
                                     <!-- Strings -->
                                     <div class="flex flex-col min-w-0 flex-1 leading-snug">
                                         <span class="font-headline-sm text-xs font-bold text-on-surface truncate">
-                                            Visual Studio Code
-                                        </span>
+                                            DisCode</span>
                                         <span class="font-body-md text-[11px] text-on-surface-variant truncate mt-0.5" id="previewLine1">
                                             Editing index.tsx
                                         </span>
@@ -8602,7 +8684,7 @@ html, body { margin:0; padding:0; height:100%; overflow:hidden; }
                                             In DisCode-Core (main*)
                                         </span>
                                         <div class="flex items-center gap-1 mt-1 text-tertiary-container font-code-inline text-[10px]" id="previewTimerRow">
-                                            <span class="material-symbols-outlined text-[11px] text-primary">schedule</span>
+                                            <span class="text-primary text-[12px] flex items-center">${ICONS.schedule}</span>
                                             <span id="previewTimerDigits">00:00:00 elapsed</span>
                                         </div>
                                     </div>

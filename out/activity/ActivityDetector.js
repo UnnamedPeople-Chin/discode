@@ -36,6 +36,38 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ActivityDetector = void 0;
 const path = __importStar(require("path"));
 const vscode = __importStar(require("vscode"));
+const DISCODE_OFFICIAL_ICON = 'https://cdn.discordapp.com/app-icons/1565769356619554887/281d28bf86d74667d7721cc09711f77f.png';
+const DEVICON_CDN_BASE = 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons';
+const LANGUAGE_CDN_ICONS = {
+    js: `${DEVICON_CDN_BASE}/javascript/javascript-original.png`,
+    ts: `${DEVICON_CDN_BASE}/typescript/typescript-original.png`,
+    jsx: `${DEVICON_CDN_BASE}/react/react-original.png`,
+    tsx: `${DEVICON_CDN_BASE}/react/react-original.png`,
+    python: `${DEVICON_CDN_BASE}/python/python-original.png`,
+    rust: `${DEVICON_CDN_BASE}/rust/rust-original.png`,
+    go: `${DEVICON_CDN_BASE}/go/go-original.png`,
+    cpp: `${DEVICON_CDN_BASE}/cplusplus/cplusplus-original.png`,
+    c: `${DEVICON_CDN_BASE}/c/c-original.png`,
+    csharp: `${DEVICON_CDN_BASE}/csharp/csharp-original.png`,
+    html: `${DEVICON_CDN_BASE}/html5/html5-original.png`,
+    css: `${DEVICON_CDN_BASE}/css3/css3-original.png`,
+    scss: `${DEVICON_CDN_BASE}/sass/sass-original.png`,
+    vue: `${DEVICON_CDN_BASE}/vuejs/vuejs-original.png`,
+    svelte: `${DEVICON_CDN_BASE}/svelte/svelte-original.png`,
+    json: `${DEVICON_CDN_BASE}/json/json-original.png`,
+    markdown: `${DEVICON_CDN_BASE}/markdown/markdown-original.png`,
+    php: `${DEVICON_CDN_BASE}/php/php-original.png`,
+    ruby: `${DEVICON_CDN_BASE}/ruby/ruby-original.png`,
+    java: `${DEVICON_CDN_BASE}/java/java-original.png`,
+    kotlin: `${DEVICON_CDN_BASE}/kotlin/kotlin-original.png`,
+    swift: `${DEVICON_CDN_BASE}/swift/swift-original.png`,
+    dart: `${DEVICON_CDN_BASE}/dart/dart-original.png`,
+    lua: `${DEVICON_CDN_BASE}/lua/lua-original.png`,
+    sql: `${DEVICON_CDN_BASE}/postgresql/postgresql-original.png`,
+    shell: `${DEVICON_CDN_BASE}/bash/bash-original.png`,
+    docker: `${DEVICON_CDN_BASE}/docker/docker-original.png`,
+    yaml: `${DEVICON_CDN_BASE}/yaml/yaml-original.png`
+};
 class ActivityDetector {
     rpcManager;
     configHandler;
@@ -173,7 +205,7 @@ class ActivityDetector {
                     details: details || undefined,
                     state: state || undefined,
                     startTimestamp,
-                    largeImageKey: editorInfo.icon,
+                    largeImageKey: this.resolvePresenceImage(editorInfo.icon, true),
                     largeImageText: editorInfo.label,
                     smallImageKey: 'idle',
                     smallImageText: 'Idle',
@@ -195,7 +227,7 @@ class ActivityDetector {
                 details: details || undefined,
                 state: state || undefined,
                 startTimestamp,
-                largeImageKey: editorInfo.icon,
+                largeImageKey: this.resolvePresenceImage(editorInfo.icon, true),
                 largeImageText: editorInfo.label,
                 smallImageKey: 'debugging',
                 smallImageText: `Debugging: ${debugSession.name}`,
@@ -222,9 +254,11 @@ class ActivityDetector {
             const details = this.formatTemplate(this.configHandler.formatting.detailsEditing, templateVars);
             const state = this.formatTemplate(this.configHandler.formatting.stateEditing, templateVars);
             const isFileIconLarge = this.configHandler.appearance.largeImageStyle === 'fileIcon';
-            const largeKey = isFileIconLarge ? fileInfo.iconKey : editorInfo.icon;
+            const rawLarge = isFileIconLarge ? fileInfo.iconKey : editorInfo.icon;
+            const rawSmall = isFileIconLarge ? editorInfo.icon : fileInfo.iconKey;
+            const largeKey = this.resolvePresenceImage(rawLarge, !isFileIconLarge);
+            const smallKey = this.resolvePresenceImage(rawSmall, isFileIconLarge);
             const largeText = isFileIconLarge ? fileInfo.label : editorInfo.label;
-            const smallKey = isFileIconLarge ? editorInfo.icon : fileInfo.iconKey;
             const smallText = isFileIconLarge ? editorInfo.label : fileInfo.label;
             const payload = {
                 details: details || undefined,
@@ -258,7 +292,7 @@ class ActivityDetector {
                 details: details || undefined,
                 state: state || undefined,
                 startTimestamp,
-                largeImageKey: editorInfo.icon,
+                largeImageKey: this.resolvePresenceImage(editorInfo.icon, true),
                 largeImageText: editorInfo.label,
                 smallImageKey: 'idle',
                 smallImageText: 'Idle',
@@ -273,10 +307,22 @@ class ActivityDetector {
             details: details || undefined,
             state: state || undefined,
             startTimestamp,
-            largeImageKey: editorInfo.icon,
+            largeImageKey: this.resolvePresenceImage(editorInfo.icon, true),
             largeImageText: editorInfo.label,
             instance: false
         });
+    }
+    resolvePresenceImage(key, isEditor = false) {
+        if (this.configHandler.customClientId) {
+            return key;
+        }
+        if (isEditor || key === 'vscode' || key === 'vscodium' || key === 'vscode-insiders') {
+            return DISCODE_OFFICIAL_ICON;
+        }
+        if (LANGUAGE_CDN_ICONS[key]) {
+            return LANGUAGE_CDN_ICONS[key];
+        }
+        return DISCODE_OFFICIAL_ICON;
     }
     resolveFileIcon(languageId, ext, fileName) {
         const lowerName = fileName.toLowerCase();

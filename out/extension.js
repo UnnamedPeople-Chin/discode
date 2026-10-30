@@ -9192,7 +9192,7 @@ var SettingsWebviewPanel = class _SettingsWebviewPanel {
 };
 
 // src/extension.ts
-var DEFAULT_CLIENT_ID = "383226320970055681";
+var DEFAULT_CLIENT_ID = "1565769356619554887";
 async function activate(context) {
   const outputChannel = vscode4.window.createOutputChannel("Discord Presence");
   context.subscriptions.push(outputChannel);

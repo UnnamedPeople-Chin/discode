@@ -4,7 +4,7 @@ import { ConfigurationHandler } from './config/ConfigurationHandler';
 import { DiscordRpcManager } from './rpc/DiscordRpcManager';
 import { SettingsWebviewPanel } from './ui/SettingsWebviewPanel';
 
-const DEFAULT_CLIENT_ID = '383226320970055681';
+const DEFAULT_CLIENT_ID = '1565769356619554887';
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
     const outputChannel = vscode.window.createOutputChannel('Discord Presence');

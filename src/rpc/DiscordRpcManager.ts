@@ -2,7 +2,10 @@ import { Client, Presence } from 'discord-rpc';
 import { EventEmitter } from 'events';
 import type * as vscode from 'vscode';
 
-export type ActivityPayload = Presence;
+export interface ActivityPayload extends Presence {
+    name?: string;
+    type?: number;
+}
 
 export interface DiscordUserInfo {
     id: string;
@@ -218,6 +221,8 @@ export class DiscordRpcManager implements vscode.Disposable {
     public arePayloadsEqual(a: ActivityPayload | null, b: ActivityPayload | null): boolean {
         if (!a && !b) return true;
         if (!a || !b) return false;
+        if (a.name !== b.name) return false;
+        if (a.type !== b.type) return false;
         if (a.details !== b.details) return false;
         if (a.state !== b.state) return false;
         if (a.startTimestamp !== b.startTimestamp) return false;
@@ -299,8 +304,43 @@ export class DiscordRpcManager implements vscode.Disposable {
         }
 
         try {
-            this.log(`Sending Activity to Discord -> Details: "${payload.details || ''}" | State: "${payload.state || ''}" | Icon: "${payload.largeImageKey || ''}"`);
-            await this.client.setActivity(payload);
+            this.log(`Sending Activity to Discord -> Name: "${payload.name || 'DisCode'}" | Type: ${payload.type ?? 0} | Details: "${payload.details || ''}" | State: "${payload.state || ''}"`);
+
+            const activity: Record<string, unknown> = {
+                state: payload.state,
+                details: payload.details,
+                instance: Boolean(payload.instance)
+            };
+            if (payload.type !== undefined) {
+                activity.type = payload.type;
+            }
+            if (payload.name) {
+                activity.name = payload.name;
+            }
+            if (payload.startTimestamp || payload.endTimestamp) {
+                activity.timestamps = {
+                    start: payload.startTimestamp,
+                    end: payload.endTimestamp
+                };
+            }
+            if (payload.largeImageKey || payload.smallImageKey) {
+                activity.assets = {
+                    large_image: payload.largeImageKey,
+                    large_text: payload.largeImageText,
+                    small_image: payload.smallImageKey,
+                    small_text: payload.smallImageText
+                };
+            }
+            const buttons = (payload as unknown as { buttons?: Array<{ label: string; url: string }> }).buttons;
+            if (buttons && buttons.length > 0) {
+                activity.buttons = buttons;
+            }
+
+            await (this.client as unknown as { request: (cmd: string, args: unknown) => Promise<unknown> }).request('SET_ACTIVITY', {
+                pid: process.pid,
+                activity
+            });
+
             this.lastSendTimestamp = Date.now();
             this.lastSentPayload = { ...payload };
             this.pendingPayload = null;

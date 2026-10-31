@@ -54,6 +54,8 @@ export class ActivityDetector implements vscode.Disposable {
             lineCount: string;
             currentLine: string;
             iconUrl?: string;
+            appName?: string;
+            activityType?: string;
             startTimestamp?: number;
         };
     }>();
@@ -175,6 +177,8 @@ export class ActivityDetector implements vscode.Disposable {
 
         const editorInfo = this.getEditorAppInfo();
         const startTimestamp = this.resolveStartTimestamp();
+        const appNameTemplate = this.configHandler.formatting.appName || 'DisCode';
+        const activityType = this.getActivityTypeNumber(this.configHandler.appearance.activityType);
 
         const dispatch = (payload: ActivityPayload) => {
             this.currentPayload = payload;
@@ -200,8 +204,11 @@ export class ActivityDetector implements vscode.Disposable {
                 const templateVars = this.buildTemplateVars(workspaceName);
                 const details = this.formatTemplate(this.configHandler.formatting.detailsIdle, templateVars);
                 const state = this.formatTemplate(this.configHandler.formatting.stateIdle, templateVars);
+                const appName = this.formatTemplate(appNameTemplate, templateVars).trim() || 'DisCode';
 
                 dispatch({
+                    name: appName,
+                    type: activityType,
                     details: details || undefined,
                     state: state || undefined,
                     startTimestamp,
@@ -224,8 +231,11 @@ export class ActivityDetector implements vscode.Disposable {
             });
             const details = this.formatTemplate(this.configHandler.formatting.detailsDebugging, templateVars);
             const state = this.formatTemplate(this.configHandler.formatting.stateDebugging, templateVars);
+            const appName = this.formatTemplate(appNameTemplate, templateVars).trim() || 'DisCode';
 
             dispatch({
+                name: appName,
+                type: activityType,
                 details: details || undefined,
                 state: state || undefined,
                 startTimestamp,
@@ -258,6 +268,7 @@ export class ActivityDetector implements vscode.Disposable {
 
             const details = this.formatTemplate(this.configHandler.formatting.detailsEditing, templateVars);
             const state = this.formatTemplate(this.configHandler.formatting.stateEditing, templateVars);
+            const appName = this.formatTemplate(appNameTemplate, templateVars).trim() || 'DisCode';
 
             const isFileIconLarge = this.configHandler.appearance.largeImageStyle === 'fileIcon';
             const rawLarge = isFileIconLarge ? fileInfo.iconKey : editorInfo.icon;
@@ -268,6 +279,8 @@ export class ActivityDetector implements vscode.Disposable {
             const smallText = isFileIconLarge ? editorInfo.label : fileInfo.label;
 
             const payload: ActivityPayload = {
+                name: appName,
+                type: activityType,
                 details: details || undefined,
                 state: state || undefined,
                 startTimestamp,
@@ -300,8 +313,11 @@ export class ActivityDetector implements vscode.Disposable {
             const templateVars = this.buildTemplateVars(workspaceName);
             const details = this.formatTemplate(this.configHandler.formatting.detailsIdle, templateVars);
             const state = this.formatTemplate(this.configHandler.formatting.stateIdle, templateVars);
+            const appName = this.formatTemplate(appNameTemplate, templateVars).trim() || 'DisCode';
 
             dispatch({
+                name: appName,
+                type: activityType,
                 details: details || undefined,
                 state: state || undefined,
                 startTimestamp,
@@ -317,8 +333,11 @@ export class ActivityDetector implements vscode.Disposable {
         const templateVars = this.buildTemplateVars(workspaceName);
         const details = this.formatTemplate(this.configHandler.formatting.detailsNoFile, templateVars);
         const state = this.formatTemplate(this.configHandler.formatting.stateNoFile, templateVars);
+        const appName = this.formatTemplate(appNameTemplate, templateVars).trim() || 'DisCode';
 
         dispatch({
+            name: appName,
+            type: activityType,
             details: details || undefined,
             state: state || undefined,
             startTimestamp,
@@ -326,6 +345,20 @@ export class ActivityDetector implements vscode.Disposable {
             largeImageText: editorInfo.label,
             instance: false
         });
+    }
+
+    public getActivityTypeNumber(type?: string): number {
+        switch (type) {
+            case 'watching':
+                return 3;
+            case 'listening':
+                return 2;
+            case 'competing':
+                return 5;
+            case 'playing':
+            default:
+                return 0;
+        }
     }
 
     public resolvePresenceImage(key: string, isEditor = false): string {
@@ -499,6 +532,8 @@ export class ActivityDetector implements vscode.Disposable {
         lineCount: string;
         currentLine: string;
         iconUrl?: string;
+        appName?: string;
+        activityType?: string;
         startTimestamp?: number;
     } {
         const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
@@ -512,6 +547,16 @@ export class ActivityDetector implements vscode.Disposable {
             ? this.resolvePresenceImage(fileInfo.iconKey, false)
             : DISCODE_OFFICIAL_ICON;
 
+        const templateVars = this.buildTemplateVars(workspaceName, {
+            fileName,
+            fileExt: ext,
+            language: fileInfo.label,
+            lineCount: String(doc?.lineCount || 128),
+            currentLine: String((vscode.window.activeTextEditor?.selection.active.line || 0) + 1)
+        });
+        const appNameTemplate = this.configHandler.formatting.appName || 'DisCode';
+        const appName = this.formatTemplate(appNameTemplate, templateVars).trim() || 'DisCode';
+
         return {
             fileName,
             language: fileInfo.label,
@@ -520,6 +565,8 @@ export class ActivityDetector implements vscode.Disposable {
             lineCount: String(doc?.lineCount || 128),
             currentLine: String((vscode.window.activeTextEditor?.selection.active.line || 0) + 1),
             iconUrl,
+            appName,
+            activityType: this.configHandler.appearance.activityType,
             startTimestamp: this.resolveStartTimestamp()
         };
     }

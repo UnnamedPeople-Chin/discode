@@ -113,6 +113,24 @@
           "description": "Tampilkan timer durasi waktu (elapsed time) koding di Discord.",
           "scope": "resource"
         },
+        "discordPresence.appearance.activityType": {
+          "type": "string",
+          "enum": [
+            "playing",
+            "watching",
+            "listening",
+            "competing"
+          ],
+          "enumDescriptions": [
+            "Tampilkan status 'Playing <Nama Aplikasi>' (Default).",
+            "Tampilkan status 'Watching <Nama Aplikasi>'.",
+            "Tampilkan status 'Listening to <Nama Aplikasi>'.",
+            "Tampilkan status 'Competing in <Nama Aplikasi>'."
+          ],
+          "default": "playing",
+          "description": "Verb/kategori aktivitas Discord (Playing, Watching, Listening to, Competing in).",
+          "scope": "resource"
+        },
         "discordPresence.behavior.whenNoFileOpen": {
           "type": "string",
           "enum": [
@@ -152,6 +170,12 @@
           "default": 300,
           "description": "Batas waktu tidak aktif (dalam detik) sebelum status beralih ke Idle.",
           "scope": "window"
+        },
+        "discordPresence.formatting.appName": {
+          "type": "string",
+          "default": "DisCode",
+          "description": "Judul nama aplikasi aktivitas yang muncul di profil Discord (misal: DisCode, Visual Studio Code, Antigravity, atau template kustom). Variabel yang didukung: {workspace}, {fileName}, {language}, {gitBranch}",
+          "scope": "resource"
         },
         "discordPresence.formatting.detailsEditing": {
           "type": "string",

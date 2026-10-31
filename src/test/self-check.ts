@@ -85,15 +85,31 @@ function runSelfCheck(): void {
     assert.strictEqual(criticalDiscordAssetKeys['typescript'], 'ts', 'TS must map to ts asset key');
     assert.strictEqual(criticalDiscordAssetKeys['debug'], 'debugging', 'Debug must map to debugging asset key');
 
-    // 7. Invariant: Payload deduplication
+    // 7. Invariant: Payload deduplication (including custom name and type)
     const rpcManager = DiscordRpcManager.getInstance('test-app');
     assert.strictEqual(
         rpcManager.arePayloadsEqual(
-            { details: 'Coding', state: 'Active' },
-            { details: 'Coding', state: 'Active' }
+            { details: 'Coding', state: 'Active', name: 'DisCode', type: 0 },
+            { details: 'Coding', state: 'Active', name: 'DisCode', type: 0 }
         ),
         true,
-        'Identical payloads must be considered equal'
+        'Identical payloads with name and type must be considered equal'
+    );
+    assert.strictEqual(
+        rpcManager.arePayloadsEqual(
+            { details: 'Coding', state: 'Active', name: 'DisCode', type: 0 },
+            { details: 'Coding', state: 'Active', name: 'Visual Studio Code', type: 0 }
+        ),
+        false,
+        'Payloads with different app name must not be equal'
+    );
+    assert.strictEqual(
+        rpcManager.arePayloadsEqual(
+            { details: 'Coding', state: 'Active', name: 'DisCode', type: 0 },
+            { details: 'Coding', state: 'Active', name: 'DisCode', type: 3 }
+        ),
+        false,
+        'Payloads with different activity type must not be equal'
     );
     assert.strictEqual(
         rpcManager.arePayloadsEqual(
@@ -110,7 +126,19 @@ function runSelfCheck(): void {
     );
     rpcManager.dispose();
 
-    // 8. Invariant: CDN PNG URL generation and icon mapping contracts
+    // 8. Invariant: Activity Type numeric mapping contracts (Discord RPC protocol)
+    const activityTypeMap: Record<string, number> = {
+        playing: 0,
+        listening: 2,
+        watching: 3,
+        competing: 5
+    };
+    assert.strictEqual(activityTypeMap['playing'], 0, 'playing activity must map to 0');
+    assert.strictEqual(activityTypeMap['listening'], 2, 'listening activity must map to 2');
+    assert.strictEqual(activityTypeMap['watching'], 3, 'watching activity must map to 3');
+    assert.strictEqual(activityTypeMap['competing'], 5, 'competing activity must map to 5');
+
+    // 9. Invariant: CDN PNG URL generation and icon mapping contracts
     const VSCORD_CDN_BASE = 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons';
     const testIcons = ['dart', 'js', 'ts', 'jsx', 'tsx', 'python', 'rust', 'idle', 'debugging', 'text'];
     for (const icon of testIcons) {
@@ -119,7 +147,7 @@ function runSelfCheck(): void {
         assert.ok(url.endsWith('.png'), `Icon URL for ${icon} must be direct PNG raster`);
     }
 
-    console.log('[Self-Check] All invariants passed successfully! (14/14 assertions)');
+    console.log('[Self-Check] All invariants passed successfully! (20/20 assertions)');
 }
 
 runSelfCheck();

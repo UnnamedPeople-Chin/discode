@@ -66,7 +66,8 @@ class ConfigurationHandler {
         };
         this._appearanceSettings = {
             largeImageStyle: config.get('appearance.largeImageStyle', 'fileIcon'),
-            showElapsedTime: config.get('appearance.showElapsedTime', true)
+            showElapsedTime: config.get('appearance.showElapsedTime', true),
+            activityType: config.get('appearance.activityType', 'playing')
         };
         this._timerSettings = {
             mode: config.get('timer.mode', 'session'),
@@ -77,6 +78,7 @@ class ConfigurationHandler {
             idleAction: config.get('behavior.idleAction', 'showIdle')
         };
         this._formattingSettings = {
+            appName: config.get('formatting.appName', 'DisCode'),
             detailsEditing: config.get('formatting.detailsEditing', 'Editing {fileName}'),
             stateEditing: config.get('formatting.stateEditing', 'Workspace: {workspace}'),
             detailsIdle: config.get('formatting.detailsIdle', 'Idling'),
@@ -128,11 +130,13 @@ class ConfigurationHandler {
             enabled: this._enabled,
             'appearance.largeImageStyle': this._appearanceSettings.largeImageStyle,
             'appearance.showElapsedTime': this._appearanceSettings.showElapsedTime,
+            'appearance.activityType': this._appearanceSettings.activityType,
             'timer.mode': this._timerSettings.mode,
             'timer.customOffsetMinutes': this._timerSettings.customOffsetMinutes,
             'behavior.whenNoFileOpen': this._behaviorSettings.whenNoFileOpen,
             'behavior.idleAction': this._behaviorSettings.idleAction,
             'idleTimeoutSeconds': this._idleTimeoutSeconds,
+            'formatting.appName': this._formattingSettings.appName,
             'formatting.detailsEditing': this._formattingSettings.detailsEditing,
             'formatting.stateEditing': this._formattingSettings.stateEditing,
             'formatting.detailsIdle': this._formattingSettings.detailsIdle,

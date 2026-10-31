@@ -11,6 +11,7 @@ export interface PresencePrivacySettings {
 export interface PresenceAppearanceSettings {
     largeImageStyle: 'fileIcon' | 'editorIcon';
     showElapsedTime: boolean;
+    activityType: 'playing' | 'watching' | 'listening' | 'competing';
 }
 
 export interface PresenceTimerSettings {
@@ -24,6 +25,7 @@ export interface PresenceBehaviorSettings {
 }
 
 export interface PresenceFormattingSettings {
+    appName: string;
     detailsEditing: string;
     stateEditing: string;
     detailsIdle: string;
@@ -71,7 +73,8 @@ export class ConfigurationHandler implements vscode.Disposable {
 
         this._appearanceSettings = {
             largeImageStyle: config.get<'fileIcon' | 'editorIcon'>('appearance.largeImageStyle', 'fileIcon'),
-            showElapsedTime: config.get<boolean>('appearance.showElapsedTime', true)
+            showElapsedTime: config.get<boolean>('appearance.showElapsedTime', true),
+            activityType: config.get<'playing' | 'watching' | 'listening' | 'competing'>('appearance.activityType', 'playing')
         };
 
         this._timerSettings = {
@@ -85,6 +88,7 @@ export class ConfigurationHandler implements vscode.Disposable {
         };
 
         this._formattingSettings = {
+            appName: config.get<string>('formatting.appName', 'DisCode'),
             detailsEditing: config.get<string>('formatting.detailsEditing', 'Editing {fileName}'),
             stateEditing: config.get<string>('formatting.stateEditing', 'Workspace: {workspace}'),
             detailsIdle: config.get<string>('formatting.detailsIdle', 'Idling'),
@@ -147,11 +151,13 @@ export class ConfigurationHandler implements vscode.Disposable {
             enabled: this._enabled,
             'appearance.largeImageStyle': this._appearanceSettings.largeImageStyle,
             'appearance.showElapsedTime': this._appearanceSettings.showElapsedTime,
+            'appearance.activityType': this._appearanceSettings.activityType,
             'timer.mode': this._timerSettings.mode,
             'timer.customOffsetMinutes': this._timerSettings.customOffsetMinutes,
             'behavior.whenNoFileOpen': this._behaviorSettings.whenNoFileOpen,
             'behavior.idleAction': this._behaviorSettings.idleAction,
             'idleTimeoutSeconds': this._idleTimeoutSeconds,
+            'formatting.appName': this._formattingSettings.appName,
             'formatting.detailsEditing': this._formattingSettings.detailsEditing,
             'formatting.stateEditing': this._formattingSettings.stateEditing,
             'formatting.detailsIdle': this._formattingSettings.detailsIdle,

@@ -7505,6 +7505,8 @@ var ActivityDetector = class {
     }
     const editorInfo = this.getEditorAppInfo();
     const startTimestamp = this.resolveStartTimestamp();
+    const appNameTemplate = this.configHandler.formatting.appName || "DisCode";
+    const activityType = this.getActivityTypeNumber(this.configHandler.appearance.activityType);
     const dispatch = (payload) => {
       this.currentPayload = payload;
       if (forceSync) {
@@ -7527,7 +7529,10 @@ var ActivityDetector = class {
         const templateVars2 = this.buildTemplateVars(workspaceName);
         const details2 = this.formatTemplate(this.configHandler.formatting.detailsIdle, templateVars2);
         const state2 = this.formatTemplate(this.configHandler.formatting.stateIdle, templateVars2);
+        const appName2 = this.formatTemplate(appNameTemplate, templateVars2).trim() || "DisCode";
         dispatch({
+          name: appName2,
+          type: activityType,
           details: details2 || void 0,
           state: state2 || void 0,
           startTimestamp,
@@ -7548,7 +7553,10 @@ var ActivityDetector = class {
       });
       const details2 = this.formatTemplate(this.configHandler.formatting.detailsDebugging, templateVars2);
       const state2 = this.formatTemplate(this.configHandler.formatting.stateDebugging, templateVars2);
+      const appName2 = this.formatTemplate(appNameTemplate, templateVars2).trim() || "DisCode";
       dispatch({
+        name: appName2,
+        type: activityType,
         details: details2 || void 0,
         state: state2 || void 0,
         startTimestamp,
@@ -7577,6 +7585,7 @@ var ActivityDetector = class {
       });
       const details2 = this.formatTemplate(this.configHandler.formatting.detailsEditing, templateVars2);
       const state2 = this.formatTemplate(this.configHandler.formatting.stateEditing, templateVars2);
+      const appName2 = this.formatTemplate(appNameTemplate, templateVars2).trim() || "DisCode";
       const isFileIconLarge = this.configHandler.appearance.largeImageStyle === "fileIcon";
       const rawLarge = isFileIconLarge ? fileInfo.iconKey : editorInfo.icon;
       const rawSmall = isFileIconLarge ? editorInfo.icon : fileInfo.iconKey;
@@ -7585,6 +7594,8 @@ var ActivityDetector = class {
       const largeText = isFileIconLarge ? fileInfo.label : editorInfo.label;
       const smallText = isFileIconLarge ? editorInfo.label : fileInfo.label;
       const payload = {
+        name: appName2,
+        type: activityType,
         details: details2 || void 0,
         state: state2 || void 0,
         startTimestamp,
@@ -7611,7 +7622,10 @@ var ActivityDetector = class {
       const templateVars2 = this.buildTemplateVars(workspaceName);
       const details2 = this.formatTemplate(this.configHandler.formatting.detailsIdle, templateVars2);
       const state2 = this.formatTemplate(this.configHandler.formatting.stateIdle, templateVars2);
+      const appName2 = this.formatTemplate(appNameTemplate, templateVars2).trim() || "DisCode";
       dispatch({
+        name: appName2,
+        type: activityType,
         details: details2 || void 0,
         state: state2 || void 0,
         startTimestamp,
@@ -7626,7 +7640,10 @@ var ActivityDetector = class {
     const templateVars = this.buildTemplateVars(workspaceName);
     const details = this.formatTemplate(this.configHandler.formatting.detailsNoFile, templateVars);
     const state = this.formatTemplate(this.configHandler.formatting.stateNoFile, templateVars);
+    const appName = this.formatTemplate(appNameTemplate, templateVars).trim() || "DisCode";
     dispatch({
+      name: appName,
+      type: activityType,
       details: details || void 0,
       state: state || void 0,
       startTimestamp,
@@ -7634,6 +7651,19 @@ var ActivityDetector = class {
       largeImageText: editorInfo.label,
       instance: false
     });
+  }
+  getActivityTypeNumber(type) {
+    switch (type) {
+      case "watching":
+        return 3;
+      case "listening":
+        return 2;
+      case "competing":
+        return 5;
+      case "playing":
+      default:
+        return 0;
+    }
   }
   resolvePresenceImage(key, isEditor = false) {
     if (!key) {
@@ -7795,6 +7825,15 @@ var ActivityDetector = class {
     const fileInfo = this.resolveFileIcon(doc?.languageId || "typescriptreact", ext, fileName);
     const isFileIconLarge = this.configHandler.appearance.largeImageStyle === "fileIcon";
     const iconUrl = isFileIconLarge ? this.resolvePresenceImage(fileInfo.iconKey, false) : DISCODE_OFFICIAL_ICON;
+    const templateVars = this.buildTemplateVars(workspaceName, {
+      fileName,
+      fileExt: ext,
+      language: fileInfo.label,
+      lineCount: String(doc?.lineCount || 128),
+      currentLine: String((vscode.window.activeTextEditor?.selection.active.line || 0) + 1)
+    });
+    const appNameTemplate = this.configHandler.formatting.appName || "DisCode";
+    const appName = this.formatTemplate(appNameTemplate, templateVars).trim() || "DisCode";
     return {
       fileName,
       language: fileInfo.label,
@@ -7803,6 +7842,8 @@ var ActivityDetector = class {
       lineCount: String(doc?.lineCount || 128),
       currentLine: String((vscode.window.activeTextEditor?.selection.active.line || 0) + 1),
       iconUrl,
+      appName,
+      activityType: this.configHandler.appearance.activityType,
       startTimestamp: this.resolveStartTimestamp()
     };
   }
@@ -7869,7 +7910,8 @@ var ConfigurationHandler = class {
     };
     this._appearanceSettings = {
       largeImageStyle: config.get("appearance.largeImageStyle", "fileIcon"),
-      showElapsedTime: config.get("appearance.showElapsedTime", true)
+      showElapsedTime: config.get("appearance.showElapsedTime", true),
+      activityType: config.get("appearance.activityType", "playing")
     };
     this._timerSettings = {
       mode: config.get("timer.mode", "session"),
@@ -7880,6 +7922,7 @@ var ConfigurationHandler = class {
       idleAction: config.get("behavior.idleAction", "showIdle")
     };
     this._formattingSettings = {
+      appName: config.get("formatting.appName", "DisCode"),
       detailsEditing: config.get("formatting.detailsEditing", "Editing {fileName}"),
       stateEditing: config.get("formatting.stateEditing", "Workspace: {workspace}"),
       detailsIdle: config.get("formatting.detailsIdle", "Idling"),
@@ -7930,11 +7973,13 @@ var ConfigurationHandler = class {
       enabled: this._enabled,
       "appearance.largeImageStyle": this._appearanceSettings.largeImageStyle,
       "appearance.showElapsedTime": this._appearanceSettings.showElapsedTime,
+      "appearance.activityType": this._appearanceSettings.activityType,
       "timer.mode": this._timerSettings.mode,
       "timer.customOffsetMinutes": this._timerSettings.customOffsetMinutes,
       "behavior.whenNoFileOpen": this._behaviorSettings.whenNoFileOpen,
       "behavior.idleAction": this._behaviorSettings.idleAction,
       "idleTimeoutSeconds": this._idleTimeoutSeconds,
+      "formatting.appName": this._formattingSettings.appName,
       "formatting.detailsEditing": this._formattingSettings.detailsEditing,
       "formatting.stateEditing": this._formattingSettings.stateEditing,
       "formatting.detailsIdle": this._formattingSettings.detailsIdle,
@@ -8106,6 +8151,8 @@ var DiscordRpcManager = class _DiscordRpcManager {
   arePayloadsEqual(a, b) {
     if (!a && !b) return true;
     if (!a || !b) return false;
+    if (a.name !== b.name) return false;
+    if (a.type !== b.type) return false;
     if (a.details !== b.details) return false;
     if (a.state !== b.state) return false;
     if (a.startTimestamp !== b.startTimestamp) return false;
@@ -8177,8 +8224,40 @@ var DiscordRpcManager = class _DiscordRpcManager {
       return;
     }
     try {
-      this.log(`Sending Activity to Discord -> Details: "${payload.details || ""}" | State: "${payload.state || ""}" | Icon: "${payload.largeImageKey || ""}"`);
-      await this.client.setActivity(payload);
+      this.log(`Sending Activity to Discord -> Name: "${payload.name || "DisCode"}" | Type: ${payload.type ?? 0} | Details: "${payload.details || ""}" | State: "${payload.state || ""}"`);
+      const activity = {
+        state: payload.state,
+        details: payload.details,
+        instance: Boolean(payload.instance)
+      };
+      if (payload.type !== void 0) {
+        activity.type = payload.type;
+      }
+      if (payload.name) {
+        activity.name = payload.name;
+      }
+      if (payload.startTimestamp || payload.endTimestamp) {
+        activity.timestamps = {
+          start: payload.startTimestamp,
+          end: payload.endTimestamp
+        };
+      }
+      if (payload.largeImageKey || payload.smallImageKey) {
+        activity.assets = {
+          large_image: payload.largeImageKey,
+          large_text: payload.largeImageText,
+          small_image: payload.smallImageKey,
+          small_text: payload.smallImageText
+        };
+      }
+      const buttons = payload.buttons;
+      if (buttons && buttons.length > 0) {
+        activity.buttons = buttons;
+      }
+      await this.client.request("SET_ACTIVITY", {
+        pid: process.pid,
+        activity
+      });
       this.lastSendTimestamp = Date.now();
       this.lastSentPayload = { ...payload };
       this.pendingPayload = null;
@@ -9196,6 +9275,42 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = "") {
 
                     <div class="card">
                         <div class="field-group">
+                            <label class="field-label" for="activityType">
+                                <span>Activity Verb / Category</span>
+                                <span class="field-sub">Choose how Discord introduces your activity (Default: Playing)</span>
+                            </label>
+                            <select id="activityType" class="select-input">
+                                <option value="playing">Playing (e.g. "Playing DisCode")</option>
+                                <option value="watching">Watching (e.g. "Watching DisCode")</option>
+                                <option value="listening">Listening to (e.g. "Listening to DisCode")</option>
+                                <option value="competing">Competing in (e.g. "Competing in DisCode")</option>
+                            </select>
+                        </div>
+
+                        <div class="field-group">
+                            <label class="field-label" for="appName">
+                                <span>Application Title</span>
+                                <span class="field-sub">Name displayed on your Discord status (Default: DisCode)</span>
+                            </label>
+                            <input type="text" id="appName" class="input-text" placeholder="DisCode"/>
+                            <div class="token-row" style="margin-bottom: 8px;">
+                                <span style="font-size: 11px; color: var(--text-muted); align-self: center; margin-right: 4px;">Presets:</span>
+                                <button type="button" class="token-btn preset-app-btn" data-preset="DisCode">DisCode</button>
+                                <button type="button" class="token-btn preset-app-btn" data-preset="Visual Studio Code">Visual Studio Code</button>
+                                <button type="button" class="token-btn preset-app-btn" data-preset="VSCodium">VSCodium</button>
+                                <button type="button" class="token-btn preset-app-btn" data-preset="Antigravity">Antigravity</button>
+                                <button type="button" class="token-btn preset-app-btn" data-preset="Cursor">Cursor</button>
+                            </div>
+                            <div class="token-row">
+                                <span style="font-size: 11px; color: var(--text-muted); align-self: center; margin-right: 4px;">Tokens:</span>
+                                <button type="button" class="token-btn" data-target="appName" data-token="{workspace}">+ {workspace}</button>
+                                <button type="button" class="token-btn" data-target="appName" data-token="{fileName}">+ {fileName}</button>
+                                <button type="button" class="token-btn" data-target="appName" data-token="{language}">+ {language}</button>
+                                <button type="button" class="token-btn" data-target="appName" data-token="{gitBranch}">+ {gitBranch}</button>
+                            </div>
+                        </div>
+
+                        <div class="field-group">
                             <label class="field-label" for="detailsEditing">
                                 <span>Details Format (Line 1)</span>
                                 <span class="field-sub">Default: Cooking {fileName}</span>
@@ -9486,7 +9601,7 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = "") {
 
                         <!-- Activity Box -->
                         <div class="discord-activity-box">
-                            <div class="discord-act-header">PLAYING A GAME</div>
+                            <div class="discord-act-header" id="previewActHeader">PLAYING A GAME</div>
                             <div class="discord-act-main">
                                 <div class="discord-icon-container" id="previewAppIconWrap">
                                     <img id="previewLargeIconImg" class="discord-large-icon-img" src="" alt="Icon" style="display:none; width: 100%; height: 100%; object-fit: contain; padding: 6px; box-sizing: border-box; border-radius: 8px;" />
@@ -9540,6 +9655,10 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = "") {
 
             const detailsInput = document.getElementById('detailsEditing');
             const stateInput = document.getElementById('stateEditing');
+            const activityTypeSelect = document.getElementById('activityType');
+            const appNameInput = document.getElementById('appName');
+            const previewActHeader = document.getElementById('previewActHeader');
+            const previewAppName = document.getElementById('previewAppName');
             const previewLine1 = document.getElementById('previewLine1');
             const previewLine2 = document.getElementById('previewLine2');
             const previewTimerRow = document.getElementById('previewTimerRow');
@@ -9689,6 +9808,24 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = "") {
                 previewLine1.textContent = dVal;
                 previewLine2.textContent = sVal;
 
+                let nameVal = (appNameInput && appNameInput.value && appNameInput.value.trim()) ? appNameInput.value : (livePreviewData.appName || 'DisCode');
+                nameVal = nameVal
+                    .replace(/{fileName}/g, curFile)
+                    .replace(/{workspace}/g, curWs)
+                    .replace(/{gitBranch}/g, curBranch)
+                    .replace(/{lineCount}/g, livePreviewData.lineCount || '128 lines')
+                    .replace(/{currentLine}/g, livePreviewData.currentLine || '1')
+                    .replace(/{language}/g, livePreviewData.language || 'JavaScript');
+                if (previewAppName) previewAppName.textContent = nameVal;
+
+                if (activityTypeSelect && previewActHeader) {
+                    const actType = activityTypeSelect.value;
+                    if (actType === 'watching') previewActHeader.textContent = 'WATCHING';
+                    else if (actType === 'listening') previewActHeader.textContent = 'LISTENING TO';
+                    else if (actType === 'competing') previewActHeader.textContent = 'COMPETING IN';
+                    else previewActHeader.textContent = 'PLAYING A GAME';
+                }
+
                 if (showElapsedTime.checked) {
                     previewTimerRow.style.display = 'flex';
                 } else {
@@ -9732,10 +9869,24 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = "") {
             // Input listeners
             detailsInput.addEventListener('input', syncPreview);
             stateInput.addEventListener('input', syncPreview);
+            if (activityTypeSelect) activityTypeSelect.addEventListener('change', syncPreview);
+            if (appNameInput) appNameInput.addEventListener('input', syncPreview);
             showElapsedTime.addEventListener('change', syncPreview);
             showFileName.addEventListener('change', syncPreview);
             showWorkspaceName.addEventListener('change', syncPreview);
             showGitBranch.addEventListener('change', syncPreview);
+
+            // Preset app name buttons
+            document.querySelectorAll('.preset-app-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const preset = btn.getAttribute('data-preset');
+                    if (preset && appNameInput) {
+                        appNameInput.value = preset;
+                        syncPreview();
+                        appNameInput.focus();
+                    }
+                });
+            });
 
             // Dynamic Tokens
             tokenButtons.forEach(btn => {
@@ -9813,10 +9964,12 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = "") {
                 const totalMinutes = (parseInt(timerHours.value || '0', 10) * 60) + parseInt(timerMinutes.value || '0', 10);
                 const newSettings = {
                     enabled: document.getElementById('enabled').checked,
+                    'appearance.activityType': activityTypeSelect ? activityTypeSelect.value : 'playing',
                     'appearance.largeImageStyle': document.getElementById('largeImageStyle').value,
                     'appearance.showElapsedTime': showElapsedTime.checked,
                     'timer.mode': timerMode.value,
                     'timer.customOffsetMinutes': totalMinutes,
+                    'formatting.appName': appNameInput ? (appNameInput.value.trim() || 'DisCode') : 'DisCode',
                     'formatting.detailsEditing': detailsInput.value,
                     'formatting.stateEditing': stateInput.value,
                     'formatting.detailsIdle': document.getElementById('detailsIdle').value,
@@ -9836,6 +9989,9 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = "") {
 
             // Reset to defaults
             document.getElementById('btnResetDefaults').addEventListener('click', () => {
+                if (activityTypeSelect) activityTypeSelect.value = 'playing';
+                if (appNameInput) appNameInput.value = 'DisCode';
+                syncPreview();
                 vscode.postMessage({ command: 'resetDefaults' });
                 showStatusBadge('Defaults Restored');
             });
@@ -9868,6 +10024,8 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = "") {
                 if (message.command === 'init' && message.settings) {
                     const s = message.settings;
                     if (s.enabled !== undefined) document.getElementById('enabled').checked = Boolean(s.enabled);
+                    if (s['appearance.activityType'] && activityTypeSelect) activityTypeSelect.value = s['appearance.activityType'];
+                    if (s['formatting.appName'] && appNameInput) appNameInput.value = s['formatting.appName'];
                     if (s['formatting.detailsEditing']) detailsInput.value = s['formatting.detailsEditing'];
                     if (s['formatting.stateEditing']) stateInput.value = s['formatting.stateEditing'];
                     if (s['formatting.detailsIdle']) document.getElementById('detailsIdle').value = s['formatting.detailsIdle'];
@@ -9994,8 +10152,10 @@ var SettingsWebviewPanel = class _SettingsWebviewPanel {
               enabled: true,
               "appearance.largeImageStyle": "fileIcon",
               "appearance.showElapsedTime": true,
+              "appearance.activityType": "playing",
               "timer.mode": "session",
               "timer.customOffsetMinutes": 0,
+              "formatting.appName": "DisCode",
               "formatting.detailsEditing": "Editing {fileName}",
               "formatting.stateEditing": "Workspace: {workspace}",
               "behavior.whenNoFileOpen": "keepLastFile",

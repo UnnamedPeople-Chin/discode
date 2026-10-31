@@ -167,6 +167,8 @@ class ActivityDetector {
         }
         const editorInfo = this.getEditorAppInfo();
         const startTimestamp = this.resolveStartTimestamp();
+        const appNameTemplate = this.configHandler.formatting.appName || 'DisCode';
+        const activityType = this.getActivityTypeNumber(this.configHandler.appearance.activityType);
         const dispatch = (payload) => {
             this.currentPayload = payload;
             if (forceSync) {
@@ -191,7 +193,10 @@ class ActivityDetector {
                 const templateVars = this.buildTemplateVars(workspaceName);
                 const details = this.formatTemplate(this.configHandler.formatting.detailsIdle, templateVars);
                 const state = this.formatTemplate(this.configHandler.formatting.stateIdle, templateVars);
+                const appName = this.formatTemplate(appNameTemplate, templateVars).trim() || 'DisCode';
                 dispatch({
+                    name: appName,
+                    type: activityType,
                     details: details || undefined,
                     state: state || undefined,
                     startTimestamp,
@@ -213,7 +218,10 @@ class ActivityDetector {
             });
             const details = this.formatTemplate(this.configHandler.formatting.detailsDebugging, templateVars);
             const state = this.formatTemplate(this.configHandler.formatting.stateDebugging, templateVars);
+            const appName = this.formatTemplate(appNameTemplate, templateVars).trim() || 'DisCode';
             dispatch({
+                name: appName,
+                type: activityType,
                 details: details || undefined,
                 state: state || undefined,
                 startTimestamp,
@@ -243,6 +251,7 @@ class ActivityDetector {
             });
             const details = this.formatTemplate(this.configHandler.formatting.detailsEditing, templateVars);
             const state = this.formatTemplate(this.configHandler.formatting.stateEditing, templateVars);
+            const appName = this.formatTemplate(appNameTemplate, templateVars).trim() || 'DisCode';
             const isFileIconLarge = this.configHandler.appearance.largeImageStyle === 'fileIcon';
             const rawLarge = isFileIconLarge ? fileInfo.iconKey : editorInfo.icon;
             const rawSmall = isFileIconLarge ? editorInfo.icon : fileInfo.iconKey;
@@ -251,6 +260,8 @@ class ActivityDetector {
             const largeText = isFileIconLarge ? fileInfo.label : editorInfo.label;
             const smallText = isFileIconLarge ? editorInfo.label : fileInfo.label;
             const payload = {
+                name: appName,
+                type: activityType,
                 details: details || undefined,
                 state: state || undefined,
                 startTimestamp,
@@ -278,7 +289,10 @@ class ActivityDetector {
             const templateVars = this.buildTemplateVars(workspaceName);
             const details = this.formatTemplate(this.configHandler.formatting.detailsIdle, templateVars);
             const state = this.formatTemplate(this.configHandler.formatting.stateIdle, templateVars);
+            const appName = this.formatTemplate(appNameTemplate, templateVars).trim() || 'DisCode';
             dispatch({
+                name: appName,
+                type: activityType,
                 details: details || undefined,
                 state: state || undefined,
                 startTimestamp,
@@ -293,7 +307,10 @@ class ActivityDetector {
         const templateVars = this.buildTemplateVars(workspaceName);
         const details = this.formatTemplate(this.configHandler.formatting.detailsNoFile, templateVars);
         const state = this.formatTemplate(this.configHandler.formatting.stateNoFile, templateVars);
+        const appName = this.formatTemplate(appNameTemplate, templateVars).trim() || 'DisCode';
         dispatch({
+            name: appName,
+            type: activityType,
             details: details || undefined,
             state: state || undefined,
             startTimestamp,
@@ -301,6 +318,19 @@ class ActivityDetector {
             largeImageText: editorInfo.label,
             instance: false
         });
+    }
+    getActivityTypeNumber(type) {
+        switch (type) {
+            case 'watching':
+                return 3;
+            case 'listening':
+                return 2;
+            case 'competing':
+                return 5;
+            case 'playing':
+            default:
+                return 0;
+        }
     }
     resolvePresenceImage(key, isEditor = false) {
         if (!key) {
@@ -465,6 +495,15 @@ class ActivityDetector {
         const iconUrl = isFileIconLarge
             ? this.resolvePresenceImage(fileInfo.iconKey, false)
             : DISCODE_OFFICIAL_ICON;
+        const templateVars = this.buildTemplateVars(workspaceName, {
+            fileName,
+            fileExt: ext,
+            language: fileInfo.label,
+            lineCount: String(doc?.lineCount || 128),
+            currentLine: String((vscode.window.activeTextEditor?.selection.active.line || 0) + 1)
+        });
+        const appNameTemplate = this.configHandler.formatting.appName || 'DisCode';
+        const appName = this.formatTemplate(appNameTemplate, templateVars).trim() || 'DisCode';
         return {
             fileName,
             language: fileInfo.label,
@@ -473,6 +512,8 @@ class ActivityDetector {
             lineCount: String(doc?.lineCount || 128),
             currentLine: String((vscode.window.activeTextEditor?.selection.active.line || 0) + 1),
             iconUrl,
+            appName,
+            activityType: this.configHandler.appearance.activityType,
             startTimestamp: this.resolveStartTimestamp()
         };
     }

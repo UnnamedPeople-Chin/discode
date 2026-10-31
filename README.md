@@ -1,11 +1,14 @@
-# DisCode - Visual Discord Rich Presence
+# DisCode: Rich Presence for Discord
 
-A high-performance, privacy-conscious Discord Rich Presence extension for Visual Studio Code with an interactive Live Preview dashboard, dynamic language branding, and instant synchronization.
+A high-performance, privacy-conscious Rich Presence extension for Visual Studio Code with an interactive Live Preview dashboard, dynamic language branding, and instant synchronization.
 
 [![VS Code](https://img.shields.io/badge/VS_Code-^1.85.0-007ACC?style=flat&logo=visualstudiocode&logoColor=white)](https://code.visualstudio.com)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3+-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Discord](https://img.shields.io/badge/Discord-RPC_API-5865F2?style=flat&logo=discord&logoColor=white)](https://discord.com)
 [![License](https://img.shields.io/badge/License-MIT-23A55A?style=flat)](https://github.com/UnnamedPeople-Chin/discode/blob/main/LICENSE)
+
+> [!NOTE]
+> **Disclaimer & Trademark Notice:** DisCode is an independent, open-source community extension. It is not affiliated with, endorsed by, or sponsored by Discord Inc., Microsoft Corporation, or any of their affiliates. "Discord", "Visual Studio Code", and other associated trademarks and logos belong to their respective owners.
 
 ---
 
@@ -14,6 +17,17 @@ A high-performance, privacy-conscious Discord Rich Presence extension for Visual
 DisCode establishes a robust, production-grade integration between the **VS Code Extension API** and the **Discord Local RPC IPC socket**. Built with a centralized Singleton state orchestrator, exponential backoff reconnection, and an anti-leak disposal lifecycle, DisCode guarantees zero editor lag. 
 
 Key highlights include an **Interactive GUI Settings Dashboard with a Live Discord Profile Preview (`Ctrl + Alt + D`)**, dynamic language logo matching (React, TypeScript, Python, Go, Docker, etc.), granular elapsed timer controls, and sub-second instant synchronization without restarting your editor.
+
+---
+
+## Security & Privacy Transparency
+
+DisCode is engineered strictly as a client-side integration and prioritizes developer privacy:
+- **Local IPC Communication Only:** Connects exclusively to the official Discord desktop client running on the local machine via standard Discord IPC channels (`\\.\pipe\discord-ipc-0` on Windows, `/tmp/discord-ipc-0` on macOS/Linux).
+- **No Token or Credential Storage:** DisCode never asks for, reads, or stores your Discord account credentials, tokens, or passwords.
+- **Zero Remote Telemetry:** No user data, analytics, code telemetry, or keystrokes are transmitted to third-party servers.
+- **Granular Masking & Blacklists:** Sensitive workspace names, Git branches, and file names can be masked or excluded per user preference.
+- **Fully Open-Source:** 100% of the TypeScript source code and build recipes are publicly verifiable in our GitHub repository.
 
 ---
 

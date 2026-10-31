@@ -1,6 +1,5 @@
 .vscode/**
 .github/**
-src/**
 scripts/**
 stitch-assets/**
 anti-slop/**
@@ -18,5 +17,4 @@ out/activity/**
 out/config/**
 out/rpc/**
 out/ui/**
-**/*.map
 node_modules/**

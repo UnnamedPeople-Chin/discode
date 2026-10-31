@@ -13,7 +13,7 @@ class DiscordRpcManager {
     reconnectTimer = null;
     discordUser = null;
     currentUserInfo = null;
-    THROTTLE_INTERVAL_MS = 3000;
+    THROTTLE_INTERVAL_MS = 2000;
     lastSendTimestamp = 0;
     pendingPayload = null;
     throttleTimer = null;
@@ -34,6 +34,9 @@ class DiscordRpcManager {
     }
     setOutputChannel(channel) {
         this.outputChannel = channel;
+    }
+    getClientId() {
+        return this.clientId;
     }
     log(message) {
         const time = new Date().toLocaleTimeString();
@@ -244,6 +247,7 @@ class DiscordRpcManager {
         if (this.pendingPayload) {
             const toSend = this.pendingPayload;
             this.pendingPayload = null;
+            this.lastSendTimestamp = 0;
             await this.executeSend(toSend, true);
         }
     }
@@ -255,7 +259,7 @@ class DiscordRpcManager {
             return;
         }
         try {
-            this.log(`Sending Activity to Discord -> Name: "${payload.name || 'DisCode'}" | Type: ${payload.type ?? 0} | Details: "${payload.details || ''}" | State: "${payload.state || ''}"`);
+            this.log(`Sending Activity to Discord -> Type: ${payload.type ?? 0} | Details: "${payload.details || ''}" | State: "${payload.state || ''}"`);
             const activity = {
                 state: payload.state,
                 details: payload.details,
@@ -263,9 +267,6 @@ class DiscordRpcManager {
             };
             if (payload.type !== undefined) {
                 activity.type = payload.type;
-            }
-            if (payload.name) {
-                activity.name = payload.name;
             }
             if (payload.startTimestamp || payload.endTimestamp) {
                 activity.timestamps = {

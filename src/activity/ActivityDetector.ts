@@ -75,13 +75,15 @@ export class ActivityDetector implements vscode.Disposable {
         this.evaluateState();
     }
 
+    private selectionDebounceTimer: NodeJS.Timeout | null = null;
+
     private registerListeners(): void {
         this.disposables.push(
             vscode.window.onDidChangeActiveTextEditor(() => this.onUserActivity(true)),
-            vscode.window.onDidChangeTextEditorSelection(() => this.onUserActivity(false)),
+            vscode.window.onDidChangeTextEditorSelection(() => this.onEditorContentOrSelectionChange()),
             vscode.workspace.onDidChangeTextDocument(e => {
                 if (e.contentChanges.length > 0) {
-                    this.onUserActivity(false);
+                    this.onEditorContentOrSelectionChange();
                 }
             }),
             vscode.window.onDidChangeWindowState(state => {
@@ -91,11 +93,25 @@ export class ActivityDetector implements vscode.Disposable {
                     this.evaluateState();
                 }
             }),
-            vscode.debug.onDidStartDebugSession(() => this.evaluateState()),
-            vscode.debug.onDidTerminateDebugSession(() => this.evaluateState()),
-            vscode.workspace.onDidChangeWorkspaceFolders(() => this.evaluateState()),
+            vscode.debug.onDidStartDebugSession(() => this.evaluateState(true)),
+            vscode.debug.onDidTerminateDebugSession(() => this.evaluateState(true)),
+            vscode.workspace.onDidChangeWorkspaceFolders(() => this.evaluateState(true)),
             this.configHandler.onDidChangeSettings(() => this.forceSync())
         );
+    }
+
+    private onEditorContentOrSelectionChange(): void {
+        if (this.isIdle) {
+            this.isIdle = false;
+        }
+        this.resetIdleTimer();
+        if (this.selectionDebounceTimer) {
+            clearTimeout(this.selectionDebounceTimer);
+        }
+        this.selectionDebounceTimer = setTimeout(() => {
+            this.selectionDebounceTimer = null;
+            this.evaluateState(false);
+        }, 1500);
     }
 
     private onUserActivity(isFileSwitch: boolean): void {
@@ -110,10 +126,14 @@ export class ActivityDetector implements vscode.Disposable {
                 this.fileStartTimestamp = Math.floor(Date.now() / 1000);
                 this.lastFileName = currentFileName;
             }
+            this.resetIdleTimer();
+            // Switching file is an immediate explicit user transition: force sync instantly!
+            this.evaluateState(true);
+            return;
         }
 
         this.resetIdleTimer();
-        this.evaluateState();
+        this.evaluateState(false);
     }
 
     private resetIdleTimer(): void {
@@ -594,6 +614,10 @@ export class ActivityDetector implements vscode.Disposable {
         if (this.idleTimer) {
             clearTimeout(this.idleTimer);
             this.idleTimer = null;
+        }
+        if (this.selectionDebounceTimer) {
+            clearTimeout(this.selectionDebounceTimer);
+            this.selectionDebounceTimer = null;
         }
         this.onActivityChangeEmitter.dispose();
         this.disposables.forEach(d => d.dispose());

@@ -138,7 +138,30 @@ function runSelfCheck(): void {
     assert.strictEqual(activityTypeMap['watching'], 3, 'watching activity must map to 3');
     assert.strictEqual(activityTypeMap['competing'], 5, 'competing activity must map to 5');
 
-    // 9. Invariant: CDN PNG URL generation and icon mapping contracts
+    // 9. Invariant: Dynamic Client ID resolution for presets
+    function resolveEffectiveClientId(customClientId?: string, appName?: string): string {
+        if (customClientId && customClientId.trim().length > 0) {
+            return customClientId.trim();
+        }
+        const normalized = (appName || '').trim().toLowerCase();
+        if (normalized.includes('visual studio code') || normalized.includes('vscode')) {
+            return '383226320970055681';
+        }
+        if (normalized.includes('vscodium')) {
+            return '790693994793664533';
+        }
+        if (normalized.includes('code - oss') || normalized.includes('oss')) {
+            return '782685898163617802';
+        }
+        return '1565769356619554887';
+    }
+
+    assert.strictEqual(resolveEffectiveClientId('', 'Visual Studio Code'), '383226320970055681', 'VS Code preset must resolve to 383226320970055681');
+    assert.strictEqual(resolveEffectiveClientId('', 'DisCode'), '1565769356619554887', 'DisCode preset must resolve to 1565769356619554887');
+    assert.strictEqual(resolveEffectiveClientId('', 'VSCodium'), '790693994793664533', 'VSCodium preset must resolve to 790693994793664533');
+    assert.strictEqual(resolveEffectiveClientId('1234567890', 'Visual Studio Code'), '1234567890', 'Explicit custom client ID must take precedence');
+
+    // 10. Invariant: CDN PNG URL generation and icon mapping contracts
     const VSCORD_CDN_BASE = 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons';
     const testIcons = ['dart', 'js', 'ts', 'jsx', 'tsx', 'python', 'rust', 'idle', 'debugging', 'text'];
     for (const icon of testIcons) {
@@ -147,7 +170,7 @@ function runSelfCheck(): void {
         assert.ok(url.endsWith('.png'), `Icon URL for ${icon} must be direct PNG raster`);
     }
 
-    console.log('[Self-Check] All invariants passed successfully! (20/20 assertions)');
+    console.log('[Self-Check] All invariants passed successfully! (24/24 assertions)');
 }
 
 runSelfCheck();

@@ -7415,13 +7415,14 @@ var ActivityDetector = class {
   currentPayload = null;
   onActivityChangeEmitter = new vscode.EventEmitter();
   onDidChangeActivity = this.onActivityChangeEmitter.event;
+  selectionDebounceTimer = null;
   registerListeners() {
     this.disposables.push(
       vscode.window.onDidChangeActiveTextEditor(() => this.onUserActivity(true)),
-      vscode.window.onDidChangeTextEditorSelection(() => this.onUserActivity(false)),
+      vscode.window.onDidChangeTextEditorSelection(() => this.onEditorContentOrSelectionChange()),
       vscode.workspace.onDidChangeTextDocument((e) => {
         if (e.contentChanges.length > 0) {
-          this.onUserActivity(false);
+          this.onEditorContentOrSelectionChange();
         }
       }),
       vscode.window.onDidChangeWindowState((state) => {
@@ -7431,11 +7432,24 @@ var ActivityDetector = class {
           this.evaluateState();
         }
       }),
-      vscode.debug.onDidStartDebugSession(() => this.evaluateState()),
-      vscode.debug.onDidTerminateDebugSession(() => this.evaluateState()),
-      vscode.workspace.onDidChangeWorkspaceFolders(() => this.evaluateState()),
+      vscode.debug.onDidStartDebugSession(() => this.evaluateState(true)),
+      vscode.debug.onDidTerminateDebugSession(() => this.evaluateState(true)),
+      vscode.workspace.onDidChangeWorkspaceFolders(() => this.evaluateState(true)),
       this.configHandler.onDidChangeSettings(() => this.forceSync())
     );
+  }
+  onEditorContentOrSelectionChange() {
+    if (this.isIdle) {
+      this.isIdle = false;
+    }
+    this.resetIdleTimer();
+    if (this.selectionDebounceTimer) {
+      clearTimeout(this.selectionDebounceTimer);
+    }
+    this.selectionDebounceTimer = setTimeout(() => {
+      this.selectionDebounceTimer = null;
+      this.evaluateState(false);
+    }, 1500);
   }
   onUserActivity(isFileSwitch) {
     if (this.isIdle) {
@@ -7448,9 +7462,12 @@ var ActivityDetector = class {
         this.fileStartTimestamp = Math.floor(Date.now() / 1e3);
         this.lastFileName = currentFileName;
       }
+      this.resetIdleTimer();
+      this.evaluateState(true);
+      return;
     }
     this.resetIdleTimer();
-    this.evaluateState();
+    this.evaluateState(false);
   }
   resetIdleTimer() {
     if (this.idleTimer) {
@@ -7868,6 +7885,10 @@ var ActivityDetector = class {
       clearTimeout(this.idleTimer);
       this.idleTimer = null;
     }
+    if (this.selectionDebounceTimer) {
+      clearTimeout(this.selectionDebounceTimer);
+      this.selectionDebounceTimer = null;
+    }
     this.onActivityChangeEmitter.dispose();
     this.disposables.forEach((d) => d.dispose());
     this.disposables = [];
@@ -7878,6 +7899,22 @@ var ActivityDetector = class {
 
 // src/config/ConfigurationHandler.ts
 var vscode2 = __toESM(require("vscode"));
+function resolveEffectiveClientId(customClientId, appName) {
+  if (customClientId && customClientId.trim().length > 0) {
+    return customClientId.trim();
+  }
+  const normalized = (appName || "").trim().toLowerCase();
+  if (normalized.includes("visual studio code") || normalized.includes("vscode")) {
+    return "383226320970055681";
+  }
+  if (normalized.includes("vscodium")) {
+    return "790693994793664533";
+  }
+  if (normalized.includes("code - oss") || normalized.includes("oss")) {
+    return "782685898163617802";
+  }
+  return "1565769356619554887";
+}
 var ConfigurationHandler = class {
   section = "discordPresence";
   disposables = [];
@@ -7959,6 +7996,9 @@ var ConfigurationHandler = class {
   }
   get customClientId() {
     return this._clientId;
+  }
+  get effectiveClientId() {
+    return resolveEffectiveClientId(this._clientId, this._formattingSettings.appName);
   }
   get enabled() {
     return this._enabled;
@@ -8096,7 +8136,7 @@ var DiscordRpcManager = class _DiscordRpcManager {
   reconnectTimer = null;
   discordUser = null;
   currentUserInfo = null;
-  THROTTLE_INTERVAL_MS = 3e3;
+  THROTTLE_INTERVAL_MS = 2e3;
   lastSendTimestamp = 0;
   pendingPayload = null;
   throttleTimer = null;
@@ -8116,6 +8156,9 @@ var DiscordRpcManager = class _DiscordRpcManager {
   }
   setOutputChannel(channel) {
     this.outputChannel = channel;
+  }
+  getClientId() {
+    return this.clientId;
   }
   log(message) {
     const time = (/* @__PURE__ */ new Date()).toLocaleTimeString();
@@ -8301,6 +8344,7 @@ var DiscordRpcManager = class _DiscordRpcManager {
     if (this.pendingPayload) {
       const toSend = this.pendingPayload;
       this.pendingPayload = null;
+      this.lastSendTimestamp = 0;
       await this.executeSend(toSend, true);
     }
   }
@@ -8311,7 +8355,7 @@ var DiscordRpcManager = class _DiscordRpcManager {
       return;
     }
     try {
-      this.log(`Sending Activity to Discord -> Name: "${payload.name || "DisCode"}" | Type: ${payload.type ?? 0} | Details: "${payload.details || ""}" | State: "${payload.state || ""}"`);
+      this.log(`Sending Activity to Discord -> Type: ${payload.type ?? 0} | Details: "${payload.details || ""}" | State: "${payload.state || ""}"`);
       const activity = {
         state: payload.state,
         details: payload.details,
@@ -8319,9 +8363,6 @@ var DiscordRpcManager = class _DiscordRpcManager {
       };
       if (payload.type !== void 0) {
         activity.type = payload.type;
-      }
-      if (payload.name) {
-        activity.name = payload.name;
       }
       if (payload.startTimestamp || payload.endTimestamp) {
         activity.timestamps = {
@@ -9376,14 +9417,14 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = "") {
 
                         <div class="field-group">
                             <label class="field-label" for="appName">
-                                <span>Application Title</span>
-                                <span class="field-sub">Name displayed on your Discord status (Default: DisCode)</span>
+                                <span>Application Title / Profile</span>
+                                <span class="field-sub">Choose app name displayed on Discord (e.g. "Visual Studio Code", "DisCode", or custom template)</span>
                             </label>
-                            <input type="text" id="appName" class="input-text" placeholder="DisCode"/>
+                            <input type="text" id="appName" class="input-text" placeholder="Visual Studio Code"/>
                             <div class="token-row" style="margin-bottom: 8px;">
                                 <span style="font-size: 11px; color: var(--text-muted); align-self: center; margin-right: 4px;">Presets:</span>
-                                <button type="button" class="token-btn preset-app-btn" data-preset="DisCode">DisCode</button>
                                 <button type="button" class="token-btn preset-app-btn" data-preset="Visual Studio Code">Visual Studio Code</button>
+                                <button type="button" class="token-btn preset-app-btn" data-preset="DisCode">DisCode</button>
                                 <button type="button" class="token-btn preset-app-btn" data-preset="VSCodium">VSCodium</button>
                                 <button type="button" class="token-btn preset-app-btn" data-preset="Antigravity">Antigravity</button>
                                 <button type="button" class="token-btn preset-app-btn" data-preset="Cursor">Cursor</button>
@@ -10044,6 +10085,16 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = "") {
                     const preset = btn.getAttribute('data-preset');
                     if (preset && appNameInput) {
                         appNameInput.value = preset;
+                        const clientIdEl = document.getElementById('clientId');
+                        if (clientIdEl) {
+                            if (preset === 'Visual Studio Code' || preset === 'Cursor') {
+                                clientIdEl.value = '383226320970055681';
+                            } else if (preset === 'DisCode' || preset === 'Antigravity') {
+                                clientIdEl.value = '1565769356619554887';
+                            } else if (preset === 'VSCodium') {
+                                clientIdEl.value = '790693994793664533';
+                            }
+                        }
                         triggerLiveApply(true);
                         appNameInput.focus();
                     }
@@ -10380,6 +10431,10 @@ var SettingsWebviewPanel = class _SettingsWebviewPanel {
   handleLiveApplySettings(settings) {
     try {
       this.configHandler.applyInMemory(settings);
+      const effectiveId = this.configHandler.effectiveClientId;
+      if (this.rpcManager.getClientId() !== effectiveId) {
+        this.rpcManager.updateClientId(effectiveId);
+      }
       this.activityDetector.forceSync();
       this.configHandler.persistSettings(settings).catch(() => {
       });
@@ -10390,6 +10445,10 @@ var SettingsWebviewPanel = class _SettingsWebviewPanel {
   async handleSaveSettings(newSettings) {
     try {
       this.configHandler.applyInMemory(newSettings);
+      const effectiveId = this.configHandler.effectiveClientId;
+      if (this.rpcManager.getClientId() !== effectiveId) {
+        this.rpcManager.updateClientId(effectiveId);
+      }
       this.activityDetector.forceSync();
       await this.configHandler.persistSettings(newSettings);
       this.sendInitialData();
@@ -10463,13 +10522,12 @@ var SettingsWebviewPanel = class _SettingsWebviewPanel {
 };
 
 // src/extension.ts
-var DEFAULT_CLIENT_ID = "1565769356619554887";
 async function activate(context) {
   const outputChannel = vscode4.window.createOutputChannel("Discord Presence");
   context.subscriptions.push(outputChannel);
   outputChannel.appendLine("[Extension] Initializing Discord Rich Presence extension...");
   const configHandler = new ConfigurationHandler();
-  const clientId = configHandler.customClientId || DEFAULT_CLIENT_ID;
+  const clientId = configHandler.effectiveClientId;
   const rpcManager = DiscordRpcManager.getInstance(clientId);
   rpcManager.setOutputChannel(outputChannel);
   const activityDetector = new ActivityDetector(rpcManager, configHandler);
@@ -10487,6 +10545,7 @@ async function activate(context) {
       if (state.isConnected) {
         statusBarItem.text = "$(pulse) Discord: Connected";
         statusBarItem.tooltip = `Terhubung ke Discord sebagai: ${state.user || "User"} (Klik untuk buka Settings / Ctrl+Alt+D)`;
+        activityDetector.evaluateState(true);
       } else if (state.isConnecting) {
         statusBarItem.text = "$(sync~spin) Discord: Connecting...";
         statusBarItem.tooltip = "Sedang menyambungkan ke socket Discord...";
@@ -10508,14 +10567,12 @@ async function activate(context) {
     })
   );
   context.subscriptions.push(
-    vscode4.workspace.onDidChangeConfiguration((e) => {
-      if (e.affectsConfiguration("discordPresence.clientId")) {
-        const updatedId = configHandler.customClientId || DEFAULT_CLIENT_ID;
+    configHandler.onDidChangeSettings(() => {
+      const updatedId = configHandler.effectiveClientId;
+      if (rpcManager.getClientId() !== updatedId) {
         rpcManager.updateClientId(updatedId);
       }
-      if (e.affectsConfiguration("discordPresence")) {
-        activityDetector.evaluateState();
-      }
+      activityDetector.forceSync();
     })
   );
   rpcManager.connect();

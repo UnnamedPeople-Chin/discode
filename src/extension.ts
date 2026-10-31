@@ -12,7 +12,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     outputChannel.appendLine('[Extension] Initializing Discord Rich Presence extension...');
 
     const configHandler = new ConfigurationHandler();
-    const clientId = configHandler.customClientId || DEFAULT_CLIENT_ID;
+    const clientId = configHandler.effectiveClientId;
     const rpcManager = DiscordRpcManager.getInstance(clientId);
     rpcManager.setOutputChannel(outputChannel);
 
@@ -36,6 +36,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
             if (state.isConnected) {
                 statusBarItem.text = '$(pulse) Discord: Connected';
                 statusBarItem.tooltip = `Terhubung ke Discord sebagai: ${state.user || 'User'} (Klik untuk buka Settings / Ctrl+Alt+D)`;
+                activityDetector.evaluateState(true);
             } else if (state.isConnecting) {
                 statusBarItem.text = '$(sync~spin) Discord: Connecting...';
                 statusBarItem.tooltip = 'Sedang menyambungkan ke socket Discord...';
@@ -63,14 +64,12 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
     // Hot-reload setting jika ada konfigurasi yang diubah
     context.subscriptions.push(
-        vscode.workspace.onDidChangeConfiguration(e => {
-            if (e.affectsConfiguration('discordPresence.clientId')) {
-                const updatedId = configHandler.customClientId || DEFAULT_CLIENT_ID;
+        configHandler.onDidChangeSettings(() => {
+            const updatedId = configHandler.effectiveClientId;
+            if (rpcManager.getClientId() !== updatedId) {
                 rpcManager.updateClientId(updatedId);
             }
-            if (e.affectsConfiguration('discordPresence')) {
-                activityDetector.evaluateState();
-            }
+            activityDetector.forceSync();
         })
     );
 

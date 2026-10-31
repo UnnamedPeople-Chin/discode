@@ -955,14 +955,14 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = '') {
 
                         <div class="field-group">
                             <label class="field-label" for="appName">
-                                <span>Application Title</span>
-                                <span class="field-sub">Name displayed on your Discord status (Default: DisCode)</span>
+                                <span>Application Title / Profile</span>
+                                <span class="field-sub">Choose app name displayed on Discord (e.g. "Visual Studio Code", "DisCode", or custom template)</span>
                             </label>
-                            <input type="text" id="appName" class="input-text" placeholder="DisCode"/>
+                            <input type="text" id="appName" class="input-text" placeholder="Visual Studio Code"/>
                             <div class="token-row" style="margin-bottom: 8px;">
                                 <span style="font-size: 11px; color: var(--text-muted); align-self: center; margin-right: 4px;">Presets:</span>
-                                <button type="button" class="token-btn preset-app-btn" data-preset="DisCode">DisCode</button>
                                 <button type="button" class="token-btn preset-app-btn" data-preset="Visual Studio Code">Visual Studio Code</button>
+                                <button type="button" class="token-btn preset-app-btn" data-preset="DisCode">DisCode</button>
                                 <button type="button" class="token-btn preset-app-btn" data-preset="VSCodium">VSCodium</button>
                                 <button type="button" class="token-btn preset-app-btn" data-preset="Antigravity">Antigravity</button>
                                 <button type="button" class="token-btn preset-app-btn" data-preset="Cursor">Cursor</button>
@@ -1623,6 +1623,16 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = '') {
                     const preset = btn.getAttribute('data-preset');
                     if (preset && appNameInput) {
                         appNameInput.value = preset;
+                        const clientIdEl = document.getElementById('clientId');
+                        if (clientIdEl) {
+                            if (preset === 'Visual Studio Code' || preset === 'Cursor') {
+                                clientIdEl.value = '383226320970055681';
+                            } else if (preset === 'DisCode' || preset === 'Antigravity') {
+                                clientIdEl.value = '1565769356619554887';
+                            } else if (preset === 'VSCodium') {
+                                clientIdEl.value = '790693994793664533';
+                            }
+                        }
                         triggerLiveApply(true);
                         appNameInput.focus();
                     }

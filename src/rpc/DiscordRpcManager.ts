@@ -35,7 +35,7 @@ export class DiscordRpcManager implements vscode.Disposable {
     private discordUser: string | null = null;
     private currentUserInfo: DiscordUserInfo | null = null;
 
-    private readonly THROTTLE_INTERVAL_MS = 3000;
+    private readonly THROTTLE_INTERVAL_MS = 2000;
     private lastSendTimestamp = 0;
     private pendingPayload: ActivityPayload | null = null;
     private throttleTimer: NodeJS.Timeout | null = null;
@@ -59,6 +59,10 @@ export class DiscordRpcManager implements vscode.Disposable {
 
     public setOutputChannel(channel: { appendLine: (msg: string) => void }): void {
         this.outputChannel = channel;
+    }
+
+    public getClientId(): string {
+        return this.clientId;
     }
 
     private log(message: string): void {
@@ -292,6 +296,7 @@ export class DiscordRpcManager implements vscode.Disposable {
         if (this.pendingPayload) {
             const toSend = this.pendingPayload;
             this.pendingPayload = null;
+            this.lastSendTimestamp = 0;
             await this.executeSend(toSend, true);
         }
     }
@@ -304,7 +309,7 @@ export class DiscordRpcManager implements vscode.Disposable {
         }
 
         try {
-            this.log(`Sending Activity to Discord -> Name: "${payload.name || 'DisCode'}" | Type: ${payload.type ?? 0} | Details: "${payload.details || ''}" | State: "${payload.state || ''}"`);
+            this.log(`Sending Activity to Discord -> Type: ${payload.type ?? 0} | Details: "${payload.details || ''}" | State: "${payload.state || ''}"`);
 
             const activity: Record<string, unknown> = {
                 state: payload.state,
@@ -313,9 +318,6 @@ export class DiscordRpcManager implements vscode.Disposable {
             };
             if (payload.type !== undefined) {
                 activity.type = payload.type;
-            }
-            if (payload.name) {
-                activity.name = payload.name;
             }
             if (payload.startTimestamp || payload.endTimestamp) {
                 activity.timestamps = {

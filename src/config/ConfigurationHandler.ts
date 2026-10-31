@@ -36,6 +36,23 @@ export interface PresenceFormattingSettings {
     stateNoFile: string;
 }
 
+export function resolveEffectiveClientId(customClientId?: string, appName?: string): string {
+    if (customClientId && customClientId.trim().length > 0) {
+        return customClientId.trim();
+    }
+    const normalized = (appName || '').trim().toLowerCase();
+    if (normalized.includes('visual studio code') || normalized.includes('vscode')) {
+        return '383226320970055681';
+    }
+    if (normalized.includes('vscodium')) {
+        return '790693994793664533';
+    }
+    if (normalized.includes('code - oss') || normalized.includes('oss')) {
+        return '782685898163617802';
+    }
+    return '1565769356619554887'; // Default: DisCode
+}
+
 export class ConfigurationHandler implements vscode.Disposable {
     private readonly section = 'discordPresence';
     private disposables: vscode.Disposable[] = [];
@@ -133,6 +150,10 @@ export class ConfigurationHandler implements vscode.Disposable {
 
     public get customClientId(): string {
         return this._clientId;
+    }
+
+    public get effectiveClientId(): string {
+        return resolveEffectiveClientId(this._clientId, this._formattingSettings.appName);
     }
 
     public get enabled(): boolean {

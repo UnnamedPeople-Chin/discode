@@ -152,6 +152,10 @@ export class SettingsWebviewPanel {
     private handleLiveApplySettings(settings: Record<string, unknown>): void {
         try {
             this.configHandler.applyInMemory(settings);
+            const effectiveId = this.configHandler.effectiveClientId;
+            if (this.rpcManager.getClientId() !== effectiveId) {
+                this.rpcManager.updateClientId(effectiveId);
+            }
             this.activityDetector.forceSync();
             this.configHandler.persistSettings(settings).catch(() => {});
         } catch (error) {
@@ -162,6 +166,10 @@ export class SettingsWebviewPanel {
     private async handleSaveSettings(newSettings: Record<string, unknown>): Promise<void> {
         try {
             this.configHandler.applyInMemory(newSettings);
+            const effectiveId = this.configHandler.effectiveClientId;
+            if (this.rpcManager.getClientId() !== effectiveId) {
+                this.rpcManager.updateClientId(effectiveId);
+            }
             this.activityDetector.forceSync();
             await this.configHandler.persistSettings(newSettings);
             this.sendInitialData();

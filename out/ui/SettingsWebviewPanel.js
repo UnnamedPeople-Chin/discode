@@ -94,6 +94,7 @@ class SettingsWebviewPanel {
                         'appearance.largeImageStyle': 'fileIcon',
                         'appearance.showElapsedTime': true,
                         'appearance.activityType': 'playing',
+                        'appearance.appLogo': 'auto',
                         'timer.mode': 'session',
                         'timer.customOffsetMinutes': 0,
                         'formatting.appName': 'DisCode',

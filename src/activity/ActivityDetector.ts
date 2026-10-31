@@ -11,6 +11,33 @@ interface FileIconInfo {
 const DISCODE_OFFICIAL_ICON = 'https://cdn.discordapp.com/app-icons/1565769356619554887/281d28bf86d74667d7721cc09711f77f.png';
 const VSCORD_CDN_BASE = 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons';
 
+export const APP_LOGOS: Record<string, { label: string; url: string }> = {
+    discode: {
+        label: 'DisCode',
+        url: 'https://cdn.discordapp.com/app-icons/1565769356619554887/281d28bf86d74667d7721cc09711f77f.png'
+    },
+    vscode: {
+        label: 'Visual Studio Code',
+        url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/vscode.png'
+    },
+    antigravity: {
+        label: 'Google Antigravity',
+        url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/antigravity.png'
+    },
+    vscodium: {
+        label: 'VSCodium',
+        url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/vscodium.png'
+    },
+    cursor: {
+        label: 'Cursor',
+        url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/cursor.png'
+    },
+    'vscode-insiders': {
+        label: 'Visual Studio Code Insiders',
+        url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/vscode-insiders.png'
+    }
+};
+
 export const KNOWN_CDN_ICONS: Set<string> = new Set([
     'agda', 'ahk', 'android', 'angular', 'ansible', 'antigravity', 'applescript',
     'appveyor', 'arduino', 'asciidoc', 'asp', 'assembly', 'astro', 'astroconfig',
@@ -54,8 +81,10 @@ export class ActivityDetector implements vscode.Disposable {
             lineCount: string;
             currentLine: string;
             iconUrl?: string;
+            smallIconUrl?: string;
             appName?: string;
             activityType?: string;
+            appLogo?: string;
             startTimestamp?: number;
         };
     }>();
@@ -197,6 +226,7 @@ export class ActivityDetector implements vscode.Disposable {
         }
 
         const editorInfo = this.getEditorAppInfo();
+        const editorLogo = this.resolveEditorLogoInfo();
         const startTimestamp = this.resolveStartTimestamp();
         const appNameTemplate = this.configHandler.formatting.appName || 'DisCode';
         const activityType = this.getActivityTypeNumber(this.configHandler.appearance.activityType);
@@ -233,8 +263,8 @@ export class ActivityDetector implements vscode.Disposable {
                     details: details || undefined,
                     state: state || undefined,
                     startTimestamp,
-                    largeImageKey: this.resolvePresenceImage(editorInfo.icon, true),
-                    largeImageText: editorInfo.label,
+                    largeImageKey: editorLogo.url || DISCODE_OFFICIAL_ICON,
+                    largeImageText: editorLogo.label || editorInfo.label,
                     smallImageKey: this.resolvePresenceImage('idle', false),
                     smallImageText: 'Idle',
                     instance: false
@@ -260,8 +290,8 @@ export class ActivityDetector implements vscode.Disposable {
                 details: details || undefined,
                 state: state || undefined,
                 startTimestamp,
-                largeImageKey: this.resolvePresenceImage(editorInfo.icon, true),
-                largeImageText: editorInfo.label,
+                largeImageKey: editorLogo.url || DISCODE_OFFICIAL_ICON,
+                largeImageText: editorLogo.label || editorInfo.label,
                 smallImageKey: this.resolvePresenceImage('debugging', false),
                 smallImageText: `Debugging: ${debugSession.name}`,
                 instance: false
@@ -292,12 +322,14 @@ export class ActivityDetector implements vscode.Disposable {
             const appName = this.formatTemplate(appNameTemplate, templateVars).trim() || 'DisCode';
 
             const isFileIconLarge = this.configHandler.appearance.largeImageStyle === 'fileIcon';
-            const rawLarge = isFileIconLarge ? fileInfo.iconKey : editorInfo.icon;
-            const rawSmall = isFileIconLarge ? editorInfo.icon : fileInfo.iconKey;
-            const largeKey = this.resolvePresenceImage(rawLarge, !isFileIconLarge);
-            const smallKey = this.resolvePresenceImage(rawSmall, isFileIconLarge);
-            const largeText = isFileIconLarge ? fileInfo.label : editorInfo.label;
-            const smallText = isFileIconLarge ? editorInfo.label : fileInfo.label;
+            const largeKey = isFileIconLarge
+                ? this.resolvePresenceImage(fileInfo.iconKey, false)
+                : (editorLogo.url || DISCODE_OFFICIAL_ICON);
+            const smallKey = isFileIconLarge
+                ? editorLogo.url
+                : this.resolvePresenceImage(fileInfo.iconKey, false);
+            const largeText = isFileIconLarge ? fileInfo.label : (editorLogo.label || editorInfo.label);
+            const smallText = isFileIconLarge ? (editorLogo.label || undefined) : fileInfo.label;
 
             const payload: ActivityPayload = {
                 name: appName,
@@ -308,7 +340,7 @@ export class ActivityDetector implements vscode.Disposable {
                 largeImageKey: largeKey,
                 largeImageText: largeText,
                 smallImageKey: smallKey,
-                smallImageText: smallText,
+                smallImageText: smallKey ? smallText : undefined,
                 instance: false
             };
 
@@ -342,8 +374,8 @@ export class ActivityDetector implements vscode.Disposable {
                 details: details || undefined,
                 state: state || undefined,
                 startTimestamp,
-                largeImageKey: this.resolvePresenceImage(editorInfo.icon, true),
-                largeImageText: editorInfo.label,
+                largeImageKey: editorLogo.url || DISCODE_OFFICIAL_ICON,
+                largeImageText: editorLogo.label || editorInfo.label,
                 smallImageKey: this.resolvePresenceImage('idle', false),
                 smallImageText: 'Idle',
                 instance: false
@@ -362,8 +394,8 @@ export class ActivityDetector implements vscode.Disposable {
             details: details || undefined,
             state: state || undefined,
             startTimestamp,
-            largeImageKey: this.resolvePresenceImage(editorInfo.icon, true),
-            largeImageText: editorInfo.label,
+            largeImageKey: editorLogo.url || DISCODE_OFFICIAL_ICON,
+            largeImageText: editorLogo.label || editorInfo.label,
             instance: false
         });
     }
@@ -382,9 +414,12 @@ export class ActivityDetector implements vscode.Disposable {
         }
     }
 
-    public resolvePresenceImage(key: string, isEditor = false): string {
+    public resolvePresenceImage(key: string, isEditor = false): string | undefined {
+        if (isEditor) {
+            return this.resolveEditorLogoInfo().url;
+        }
         if (!key) {
-            return isEditor ? DISCODE_OFFICIAL_ICON : `${VSCORD_CDN_BASE}/text.png`;
+            return `${VSCORD_CDN_BASE}/text.png`;
         }
         if (this.configHandler.customClientId) {
             return key;
@@ -392,14 +427,42 @@ export class ActivityDetector implements vscode.Disposable {
         if (key.startsWith('http://') || key.startsWith('https://')) {
             return key;
         }
-        if (isEditor || key === 'vscode' || key === 'vscodium' || key === 'vscode-insiders') {
-            return DISCODE_OFFICIAL_ICON;
-        }
         const normalized = key.toLowerCase();
         if (KNOWN_CDN_ICONS.has(normalized)) {
             return `${VSCORD_CDN_BASE}/${normalized}.png`;
         }
         return `${VSCORD_CDN_BASE}/text.png`;
+    }
+
+    public resolveEditorLogoInfo(): { url?: string; label: string } {
+        const appLogo = this.configHandler.appearance.appLogo || 'auto';
+        if (appLogo === 'none') {
+            return { url: undefined, label: '' };
+        }
+        if (appLogo.startsWith('http://') || appLogo.startsWith('https://')) {
+            return { url: appLogo, label: this.configHandler.formatting.appName || 'Editor' };
+        }
+        if (appLogo !== 'auto' && APP_LOGOS[appLogo]) {
+            return { url: APP_LOGOS[appLogo].url, label: APP_LOGOS[appLogo].label };
+        }
+
+        const appNameLower = ((this.configHandler.formatting.appName || '') + ' ' + (vscode.env.appName || '')).toLowerCase();
+        if (appNameLower.includes('antigravity')) {
+            return { url: APP_LOGOS['antigravity'].url, label: 'Google Antigravity' };
+        }
+        if (appNameLower.includes('visual studio code') || appNameLower.includes('vscode')) {
+            return { url: APP_LOGOS['vscode'].url, label: 'Visual Studio Code' };
+        }
+        if (appNameLower.includes('vscodium')) {
+            return { url: APP_LOGOS['vscodium'].url, label: 'VSCodium' };
+        }
+        if (appNameLower.includes('cursor')) {
+            return { url: APP_LOGOS['cursor'].url, label: 'Cursor' };
+        }
+        if (appNameLower.includes('insiders')) {
+            return { url: APP_LOGOS['vscode-insiders'].url, label: 'Visual Studio Code Insiders' };
+        }
+        return { url: APP_LOGOS['discode'].url, label: 'DisCode' };
     }
 
     public resolveFileIcon(languageId: string, ext: string, fileName: string): FileIconInfo {
@@ -553,8 +616,10 @@ export class ActivityDetector implements vscode.Disposable {
         lineCount: string;
         currentLine: string;
         iconUrl?: string;
+        smallIconUrl?: string;
         appName?: string;
         activityType?: string;
+        appLogo?: string;
         startTimestamp?: number;
     } {
         const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
@@ -563,10 +628,14 @@ export class ActivityDetector implements vscode.Disposable {
         const fileName = doc ? path.basename(doc.fileName) : 'App.tsx';
         const ext = path.extname(fileName).replace('.', '') || 'tsx';
         const fileInfo = this.resolveFileIcon(doc?.languageId || 'typescriptreact', ext, fileName);
+        const editorLogo = this.resolveEditorLogoInfo();
         const isFileIconLarge = this.configHandler.appearance.largeImageStyle === 'fileIcon';
         const iconUrl = isFileIconLarge
             ? this.resolvePresenceImage(fileInfo.iconKey, false)
-            : DISCODE_OFFICIAL_ICON;
+            : (editorLogo.url || DISCODE_OFFICIAL_ICON);
+        const smallIconUrl = isFileIconLarge
+            ? editorLogo.url
+            : this.resolvePresenceImage(fileInfo.iconKey, false);
 
         const templateVars = this.buildTemplateVars(workspaceName, {
             fileName,
@@ -586,8 +655,10 @@ export class ActivityDetector implements vscode.Disposable {
             lineCount: String(doc?.lineCount || 128),
             currentLine: String((vscode.window.activeTextEditor?.selection.active.line || 0) + 1),
             iconUrl,
+            smallIconUrl,
             appName,
             activityType: this.configHandler.appearance.activityType,
+            appLogo: this.configHandler.appearance.appLogo || 'auto',
             startTimestamp: this.resolveStartTimestamp()
         };
     }

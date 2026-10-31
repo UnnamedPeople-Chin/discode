@@ -87,7 +87,8 @@ class ConfigurationHandler {
         this._appearanceSettings = {
             largeImageStyle: config.get('appearance.largeImageStyle', 'fileIcon'),
             showElapsedTime: config.get('appearance.showElapsedTime', true),
-            activityType: config.get('appearance.activityType', 'playing')
+            activityType: config.get('appearance.activityType', 'playing'),
+            appLogo: config.get('appearance.appLogo', 'auto')
         };
         this._timerSettings = {
             mode: config.get('timer.mode', 'session'),
@@ -162,6 +163,9 @@ class ConfigurationHandler {
         }
         if (settings['appearance.activityType'] !== undefined) {
             this._appearanceSettings.activityType = settings['appearance.activityType'];
+        }
+        if (settings['appearance.appLogo'] !== undefined) {
+            this._appearanceSettings.appLogo = String(settings['appearance.appLogo']);
         }
         // Timer
         if (settings['timer.mode'] !== undefined) {
@@ -242,6 +246,7 @@ class ConfigurationHandler {
             'appearance.largeImageStyle': this._appearanceSettings.largeImageStyle,
             'appearance.showElapsedTime': this._appearanceSettings.showElapsedTime,
             'appearance.activityType': this._appearanceSettings.activityType,
+            'appearance.appLogo': this._appearanceSettings.appLogo,
             'timer.mode': this._timerSettings.mode,
             'timer.customOffsetMinutes': this._timerSettings.customOffsetMinutes,
             'behavior.whenNoFileOpen': this._behaviorSettings.whenNoFileOpen,

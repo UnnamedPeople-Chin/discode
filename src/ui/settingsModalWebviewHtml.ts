@@ -1081,7 +1081,24 @@ export function getSettingsModalWebviewHtml(nonce: string, cspSource: string, ba
                             </select>
                         </div>
 
-                        <div class="toggle-row">
+                        <div class="field-group" style="margin-top: 14px;">
+                            <label class="field-label" for="appLogo">
+                                <span>Application & Small Badge Logo</span>
+                                <span class="field-sub">Choose which logo appears on the secondary badge or large image</span>
+                            </label>
+                            <select id="appLogo" class="select-input">
+                                <option value="auto">Auto - Match Application Title (VS Code, Antigravity, DisCode)</option>
+                                <option value="vscode">Visual Studio Code (Official Blue Ribbon)</option>
+                                <option value="discode">DisCode (Red Headset)</option>
+                                <option value="antigravity">Google Antigravity (Official Logo)</option>
+                                <option value="vscodium">VSCodium (Official Logo)</option>
+                                <option value="cursor">Cursor (Official Logo)</option>
+                                <option value="vscode-insiders">VS Code Insiders (Green Ribbon)</option>
+                                <option value="none">Hide Badge (No small icon badge)</option>
+                            </select>
+                        </div>
+
+                        <div class="toggle-row" style="margin-top: 14px;">
                             <div class="toggle-info">
                                 <span class="toggle-title">Show Elapsed Timestamp</span>
                                 <span class="toggle-desc">Displays "XX:XX:XX elapsed" on your Discord Rich Presence card.</span>
@@ -1270,8 +1287,11 @@ export function getSettingsModalWebviewHtml(nonce: string, cspSource: string, ba
                                 <div class="discord-icon-container" id="previewAppIconWrap">
                                     <img id="previewLargeIconImg" class="discord-large-icon-img" src="" alt="Icon" style="display:none; width: 100%; height: 100%; object-fit: contain; padding: 6px; box-sizing: border-box; border-radius: 8px;" />
                                     <span id="previewBadgeIcon" class="discord-large-badge">TS</span>
-                                    <div class="discord-small-badge" title="DisCode Official">
-                                        ${ICONS.discodeLogo}
+                                    <div class="discord-small-badge" id="previewSmallBadge" title="Editor Logo Badge">
+                                        <img id="previewSmallBadgeImg" src="" alt="Badge" style="width:100%;height:100%;object-fit:contain;border-radius:50%;display:none;" />
+                                        <span id="previewSmallBadgeSvg" style="width:100%;height:100%;display:block;">
+                                            ${ICONS.discodeLogo}
+                                        </span>
                                     </div>
                                 </div>
                                 <div class="discord-act-text">
@@ -1320,6 +1340,7 @@ export function getSettingsModalWebviewHtml(nonce: string, cspSource: string, ba
             const detailsInput = document.getElementById('detailsEditing');
             const stateInput = document.getElementById('stateEditing');
             const activityTypeSelect = document.getElementById('activityType');
+            const appLogoSelect = document.getElementById('appLogo');
             const appNameInput = document.getElementById('appName');
             const previewActHeader = document.getElementById('previewActHeader');
             const previewAppName = document.getElementById('previewAppName');
@@ -1348,9 +1369,65 @@ export function getSettingsModalWebviewHtml(nonce: string, cspSource: string, ba
             const previewFooterUserId = document.getElementById('previewFooterUserId');
             const previewBadgeIcon = document.getElementById('previewBadgeIcon');
             const previewLargeIconImg = document.getElementById('previewLargeIconImg');
+            const previewSmallBadge = document.getElementById('previewSmallBadge');
+            const previewSmallBadgeImg = document.getElementById('previewSmallBadgeImg');
+            const previewSmallBadgeSvg = document.getElementById('previewSmallBadgeSvg');
             const topStatusDot = document.getElementById('topStatusDot');
             const topConnStatus = document.getElementById('topConnStatus');
             const kyotoRelayStatus = document.getElementById('kyotoRelayStatus');
+
+            const APP_LOGOS_MAP = {
+                discode: { label: 'DisCode', url: 'https://cdn.discordapp.com/app-icons/1565769356619554887/281d28bf86d74667d7721cc09711f77f.png' },
+                vscode: { label: 'Visual Studio Code', url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/vscode.png' },
+                antigravity: { label: 'Google Antigravity', url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/antigravity.png' },
+                vscodium: { label: 'VSCodium', url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/vscodium.png' },
+                cursor: { label: 'Cursor', url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/cursor.png' },
+                'vscode-insiders': { label: 'Visual Studio Code Insiders', url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/vscode-insiders.png' }
+            };
+
+            function updateSmallBadgePreview() {
+                if (!previewSmallBadge) return;
+                const choice = appLogoSelect ? appLogoSelect.value : 'auto';
+
+                if (choice === 'none') {
+                    previewSmallBadge.style.display = 'none';
+                    return;
+                }
+                previewSmallBadge.style.display = 'flex';
+
+                let resolvedUrl = '';
+                if (choice !== 'auto' && APP_LOGOS_MAP[choice]) {
+                    resolvedUrl = APP_LOGOS_MAP[choice].url;
+                } else if (choice.startsWith('http://') || choice.startsWith('https://')) {
+                    resolvedUrl = choice;
+                } else {
+                    const appNameLower = ((appNameInput ? appNameInput.value : '') + ' ' + (livePreviewData.appName || '')).toLowerCase();
+                    if (appNameLower.includes('antigravity')) {
+                        resolvedUrl = APP_LOGOS_MAP.antigravity.url;
+                    } else if (appNameLower.includes('visual studio code') || appNameLower.includes('vscode')) {
+                        resolvedUrl = APP_LOGOS_MAP.vscode.url;
+                    } else if (appNameLower.includes('vscodium')) {
+                        resolvedUrl = APP_LOGOS_MAP.vscodium.url;
+                    } else if (appNameLower.includes('cursor')) {
+                        resolvedUrl = APP_LOGOS_MAP.cursor.url;
+                    } else if (appNameLower.includes('insiders')) {
+                        resolvedUrl = APP_LOGOS_MAP['vscode-insiders'].url;
+                    } else if (livePreviewData.smallIconUrl) {
+                        resolvedUrl = livePreviewData.smallIconUrl;
+                    }
+                }
+
+                if (resolvedUrl && !resolvedUrl.includes('app-icons/1565769356619554887')) {
+                    if (previewSmallBadgeImg) {
+                        previewSmallBadgeImg.src = resolvedUrl;
+                        previewSmallBadgeImg.style.display = 'block';
+                    }
+                    if (previewSmallBadgeSvg) previewSmallBadgeSvg.style.display = 'none';
+                } else {
+                    if (previewSmallBadgeImg) previewSmallBadgeImg.style.display = 'none';
+                    if (previewSmallBadgeSvg) previewSmallBadgeSvg.style.display = 'block';
+                }
+            }
 
             if (previewLargeIconImg) {
                 previewLargeIconImg.onerror = function() {
@@ -1495,6 +1572,7 @@ export function getSettingsModalWebviewHtml(nonce: string, cspSource: string, ba
                 } else {
                     previewTimerRow.style.display = 'none';
                 }
+                updateSmallBadgePreview();
             }
 
             function tickTimer() {
@@ -1546,6 +1624,7 @@ export function getSettingsModalWebviewHtml(nonce: string, cspSource: string, ba
                     enabled: enabledEl ? enabledEl.checked : true,
                     'appearance.activityType': activityTypeSelect ? activityTypeSelect.value : 'playing',
                     'appearance.largeImageStyle': largeImgEl ? largeImgEl.value : 'fileIcon',
+                    'appearance.appLogo': appLogoSelect ? appLogoSelect.value : 'auto',
                     'appearance.showElapsedTime': showElapsedTime.checked,
                     'timer.mode': timerMode.value,
                     'timer.customOffsetMinutes': totalMinutes,
@@ -1601,6 +1680,10 @@ export function getSettingsModalWebviewHtml(nonce: string, cspSource: string, ba
             if (enabledEl) enabledEl.addEventListener('change', () => triggerLiveApply(true));
             const largeImgEl = document.getElementById('largeImageStyle');
             if (largeImgEl) largeImgEl.addEventListener('change', () => triggerLiveApply(true));
+            if (appLogoSelect) appLogoSelect.addEventListener('change', () => {
+                updateSmallBadgePreview();
+                triggerLiveApply(true);
+            });
             const whenNoFileEl = document.getElementById('whenNoFileOpen');
             if (whenNoFileEl) whenNoFileEl.addEventListener('change', () => triggerLiveApply(true));
             const idleActionEl = document.getElementById('idleAction');
@@ -1631,6 +1714,7 @@ export function getSettingsModalWebviewHtml(nonce: string, cspSource: string, ba
                                 clientIdEl.value = '790693994793664533';
                             }
                         }
+                        updateSmallBadgePreview();
                         triggerLiveApply(true);
                         appNameInput.focus();
                     }
@@ -1726,6 +1810,8 @@ export function getSettingsModalWebviewHtml(nonce: string, cspSource: string, ba
             document.getElementById('btnResetDefaults').addEventListener('click', () => {
                 if (activityTypeSelect) activityTypeSelect.value = 'playing';
                 if (appNameInput) appNameInput.value = 'DisCode';
+                if (appLogoSelect) appLogoSelect.value = 'auto';
+                updateSmallBadgePreview();
                 syncPreview();
                 vscode.postMessage({ command: 'resetDefaults' });
                 showStatusBadge('Defaults Restored');
@@ -1766,6 +1852,7 @@ export function getSettingsModalWebviewHtml(nonce: string, cspSource: string, ba
                     if (s['formatting.detailsIdle']) document.getElementById('detailsIdle').value = s['formatting.detailsIdle'];
                     if (s['formatting.stateIdle']) document.getElementById('stateIdle').value = s['formatting.stateIdle'];
                     if (s['appearance.largeImageStyle']) document.getElementById('largeImageStyle').value = s['appearance.largeImageStyle'];
+                    if (s['appearance.appLogo'] && appLogoSelect) appLogoSelect.value = s['appearance.appLogo'];
                     if (s['appearance.showElapsedTime'] !== undefined) showElapsedTime.checked = Boolean(s['appearance.showElapsedTime']);
                     if (s['timer.mode']) timerMode.value = s['timer.mode'];
                     if (s['timer.customOffsetMinutes'] !== undefined) {

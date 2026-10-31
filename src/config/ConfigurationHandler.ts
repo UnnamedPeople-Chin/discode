@@ -12,6 +12,7 @@ export interface PresenceAppearanceSettings {
     largeImageStyle: 'fileIcon' | 'editorIcon';
     showElapsedTime: boolean;
     activityType: 'playing' | 'watching' | 'listening' | 'competing';
+    appLogo: 'auto' | 'vscode' | 'discode' | 'antigravity' | 'vscodium' | 'cursor' | 'vscode-insiders' | 'none' | string;
 }
 
 export interface PresenceTimerSettings {
@@ -95,7 +96,8 @@ export class ConfigurationHandler implements vscode.Disposable {
         this._appearanceSettings = {
             largeImageStyle: config.get<'fileIcon' | 'editorIcon'>('appearance.largeImageStyle', 'fileIcon'),
             showElapsedTime: config.get<boolean>('appearance.showElapsedTime', true),
-            activityType: config.get<'playing' | 'watching' | 'listening' | 'competing'>('appearance.activityType', 'playing')
+            activityType: config.get<'playing' | 'watching' | 'listening' | 'competing'>('appearance.activityType', 'playing'),
+            appLogo: config.get<string>('appearance.appLogo', 'auto')
         };
 
         this._timerSettings = {
@@ -186,6 +188,9 @@ export class ConfigurationHandler implements vscode.Disposable {
         if (settings['appearance.activityType'] !== undefined) {
             this._appearanceSettings.activityType = settings['appearance.activityType'] as 'playing' | 'watching' | 'listening' | 'competing';
         }
+        if (settings['appearance.appLogo'] !== undefined) {
+            this._appearanceSettings.appLogo = String(settings['appearance.appLogo']);
+        }
 
         // Timer
         if (settings['timer.mode'] !== undefined) {
@@ -273,6 +278,7 @@ export class ConfigurationHandler implements vscode.Disposable {
             'appearance.largeImageStyle': this._appearanceSettings.largeImageStyle,
             'appearance.showElapsedTime': this._appearanceSettings.showElapsedTime,
             'appearance.activityType': this._appearanceSettings.activityType,
+            'appearance.appLogo': this._appearanceSettings.appLogo,
             'timer.mode': this._timerSettings.mode,
             'timer.customOffsetMinutes': this._timerSettings.customOffsetMinutes,
             'behavior.whenNoFileOpen': this._behaviorSettings.whenNoFileOpen,

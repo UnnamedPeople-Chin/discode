@@ -268,6 +268,9 @@ class DiscordRpcManager {
             if (payload.type !== undefined) {
                 activity.type = payload.type;
             }
+            if (payload.name) {
+                activity.name = payload.name;
+            }
             if (payload.startTimestamp || payload.endTimestamp) {
                 activity.timestamps = {
                     start: payload.startTimestamp,

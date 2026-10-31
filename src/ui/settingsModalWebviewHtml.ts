@@ -1530,15 +1530,90 @@ export function getSettingsModalWebviewHtml(nonce: string, cspSource: string, ba
                 btn.addEventListener('click', () => activateSection(btn.dataset.section));
             });
 
-            // Input listeners
-            detailsInput.addEventListener('input', syncPreview);
-            stateInput.addEventListener('input', syncPreview);
-            if (activityTypeSelect) activityTypeSelect.addEventListener('change', syncPreview);
-            if (appNameInput) appNameInput.addEventListener('input', syncPreview);
-            showElapsedTime.addEventListener('change', syncPreview);
-            showFileName.addEventListener('change', syncPreview);
-            showWorkspaceName.addEventListener('change', syncPreview);
-            showGitBranch.addEventListener('change', syncPreview);
+            function collectCurrentSettings() {
+                const totalMinutes = (parseInt(timerHours.value || '0', 10) * 60) + parseInt(timerMinutes.value || '0', 10);
+                const enabledEl = document.getElementById('enabled');
+                const largeImgEl = document.getElementById('largeImageStyle');
+                const detailsIdleEl = document.getElementById('detailsIdle');
+                const stateIdleEl = document.getElementById('stateIdle');
+                const whenNoFileEl = document.getElementById('whenNoFileOpen');
+                const idleActionEl = document.getElementById('idleAction');
+                const idleTimeoutEl = document.getElementById('idleTimeoutSeconds');
+                const showDebugEl = document.getElementById('showDebugStatus');
+                const clientIdEl = document.getElementById('clientId');
+
+                return {
+                    enabled: enabledEl ? enabledEl.checked : true,
+                    'appearance.activityType': activityTypeSelect ? activityTypeSelect.value : 'playing',
+                    'appearance.largeImageStyle': largeImgEl ? largeImgEl.value : 'fileIcon',
+                    'appearance.showElapsedTime': showElapsedTime.checked,
+                    'timer.mode': timerMode.value,
+                    'timer.customOffsetMinutes': totalMinutes,
+                    'formatting.appName': appNameInput ? (appNameInput.value.trim() || 'DisCode') : 'DisCode',
+                    'formatting.detailsEditing': detailsInput.value,
+                    'formatting.stateEditing': stateInput.value,
+                    'formatting.detailsIdle': detailsIdleEl ? detailsIdleEl.value : 'Idling',
+                    'formatting.stateIdle': stateIdleEl ? stateIdleEl.value : 'Workspace: {workspace}',
+                    'behavior.whenNoFileOpen': whenNoFileEl ? whenNoFileEl.value : 'keepLastFile',
+                    'behavior.idleAction': idleActionEl ? idleActionEl.value : 'showIdle',
+                    'idleTimeoutSeconds': parseInt(idleTimeoutEl ? idleTimeoutEl.value : '300', 10) || 300,
+                    'privacy.showFileName': showFileName.checked,
+                    'privacy.showWorkspaceName': showWorkspaceName.checked,
+                    'privacy.showGitBranch': showGitBranch.checked,
+                    'privacy.showDebugStatus': showDebugEl ? showDebugEl.checked : true,
+                    clientId: clientIdEl ? clientIdEl.value.trim() : ''
+                };
+            }
+
+            let liveApplyTimer = null;
+            function triggerLiveApply(immediate) {
+                syncPreview();
+                if (liveApplyTimer) {
+                    clearTimeout(liveApplyTimer);
+                    liveApplyTimer = null;
+                }
+                const sendUpdate = () => {
+                    const settings = collectCurrentSettings();
+                    vscode.postMessage({
+                        command: 'liveApplySettings',
+                        settings
+                    });
+                };
+
+                if (immediate) {
+                    sendUpdate();
+                } else {
+                    liveApplyTimer = setTimeout(sendUpdate, 400);
+                }
+            }
+
+            // Input listeners with instant live Discord apply
+            detailsInput.addEventListener('input', () => triggerLiveApply(false));
+            stateInput.addEventListener('input', () => triggerLiveApply(false));
+            if (activityTypeSelect) activityTypeSelect.addEventListener('change', () => triggerLiveApply(true));
+            if (appNameInput) appNameInput.addEventListener('input', () => triggerLiveApply(false));
+            showElapsedTime.addEventListener('change', () => triggerLiveApply(true));
+            showFileName.addEventListener('change', () => triggerLiveApply(true));
+            showWorkspaceName.addEventListener('change', () => triggerLiveApply(true));
+            showGitBranch.addEventListener('change', () => triggerLiveApply(true));
+
+            const enabledEl = document.getElementById('enabled');
+            if (enabledEl) enabledEl.addEventListener('change', () => triggerLiveApply(true));
+            const largeImgEl = document.getElementById('largeImageStyle');
+            if (largeImgEl) largeImgEl.addEventListener('change', () => triggerLiveApply(true));
+            const whenNoFileEl = document.getElementById('whenNoFileOpen');
+            if (whenNoFileEl) whenNoFileEl.addEventListener('change', () => triggerLiveApply(true));
+            const idleActionEl = document.getElementById('idleAction');
+            if (idleActionEl) idleActionEl.addEventListener('change', () => triggerLiveApply(true));
+            const showDebugEl = document.getElementById('showDebugStatus');
+            if (showDebugEl) showDebugEl.addEventListener('change', () => triggerLiveApply(true));
+            if (timerMode) timerMode.addEventListener('change', () => triggerLiveApply(true));
+            const detailsIdleEl = document.getElementById('detailsIdle');
+            if (detailsIdleEl) detailsIdleEl.addEventListener('input', () => triggerLiveApply(false));
+            const stateIdleEl = document.getElementById('stateIdle');
+            if (stateIdleEl) stateIdleEl.addEventListener('input', () => triggerLiveApply(false));
+            if (timerHours) timerHours.addEventListener('input', () => triggerLiveApply(false));
+            if (timerMinutes) timerMinutes.addEventListener('input', () => triggerLiveApply(false));
 
             // Preset app name buttons
             document.querySelectorAll('.preset-app-btn').forEach(btn => {
@@ -1546,7 +1621,7 @@ export function getSettingsModalWebviewHtml(nonce: string, cspSource: string, ba
                     const preset = btn.getAttribute('data-preset');
                     if (preset && appNameInput) {
                         appNameInput.value = preset;
-                        syncPreview();
+                        triggerLiveApply(true);
                         appNameInput.focus();
                     }
                 });
@@ -1560,7 +1635,7 @@ export function getSettingsModalWebviewHtml(nonce: string, cspSource: string, ba
                     const targetEl = document.getElementById(targetId);
                     if (targetEl) {
                         targetEl.value = targetEl.value + ' ' + token;
-                        syncPreview();
+                        triggerLiveApply(true);
                         targetEl.focus();
                     }
                 });
@@ -1573,6 +1648,7 @@ export function getSettingsModalWebviewHtml(nonce: string, cspSource: string, ba
                 if (!realStartTimestamp) realStartTimestamp = Math.floor(Date.now() / 1000);
                 realStartTimestamp = Math.max(0, realStartTimestamp - 3600);
                 tickTimer();
+                triggerLiveApply(true);
             });
 
             document.getElementById('btnPlus2').addEventListener('click', () => {
@@ -1581,6 +1657,7 @@ export function getSettingsModalWebviewHtml(nonce: string, cspSource: string, ba
                 if (!realStartTimestamp) realStartTimestamp = Math.floor(Date.now() / 1000);
                 realStartTimestamp = Math.max(0, realStartTimestamp - 7200);
                 tickTimer();
+                triggerLiveApply(true);
             });
 
             document.getElementById('btnPlus3').addEventListener('click', () => {
@@ -1592,6 +1669,7 @@ export function getSettingsModalWebviewHtml(nonce: string, cspSource: string, ba
                 if (!realStartTimestamp) realStartTimestamp = Math.floor(Date.now() / 1000);
                 realStartTimestamp = Math.max(0, realStartTimestamp - (3.5 * 3600));
                 tickTimer();
+                triggerLiveApply(true);
             });
 
             document.getElementById('btnResetTimer').addEventListener('click', () => {
@@ -1625,30 +1703,13 @@ export function getSettingsModalWebviewHtml(nonce: string, cspSource: string, ba
 
             // Save Changes
             btnSave.addEventListener('click', () => {
-                const totalMinutes = (parseInt(timerHours.value || '0', 10) * 60) + parseInt(timerMinutes.value || '0', 10);
-                const newSettings = {
-                    enabled: document.getElementById('enabled').checked,
-                    'appearance.activityType': activityTypeSelect ? activityTypeSelect.value : 'playing',
-                    'appearance.largeImageStyle': document.getElementById('largeImageStyle').value,
-                    'appearance.showElapsedTime': showElapsedTime.checked,
-                    'timer.mode': timerMode.value,
-                    'timer.customOffsetMinutes': totalMinutes,
-                    'formatting.appName': appNameInput ? (appNameInput.value.trim() || 'DisCode') : 'DisCode',
-                    'formatting.detailsEditing': detailsInput.value,
-                    'formatting.stateEditing': stateInput.value,
-                    'formatting.detailsIdle': document.getElementById('detailsIdle').value,
-                    'formatting.stateIdle': document.getElementById('stateIdle').value,
-                    'behavior.whenNoFileOpen': document.getElementById('whenNoFileOpen').value,
-                    'behavior.idleAction': document.getElementById('idleAction').value,
-                    'idleTimeoutSeconds': parseInt(document.getElementById('idleTimeoutSeconds').value || '300', 10),
-                    'privacy.showFileName': showFileName.checked,
-                    'privacy.showWorkspaceName': showWorkspaceName.checked,
-                    'privacy.showGitBranch': showGitBranch.checked,
-                    'privacy.showDebugStatus': document.getElementById('showDebugStatus').checked,
-                    clientId: document.getElementById('clientId').value.trim()
-                };
+                if (liveApplyTimer) {
+                    clearTimeout(liveApplyTimer);
+                    liveApplyTimer = null;
+                }
+                const newSettings = collectCurrentSettings();
                 vscode.postMessage({ command: 'saveSettings', settings: newSettings });
-                showStatusBadge('Settings Saved!');
+                showStatusBadge('Tersimpan & Langsung Aktif di Discord!');
             });
 
             // Reset to defaults

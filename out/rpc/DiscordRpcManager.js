@@ -13,7 +13,7 @@ class DiscordRpcManager {
     reconnectTimer = null;
     discordUser = null;
     currentUserInfo = null;
-    THROTTLE_INTERVAL_MS = 15000;
+    THROTTLE_INTERVAL_MS = 3000;
     lastSendTimestamp = 0;
     pendingPayload = null;
     throttleTimer = null;
@@ -244,13 +244,13 @@ class DiscordRpcManager {
         if (this.pendingPayload) {
             const toSend = this.pendingPayload;
             this.pendingPayload = null;
-            await this.executeSend(toSend);
+            await this.executeSend(toSend, true);
         }
     }
-    async executeSend(payload) {
+    async executeSend(payload, force = false) {
         if (!this.client || !this.isConnected)
             return;
-        if (this.arePayloadsEqual(this.lastSentPayload, payload)) {
+        if (!force && this.arePayloadsEqual(this.lastSentPayload, payload)) {
             this.pendingPayload = null;
             return;
         }

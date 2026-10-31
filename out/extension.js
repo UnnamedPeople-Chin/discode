@@ -3099,7 +3099,7 @@ var require_ipc = __commonJS({
   "node_modules/discord-rpc/src/transports/ipc.js"(exports2, module2) {
     "use strict";
     var net = require("net");
-    var EventEmitter3 = require("events");
+    var EventEmitter4 = require("events");
     var fetch = require_lib2();
     var { uuid } = require_util();
     var OPCodes = {
@@ -3186,7 +3186,7 @@ var require_ipc = __commonJS({
       }
       decode(socket, callback);
     }
-    var IPCTransport = class extends EventEmitter3 {
+    var IPCTransport = class extends EventEmitter4 {
       constructor(client) {
         super();
         this.client = client;
@@ -5334,7 +5334,7 @@ var require_extension = __commonJS({
 var require_websocket = __commonJS({
   "node_modules/ws/lib/websocket.js"(exports2, module2) {
     "use strict";
-    var EventEmitter3 = require("events");
+    var EventEmitter4 = require("events");
     var https = require("https");
     var http = require("http");
     var net = require("net");
@@ -5359,7 +5359,7 @@ var require_websocket = __commonJS({
     var readyStates = ["CONNECTING", "OPEN", "CLOSING", "CLOSED"];
     var protocolVersions = [8, 13];
     var closeTimeout = 30 * 1e3;
-    var WebSocket = class _WebSocket extends EventEmitter3 {
+    var WebSocket = class _WebSocket extends EventEmitter4 {
       /**
        * Create a new `WebSocket`.
        *
@@ -6230,7 +6230,7 @@ var require_stream = __commonJS({
 var require_websocket_server = __commonJS({
   "node_modules/ws/lib/websocket-server.js"(exports2, module2) {
     "use strict";
-    var EventEmitter3 = require("events");
+    var EventEmitter4 = require("events");
     var http = require("http");
     var https = require("https");
     var net = require("net");
@@ -6244,7 +6244,7 @@ var require_websocket_server = __commonJS({
     var RUNNING = 0;
     var CLOSING = 1;
     var CLOSED = 2;
-    var WebSocketServer = class extends EventEmitter3 {
+    var WebSocketServer = class extends EventEmitter4 {
       /**
        * Create a `WebSocketServer` instance.
        *
@@ -6564,12 +6564,12 @@ var require_ws = __commonJS({
 var require_websocket2 = __commonJS({
   "node_modules/discord-rpc/src/transports/websocket.js"(exports2, module2) {
     "use strict";
-    var EventEmitter3 = require("events");
+    var EventEmitter4 = require("events");
     var { browser } = require_constants();
     var WebSocket = browser ? window.WebSocket : require_ws();
     var pack = (d) => JSON.stringify(d);
     var unpack = (s) => JSON.parse(s);
-    var WebSocketTransport = class extends EventEmitter3 {
+    var WebSocketTransport = class extends EventEmitter4 {
       constructor(client) {
         super();
         this.client = client;
@@ -6645,7 +6645,7 @@ var require_transports = __commonJS({
 var require_client = __commonJS({
   "node_modules/discord-rpc/src/client.js"(exports2, module2) {
     "use strict";
-    var EventEmitter3 = require("events");
+    var EventEmitter4 = require("events");
     var { setTimeout: setTimeout2, clearTimeout: clearTimeout2 } = require("timers");
     var fetch = require_lib2();
     var transports = require_transports();
@@ -6654,7 +6654,7 @@ var require_client = __commonJS({
     function subKey(event, args) {
       return `${event}${JSON.stringify(args)}`;
     }
-    var RPCClient = class extends EventEmitter3 {
+    var RPCClient = class extends EventEmitter4 {
       /**
        * @param {RPCClientOptions} [options] Options for the client.
        * You must provide a transport
@@ -7433,7 +7433,8 @@ var ActivityDetector = class {
       }),
       vscode.debug.onDidStartDebugSession(() => this.evaluateState()),
       vscode.debug.onDidTerminateDebugSession(() => this.evaluateState()),
-      vscode.workspace.onDidChangeWorkspaceFolders(() => this.evaluateState())
+      vscode.workspace.onDidChangeWorkspaceFolders(() => this.evaluateState()),
+      this.configHandler.onDidChangeSettings(() => this.forceSync())
     );
   }
   onUserActivity(isFileSwitch) {
@@ -7888,12 +7889,15 @@ var ConfigurationHandler = class {
   _idleTimeoutSeconds;
   _clientId;
   _enabled;
+  onDidChangeSettingsEmitter = new vscode2.EventEmitter();
+  onDidChangeSettings = this.onDidChangeSettingsEmitter.event;
   constructor() {
     this.loadSettings();
     this.disposables.push(
       vscode2.workspace.onDidChangeConfiguration((e) => {
         if (e.affectsConfiguration(this.section)) {
           this.loadSettings();
+          this.onDidChangeSettingsEmitter.fire();
         }
       })
     );
@@ -7963,10 +7967,93 @@ var ConfigurationHandler = class {
     if (!workspaceName) return true;
     return !this._privacySettings.blacklistedWorkspaces.includes(workspaceName);
   }
-  async updateSetting(key, value, target = vscode2.ConfigurationTarget.Global) {
+  applyInMemory(settings) {
+    if (settings.enabled !== void 0) {
+      this._enabled = Boolean(settings.enabled);
+    }
+    if (settings.idleTimeoutSeconds !== void 0) {
+      this._idleTimeoutSeconds = Math.max(30, Number(settings.idleTimeoutSeconds) || 300);
+    }
+    if (typeof settings.clientId === "string") {
+      this._clientId = settings.clientId.trim();
+    }
+    if (settings["appearance.largeImageStyle"] !== void 0) {
+      this._appearanceSettings.largeImageStyle = settings["appearance.largeImageStyle"];
+    }
+    if (settings["appearance.showElapsedTime"] !== void 0) {
+      this._appearanceSettings.showElapsedTime = Boolean(settings["appearance.showElapsedTime"]);
+    }
+    if (settings["appearance.activityType"] !== void 0) {
+      this._appearanceSettings.activityType = settings["appearance.activityType"];
+    }
+    if (settings["timer.mode"] !== void 0) {
+      this._timerSettings.mode = settings["timer.mode"];
+    }
+    if (settings["timer.customOffsetMinutes"] !== void 0) {
+      this._timerSettings.customOffsetMinutes = Math.max(0, Number(settings["timer.customOffsetMinutes"]) || 0);
+    }
+    if (settings["behavior.whenNoFileOpen"] !== void 0) {
+      this._behaviorSettings.whenNoFileOpen = settings["behavior.whenNoFileOpen"];
+    }
+    if (settings["behavior.idleAction"] !== void 0) {
+      this._behaviorSettings.idleAction = settings["behavior.idleAction"];
+    }
+    if (settings["formatting.appName"] !== void 0) {
+      this._formattingSettings.appName = String(settings["formatting.appName"]);
+    }
+    if (settings["formatting.detailsEditing"] !== void 0) {
+      this._formattingSettings.detailsEditing = String(settings["formatting.detailsEditing"]);
+    }
+    if (settings["formatting.stateEditing"] !== void 0) {
+      this._formattingSettings.stateEditing = String(settings["formatting.stateEditing"]);
+    }
+    if (settings["formatting.detailsIdle"] !== void 0) {
+      this._formattingSettings.detailsIdle = String(settings["formatting.detailsIdle"]);
+    }
+    if (settings["formatting.stateIdle"] !== void 0) {
+      this._formattingSettings.stateIdle = String(settings["formatting.stateIdle"]);
+    }
+    if (settings["formatting.detailsDebugging"] !== void 0) {
+      this._formattingSettings.detailsDebugging = String(settings["formatting.detailsDebugging"]);
+    }
+    if (settings["formatting.stateDebugging"] !== void 0) {
+      this._formattingSettings.stateDebugging = String(settings["formatting.stateDebugging"]);
+    }
+    if (settings["formatting.detailsNoFile"] !== void 0) {
+      this._formattingSettings.detailsNoFile = String(settings["formatting.detailsNoFile"]);
+    }
+    if (settings["formatting.stateNoFile"] !== void 0) {
+      this._formattingSettings.stateNoFile = String(settings["formatting.stateNoFile"]);
+    }
+    if (settings["privacy.showFileName"] !== void 0) {
+      this._privacySettings.showFileName = Boolean(settings["privacy.showFileName"]);
+    }
+    if (settings["privacy.showWorkspaceName"] !== void 0) {
+      this._privacySettings.showWorkspaceName = Boolean(settings["privacy.showWorkspaceName"]);
+    }
+    if (settings["privacy.showGitBranch"] !== void 0) {
+      this._privacySettings.showGitBranch = Boolean(settings["privacy.showGitBranch"]);
+    }
+    if (settings["privacy.showDebugStatus"] !== void 0) {
+      this._privacySettings.showDebugStatus = Boolean(settings["privacy.showDebugStatus"]);
+    }
+    this.onDidChangeSettingsEmitter.fire();
+  }
+  async persistSettings(settings, target = vscode2.ConfigurationTarget.Global) {
     const config = vscode2.workspace.getConfiguration(this.section);
-    await config.update(key, value, target);
-    this.loadSettings();
+    for (const [key, value] of Object.entries(settings)) {
+      const current = config.get(key);
+      if (current !== value) {
+        await config.update(key, value, target);
+      }
+    }
+  }
+  async updateSetting(key, value, target = vscode2.ConfigurationTarget.Global) {
+    this.applyInMemory({ [key]: value });
+    const config = vscode2.workspace.getConfiguration(this.section);
+    if (config.get(key) !== value) {
+      await config.update(key, value, target);
+    }
   }
   getAllSettingsAsObject() {
     return {
@@ -8009,7 +8096,7 @@ var DiscordRpcManager = class _DiscordRpcManager {
   reconnectTimer = null;
   discordUser = null;
   currentUserInfo = null;
-  THROTTLE_INTERVAL_MS = 15e3;
+  THROTTLE_INTERVAL_MS = 3e3;
   lastSendTimestamp = 0;
   pendingPayload = null;
   throttleTimer = null;
@@ -8214,12 +8301,12 @@ var DiscordRpcManager = class _DiscordRpcManager {
     if (this.pendingPayload) {
       const toSend = this.pendingPayload;
       this.pendingPayload = null;
-      await this.executeSend(toSend);
+      await this.executeSend(toSend, true);
     }
   }
-  async executeSend(payload) {
+  async executeSend(payload, force = false) {
     if (!this.client || !this.isConnected) return;
-    if (this.arePayloadsEqual(this.lastSentPayload, payload)) {
+    if (!force && this.arePayloadsEqual(this.lastSentPayload, payload)) {
       this.pendingPayload = null;
       return;
     }
@@ -9866,15 +9953,90 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = "") {
                 btn.addEventListener('click', () => activateSection(btn.dataset.section));
             });
 
-            // Input listeners
-            detailsInput.addEventListener('input', syncPreview);
-            stateInput.addEventListener('input', syncPreview);
-            if (activityTypeSelect) activityTypeSelect.addEventListener('change', syncPreview);
-            if (appNameInput) appNameInput.addEventListener('input', syncPreview);
-            showElapsedTime.addEventListener('change', syncPreview);
-            showFileName.addEventListener('change', syncPreview);
-            showWorkspaceName.addEventListener('change', syncPreview);
-            showGitBranch.addEventListener('change', syncPreview);
+            function collectCurrentSettings() {
+                const totalMinutes = (parseInt(timerHours.value || '0', 10) * 60) + parseInt(timerMinutes.value || '0', 10);
+                const enabledEl = document.getElementById('enabled');
+                const largeImgEl = document.getElementById('largeImageStyle');
+                const detailsIdleEl = document.getElementById('detailsIdle');
+                const stateIdleEl = document.getElementById('stateIdle');
+                const whenNoFileEl = document.getElementById('whenNoFileOpen');
+                const idleActionEl = document.getElementById('idleAction');
+                const idleTimeoutEl = document.getElementById('idleTimeoutSeconds');
+                const showDebugEl = document.getElementById('showDebugStatus');
+                const clientIdEl = document.getElementById('clientId');
+
+                return {
+                    enabled: enabledEl ? enabledEl.checked : true,
+                    'appearance.activityType': activityTypeSelect ? activityTypeSelect.value : 'playing',
+                    'appearance.largeImageStyle': largeImgEl ? largeImgEl.value : 'fileIcon',
+                    'appearance.showElapsedTime': showElapsedTime.checked,
+                    'timer.mode': timerMode.value,
+                    'timer.customOffsetMinutes': totalMinutes,
+                    'formatting.appName': appNameInput ? (appNameInput.value.trim() || 'DisCode') : 'DisCode',
+                    'formatting.detailsEditing': detailsInput.value,
+                    'formatting.stateEditing': stateInput.value,
+                    'formatting.detailsIdle': detailsIdleEl ? detailsIdleEl.value : 'Idling',
+                    'formatting.stateIdle': stateIdleEl ? stateIdleEl.value : 'Workspace: {workspace}',
+                    'behavior.whenNoFileOpen': whenNoFileEl ? whenNoFileEl.value : 'keepLastFile',
+                    'behavior.idleAction': idleActionEl ? idleActionEl.value : 'showIdle',
+                    'idleTimeoutSeconds': parseInt(idleTimeoutEl ? idleTimeoutEl.value : '300', 10) || 300,
+                    'privacy.showFileName': showFileName.checked,
+                    'privacy.showWorkspaceName': showWorkspaceName.checked,
+                    'privacy.showGitBranch': showGitBranch.checked,
+                    'privacy.showDebugStatus': showDebugEl ? showDebugEl.checked : true,
+                    clientId: clientIdEl ? clientIdEl.value.trim() : ''
+                };
+            }
+
+            let liveApplyTimer = null;
+            function triggerLiveApply(immediate) {
+                syncPreview();
+                if (liveApplyTimer) {
+                    clearTimeout(liveApplyTimer);
+                    liveApplyTimer = null;
+                }
+                const sendUpdate = () => {
+                    const settings = collectCurrentSettings();
+                    vscode.postMessage({
+                        command: 'liveApplySettings',
+                        settings
+                    });
+                };
+
+                if (immediate) {
+                    sendUpdate();
+                } else {
+                    liveApplyTimer = setTimeout(sendUpdate, 400);
+                }
+            }
+
+            // Input listeners with instant live Discord apply
+            detailsInput.addEventListener('input', () => triggerLiveApply(false));
+            stateInput.addEventListener('input', () => triggerLiveApply(false));
+            if (activityTypeSelect) activityTypeSelect.addEventListener('change', () => triggerLiveApply(true));
+            if (appNameInput) appNameInput.addEventListener('input', () => triggerLiveApply(false));
+            showElapsedTime.addEventListener('change', () => triggerLiveApply(true));
+            showFileName.addEventListener('change', () => triggerLiveApply(true));
+            showWorkspaceName.addEventListener('change', () => triggerLiveApply(true));
+            showGitBranch.addEventListener('change', () => triggerLiveApply(true));
+
+            const enabledEl = document.getElementById('enabled');
+            if (enabledEl) enabledEl.addEventListener('change', () => triggerLiveApply(true));
+            const largeImgEl = document.getElementById('largeImageStyle');
+            if (largeImgEl) largeImgEl.addEventListener('change', () => triggerLiveApply(true));
+            const whenNoFileEl = document.getElementById('whenNoFileOpen');
+            if (whenNoFileEl) whenNoFileEl.addEventListener('change', () => triggerLiveApply(true));
+            const idleActionEl = document.getElementById('idleAction');
+            if (idleActionEl) idleActionEl.addEventListener('change', () => triggerLiveApply(true));
+            const showDebugEl = document.getElementById('showDebugStatus');
+            if (showDebugEl) showDebugEl.addEventListener('change', () => triggerLiveApply(true));
+            if (timerMode) timerMode.addEventListener('change', () => triggerLiveApply(true));
+            const detailsIdleEl = document.getElementById('detailsIdle');
+            if (detailsIdleEl) detailsIdleEl.addEventListener('input', () => triggerLiveApply(false));
+            const stateIdleEl = document.getElementById('stateIdle');
+            if (stateIdleEl) stateIdleEl.addEventListener('input', () => triggerLiveApply(false));
+            if (timerHours) timerHours.addEventListener('input', () => triggerLiveApply(false));
+            if (timerMinutes) timerMinutes.addEventListener('input', () => triggerLiveApply(false));
 
             // Preset app name buttons
             document.querySelectorAll('.preset-app-btn').forEach(btn => {
@@ -9882,7 +10044,7 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = "") {
                     const preset = btn.getAttribute('data-preset');
                     if (preset && appNameInput) {
                         appNameInput.value = preset;
-                        syncPreview();
+                        triggerLiveApply(true);
                         appNameInput.focus();
                     }
                 });
@@ -9896,7 +10058,7 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = "") {
                     const targetEl = document.getElementById(targetId);
                     if (targetEl) {
                         targetEl.value = targetEl.value + ' ' + token;
-                        syncPreview();
+                        triggerLiveApply(true);
                         targetEl.focus();
                     }
                 });
@@ -9909,6 +10071,7 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = "") {
                 if (!realStartTimestamp) realStartTimestamp = Math.floor(Date.now() / 1000);
                 realStartTimestamp = Math.max(0, realStartTimestamp - 3600);
                 tickTimer();
+                triggerLiveApply(true);
             });
 
             document.getElementById('btnPlus2').addEventListener('click', () => {
@@ -9917,6 +10080,7 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = "") {
                 if (!realStartTimestamp) realStartTimestamp = Math.floor(Date.now() / 1000);
                 realStartTimestamp = Math.max(0, realStartTimestamp - 7200);
                 tickTimer();
+                triggerLiveApply(true);
             });
 
             document.getElementById('btnPlus3').addEventListener('click', () => {
@@ -9928,6 +10092,7 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = "") {
                 if (!realStartTimestamp) realStartTimestamp = Math.floor(Date.now() / 1000);
                 realStartTimestamp = Math.max(0, realStartTimestamp - (3.5 * 3600));
                 tickTimer();
+                triggerLiveApply(true);
             });
 
             document.getElementById('btnResetTimer').addEventListener('click', () => {
@@ -9961,30 +10126,13 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = "") {
 
             // Save Changes
             btnSave.addEventListener('click', () => {
-                const totalMinutes = (parseInt(timerHours.value || '0', 10) * 60) + parseInt(timerMinutes.value || '0', 10);
-                const newSettings = {
-                    enabled: document.getElementById('enabled').checked,
-                    'appearance.activityType': activityTypeSelect ? activityTypeSelect.value : 'playing',
-                    'appearance.largeImageStyle': document.getElementById('largeImageStyle').value,
-                    'appearance.showElapsedTime': showElapsedTime.checked,
-                    'timer.mode': timerMode.value,
-                    'timer.customOffsetMinutes': totalMinutes,
-                    'formatting.appName': appNameInput ? (appNameInput.value.trim() || 'DisCode') : 'DisCode',
-                    'formatting.detailsEditing': detailsInput.value,
-                    'formatting.stateEditing': stateInput.value,
-                    'formatting.detailsIdle': document.getElementById('detailsIdle').value,
-                    'formatting.stateIdle': document.getElementById('stateIdle').value,
-                    'behavior.whenNoFileOpen': document.getElementById('whenNoFileOpen').value,
-                    'behavior.idleAction': document.getElementById('idleAction').value,
-                    'idleTimeoutSeconds': parseInt(document.getElementById('idleTimeoutSeconds').value || '300', 10),
-                    'privacy.showFileName': showFileName.checked,
-                    'privacy.showWorkspaceName': showWorkspaceName.checked,
-                    'privacy.showGitBranch': showGitBranch.checked,
-                    'privacy.showDebugStatus': document.getElementById('showDebugStatus').checked,
-                    clientId: document.getElementById('clientId').value.trim()
-                };
+                if (liveApplyTimer) {
+                    clearTimeout(liveApplyTimer);
+                    liveApplyTimer = null;
+                }
+                const newSettings = collectCurrentSettings();
                 vscode.postMessage({ command: 'saveSettings', settings: newSettings });
-                showStatusBadge('Settings Saved!');
+                showStatusBadge('Tersimpan & Langsung Aktif di Discord!');
             });
 
             // Reset to defaults
@@ -10129,6 +10277,9 @@ var SettingsWebviewPanel = class _SettingsWebviewPanel {
           case "saveSettings":
             await this.handleSaveSettings(message.settings);
             break;
+          case "liveApplySettings":
+            this.handleLiveApplySettings(message.settings);
+            break;
           case "applyTimer":
             await this.handleApplyTimer(message.settings);
             break;
@@ -10226,18 +10377,27 @@ var SettingsWebviewPanel = class _SettingsWebviewPanel {
       connectionState: state
     });
   }
+  handleLiveApplySettings(settings) {
+    try {
+      this.configHandler.applyInMemory(settings);
+      this.activityDetector.forceSync();
+      this.configHandler.persistSettings(settings).catch(() => {
+      });
+    } catch (error) {
+      console.error("Failed to live apply settings:", error);
+    }
+  }
   async handleSaveSettings(newSettings) {
     try {
-      for (const [key, value] of Object.entries(newSettings)) {
-        await this.configHandler.updateSetting(key, value);
-      }
+      this.configHandler.applyInMemory(newSettings);
       this.activityDetector.forceSync();
+      await this.configHandler.persistSettings(newSettings);
       this.sendInitialData();
       this.panel.webview.postMessage({
         command: "actionResult",
         action: "save",
         ok: true,
-        message: "Pengaturan tersimpan dan presence sudah diperbarui."
+        message: "Pengaturan tersimpan dan presence langsung aktif di Discord!"
       });
     } catch (error) {
       this.panel.webview.postMessage({
@@ -10251,15 +10411,14 @@ var SettingsWebviewPanel = class _SettingsWebviewPanel {
   }
   async handleApplyTimer(timerSettings) {
     try {
-      for (const [key, value] of Object.entries(timerSettings)) {
-        await this.configHandler.updateSetting(key, value);
-      }
+      this.configHandler.applyInMemory(timerSettings);
       this.activityDetector.forceSync();
+      await this.configHandler.persistSettings(timerSettings);
       this.panel.webview.postMessage({
         command: "actionResult",
         action: "timer",
         ok: true,
-        message: "Timer diperbarui dan presence sudah diperbarui."
+        message: "Timer diperbarui dan presence langsung aktif di Discord!"
       });
     } catch (error) {
       this.panel.webview.postMessage({

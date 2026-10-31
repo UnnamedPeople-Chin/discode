@@ -46,11 +46,14 @@ class ConfigurationHandler {
     _idleTimeoutSeconds;
     _clientId;
     _enabled;
+    onDidChangeSettingsEmitter = new vscode.EventEmitter();
+    onDidChangeSettings = this.onDidChangeSettingsEmitter.event;
     constructor() {
         this.loadSettings();
         this.disposables.push(vscode.workspace.onDidChangeConfiguration(e => {
             if (e.affectsConfiguration(this.section)) {
                 this.loadSettings();
+                this.onDidChangeSettingsEmitter.fire();
             }
         }));
     }
@@ -120,10 +123,98 @@ class ConfigurationHandler {
             return true;
         return !this._privacySettings.blacklistedWorkspaces.includes(workspaceName);
     }
-    async updateSetting(key, value, target = vscode.ConfigurationTarget.Global) {
+    applyInMemory(settings) {
+        if (settings.enabled !== undefined) {
+            this._enabled = Boolean(settings.enabled);
+        }
+        if (settings.idleTimeoutSeconds !== undefined) {
+            this._idleTimeoutSeconds = Math.max(30, Number(settings.idleTimeoutSeconds) || 300);
+        }
+        if (typeof settings.clientId === 'string') {
+            this._clientId = settings.clientId.trim();
+        }
+        // Appearance
+        if (settings['appearance.largeImageStyle'] !== undefined) {
+            this._appearanceSettings.largeImageStyle = settings['appearance.largeImageStyle'];
+        }
+        if (settings['appearance.showElapsedTime'] !== undefined) {
+            this._appearanceSettings.showElapsedTime = Boolean(settings['appearance.showElapsedTime']);
+        }
+        if (settings['appearance.activityType'] !== undefined) {
+            this._appearanceSettings.activityType = settings['appearance.activityType'];
+        }
+        // Timer
+        if (settings['timer.mode'] !== undefined) {
+            this._timerSettings.mode = settings['timer.mode'];
+        }
+        if (settings['timer.customOffsetMinutes'] !== undefined) {
+            this._timerSettings.customOffsetMinutes = Math.max(0, Number(settings['timer.customOffsetMinutes']) || 0);
+        }
+        // Behavior
+        if (settings['behavior.whenNoFileOpen'] !== undefined) {
+            this._behaviorSettings.whenNoFileOpen = settings['behavior.whenNoFileOpen'];
+        }
+        if (settings['behavior.idleAction'] !== undefined) {
+            this._behaviorSettings.idleAction = settings['behavior.idleAction'];
+        }
+        // Formatting
+        if (settings['formatting.appName'] !== undefined) {
+            this._formattingSettings.appName = String(settings['formatting.appName']);
+        }
+        if (settings['formatting.detailsEditing'] !== undefined) {
+            this._formattingSettings.detailsEditing = String(settings['formatting.detailsEditing']);
+        }
+        if (settings['formatting.stateEditing'] !== undefined) {
+            this._formattingSettings.stateEditing = String(settings['formatting.stateEditing']);
+        }
+        if (settings['formatting.detailsIdle'] !== undefined) {
+            this._formattingSettings.detailsIdle = String(settings['formatting.detailsIdle']);
+        }
+        if (settings['formatting.stateIdle'] !== undefined) {
+            this._formattingSettings.stateIdle = String(settings['formatting.stateIdle']);
+        }
+        if (settings['formatting.detailsDebugging'] !== undefined) {
+            this._formattingSettings.detailsDebugging = String(settings['formatting.detailsDebugging']);
+        }
+        if (settings['formatting.stateDebugging'] !== undefined) {
+            this._formattingSettings.stateDebugging = String(settings['formatting.stateDebugging']);
+        }
+        if (settings['formatting.detailsNoFile'] !== undefined) {
+            this._formattingSettings.detailsNoFile = String(settings['formatting.detailsNoFile']);
+        }
+        if (settings['formatting.stateNoFile'] !== undefined) {
+            this._formattingSettings.stateNoFile = String(settings['formatting.stateNoFile']);
+        }
+        // Privacy
+        if (settings['privacy.showFileName'] !== undefined) {
+            this._privacySettings.showFileName = Boolean(settings['privacy.showFileName']);
+        }
+        if (settings['privacy.showWorkspaceName'] !== undefined) {
+            this._privacySettings.showWorkspaceName = Boolean(settings['privacy.showWorkspaceName']);
+        }
+        if (settings['privacy.showGitBranch'] !== undefined) {
+            this._privacySettings.showGitBranch = Boolean(settings['privacy.showGitBranch']);
+        }
+        if (settings['privacy.showDebugStatus'] !== undefined) {
+            this._privacySettings.showDebugStatus = Boolean(settings['privacy.showDebugStatus']);
+        }
+        this.onDidChangeSettingsEmitter.fire();
+    }
+    async persistSettings(settings, target = vscode.ConfigurationTarget.Global) {
         const config = vscode.workspace.getConfiguration(this.section);
-        await config.update(key, value, target);
-        this.loadSettings();
+        for (const [key, value] of Object.entries(settings)) {
+            const current = config.get(key);
+            if (current !== value) {
+                await config.update(key, value, target);
+            }
+        }
+    }
+    async updateSetting(key, value, target = vscode.ConfigurationTarget.Global) {
+        this.applyInMemory({ [key]: value });
+        const config = vscode.workspace.getConfiguration(this.section);
+        if (config.get(key) !== value) {
+            await config.update(key, value, target);
+        }
     }
     getAllSettingsAsObject() {
         return {

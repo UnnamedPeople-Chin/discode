@@ -93,7 +93,8 @@ export class ActivityDetector implements vscode.Disposable {
             }),
             vscode.debug.onDidStartDebugSession(() => this.evaluateState()),
             vscode.debug.onDidTerminateDebugSession(() => this.evaluateState()),
-            vscode.workspace.onDidChangeWorkspaceFolders(() => this.evaluateState())
+            vscode.workspace.onDidChangeWorkspaceFolders(() => this.evaluateState()),
+            this.configHandler.onDidChangeSettings(() => this.forceSync())
         );
     }
 

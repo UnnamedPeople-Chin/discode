@@ -41,6 +41,9 @@ export class SettingsWebviewPanel {
                     case 'saveSettings':
                         await this.handleSaveSettings(message.settings);
                         break;
+                    case 'liveApplySettings':
+                        this.handleLiveApplySettings(message.settings);
+                        break;
                     case 'applyTimer':
                         await this.handleApplyTimer(message.settings);
                         break;
@@ -146,18 +149,27 @@ export class SettingsWebviewPanel {
         });
     }
 
+    private handleLiveApplySettings(settings: Record<string, unknown>): void {
+        try {
+            this.configHandler.applyInMemory(settings);
+            this.activityDetector.forceSync();
+            this.configHandler.persistSettings(settings).catch(() => {});
+        } catch (error) {
+            console.error('Failed to live apply settings:', error);
+        }
+    }
+
     private async handleSaveSettings(newSettings: Record<string, unknown>): Promise<void> {
         try {
-            for (const [key, value] of Object.entries(newSettings)) {
-                await this.configHandler.updateSetting(key, value);
-            }
+            this.configHandler.applyInMemory(newSettings);
             this.activityDetector.forceSync();
+            await this.configHandler.persistSettings(newSettings);
             this.sendInitialData();
             this.panel.webview.postMessage({
                 command: 'actionResult',
                 action: 'save',
                 ok: true,
-                message: 'Pengaturan tersimpan dan presence sudah diperbarui.'
+                message: 'Pengaturan tersimpan dan presence langsung aktif di Discord!'
             });
         } catch (error) {
             this.panel.webview.postMessage({
@@ -172,15 +184,14 @@ export class SettingsWebviewPanel {
 
     private async handleApplyTimer(timerSettings: Record<string, unknown>): Promise<void> {
         try {
-            for (const [key, value] of Object.entries(timerSettings)) {
-                await this.configHandler.updateSetting(key, value);
-            }
+            this.configHandler.applyInMemory(timerSettings);
             this.activityDetector.forceSync();
+            await this.configHandler.persistSettings(timerSettings);
             this.panel.webview.postMessage({
                 command: 'actionResult',
                 action: 'timer',
                 ok: true,
-                message: 'Timer diperbarui dan presence sudah diperbarui.'
+                message: 'Timer diperbarui dan presence langsung aktif di Discord!'
             });
         } catch (error) {
             this.panel.webview.postMessage({

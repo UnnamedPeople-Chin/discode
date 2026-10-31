@@ -35,7 +35,7 @@ export class DiscordRpcManager implements vscode.Disposable {
     private discordUser: string | null = null;
     private currentUserInfo: DiscordUserInfo | null = null;
 
-    private readonly THROTTLE_INTERVAL_MS = 15000;
+    private readonly THROTTLE_INTERVAL_MS = 3000;
     private lastSendTimestamp = 0;
     private pendingPayload: ActivityPayload | null = null;
     private throttleTimer: NodeJS.Timeout | null = null;
@@ -292,13 +292,13 @@ export class DiscordRpcManager implements vscode.Disposable {
         if (this.pendingPayload) {
             const toSend = this.pendingPayload;
             this.pendingPayload = null;
-            await this.executeSend(toSend);
+            await this.executeSend(toSend, true);
         }
     }
 
-    private async executeSend(payload: ActivityPayload): Promise<void> {
+    private async executeSend(payload: ActivityPayload, force = false): Promise<void> {
         if (!this.client || !this.isConnected) return;
-        if (this.arePayloadsEqual(this.lastSentPayload, payload)) {
+        if (!force && this.arePayloadsEqual(this.lastSentPayload, payload)) {
             this.pendingPayload = null;
             return;
         }

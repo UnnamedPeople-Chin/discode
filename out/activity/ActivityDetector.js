@@ -47,21 +47,61 @@ exports.APP_LOGOS = {
         label: 'Visual Studio Code',
         url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/vscode.png'
     },
+    'vscode-insiders': {
+        label: 'Visual Studio Code Insiders',
+        url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/vscode-insiders.png'
+    },
     antigravity: {
         label: 'Google Antigravity',
         url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/antigravity.png'
-    },
-    vscodium: {
-        label: 'VSCodium',
-        url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/vscodium.png'
     },
     cursor: {
         label: 'Cursor',
         url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/cursor.png'
     },
-    'vscode-insiders': {
-        label: 'Visual Studio Code Insiders',
-        url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/vscode-insiders.png'
+    vscodium: {
+        label: 'VSCodium',
+        url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/vscodium.png'
+    },
+    'vscodium-insiders': {
+        label: 'VSCodium Insiders',
+        url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/vscodium-insiders.png'
+    },
+    android: {
+        label: 'Android Studio',
+        url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/android.png'
+    },
+    arduino: {
+        label: 'Arduino IDE',
+        url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/arduino.png'
+    },
+    jupyter: {
+        label: 'Jupyter Notebook',
+        url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/jupyter.png'
+    },
+    godot: {
+        label: 'Godot Engine',
+        url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/godot.png'
+    },
+    git: {
+        label: 'Git',
+        url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/git.png'
+    },
+    gitlab: {
+        label: 'GitLab',
+        url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/gitlab.png'
+    },
+    docker: {
+        label: 'Docker',
+        url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/docker.png'
+    },
+    firebase: {
+        label: 'Google Firebase',
+        url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/firebase.png'
+    },
+    vercel: {
+        label: 'Vercel',
+        url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/vercel.png'
     }
 };
 exports.KNOWN_CDN_ICONS = new Set([
@@ -386,15 +426,15 @@ class ActivityDetector {
         if (!key) {
             return `${VSCORD_CDN_BASE}/text.png`;
         }
-        if (this.configHandler.customClientId) {
-            return key;
-        }
         if (key.startsWith('http://') || key.startsWith('https://')) {
             return key;
         }
         const normalized = key.toLowerCase();
         if (exports.KNOWN_CDN_ICONS.has(normalized)) {
             return `${VSCORD_CDN_BASE}/${normalized}.png`;
+        }
+        if (this.configHandler.customClientId) {
+            return key;
         }
         return `${VSCORD_CDN_BASE}/text.png`;
     }
@@ -409,23 +449,41 @@ class ActivityDetector {
         if (appLogo !== 'auto' && exports.APP_LOGOS[appLogo]) {
             return { url: exports.APP_LOGOS[appLogo].url, label: exports.APP_LOGOS[appLogo].label };
         }
-        const appNameLower = ((this.configHandler.formatting.appName || '') + ' ' + (vscode.env.appName || '')).toLowerCase();
-        if (appNameLower.includes('antigravity')) {
-            return { url: exports.APP_LOGOS['antigravity'].url, label: 'Google Antigravity' };
-        }
-        if (appNameLower.includes('visual studio code') || appNameLower.includes('vscode')) {
-            return { url: exports.APP_LOGOS['vscode'].url, label: 'Visual Studio Code' };
-        }
-        if (appNameLower.includes('vscodium')) {
-            return { url: exports.APP_LOGOS['vscodium'].url, label: 'VSCodium' };
-        }
-        if (appNameLower.includes('cursor')) {
-            return { url: exports.APP_LOGOS['cursor'].url, label: 'Cursor' };
-        }
-        if (appNameLower.includes('insiders')) {
-            return { url: exports.APP_LOGOS['vscode-insiders'].url, label: 'Visual Studio Code Insiders' };
-        }
-        return { url: exports.APP_LOGOS['discode'].url, label: 'DisCode' };
+        // Auto mode: check formatting appName first, then environment appName
+        const customAppName = (this.configHandler.formatting.appName || '').toLowerCase();
+        if (customAppName.includes('antigravity'))
+            return exports.APP_LOGOS['antigravity'];
+        if (customAppName.includes('visual studio code') || customAppName.includes('vscode'))
+            return exports.APP_LOGOS['vscode'];
+        if (customAppName.includes('vscodium'))
+            return exports.APP_LOGOS['vscodium'];
+        if (customAppName.includes('cursor'))
+            return exports.APP_LOGOS['cursor'];
+        if (customAppName.includes('insiders'))
+            return exports.APP_LOGOS['vscode-insiders'];
+        if (customAppName.includes('android'))
+            return exports.APP_LOGOS['android'];
+        if (customAppName.includes('arduino'))
+            return exports.APP_LOGOS['arduino'];
+        if (customAppName.includes('jupyter'))
+            return exports.APP_LOGOS['jupyter'];
+        if (customAppName.includes('godot'))
+            return exports.APP_LOGOS['godot'];
+        if (customAppName.includes('discode'))
+            return exports.APP_LOGOS['discode'];
+        // Fallback to editor environment if title is custom
+        const envName = (vscode.env.appName || '').toLowerCase();
+        if (envName.includes('antigravity'))
+            return exports.APP_LOGOS['antigravity'];
+        if (envName.includes('codium'))
+            return exports.APP_LOGOS['vscodium'];
+        if (envName.includes('cursor'))
+            return exports.APP_LOGOS['cursor'];
+        if (envName.includes('insiders'))
+            return exports.APP_LOGOS['vscode-insiders'];
+        if (envName.includes('visual studio code'))
+            return exports.APP_LOGOS['vscode'];
+        return exports.APP_LOGOS['discode'];
     }
     resolveFileIcon(languageId, ext, fileName) {
         const lowerName = fileName.toLowerCase();

@@ -177,7 +177,10 @@ function runSelfCheck(): void {
         antigravity: { label: 'Google Antigravity', url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/antigravity.png' },
         vscodium: { label: 'VSCodium', url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/vscodium.png' },
         cursor: { label: 'Cursor', url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/cursor.png' },
-        'vscode-insiders': { label: 'Visual Studio Code Insiders', url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/vscode-insiders.png' }
+        'vscode-insiders': { label: 'Visual Studio Code Insiders', url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/vscode-insiders.png' },
+        android: { label: 'Android Studio', url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/android.png' },
+        docker: { label: 'Docker', url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/docker.png' },
+        godot: { label: 'Godot Engine', url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/godot.png' }
     };
 
     function resolveAppLogo(choice: string, appName: string): { url?: string; label: string } {
@@ -189,16 +192,19 @@ function runSelfCheck(): void {
         if (lower.includes('visual studio code') || lower.includes('vscode')) return appLogosMap.vscode;
         if (lower.includes('vscodium')) return appLogosMap.vscodium;
         if (lower.includes('cursor')) return appLogosMap.cursor;
+        if (lower.includes('android')) return appLogosMap.android;
+        if (lower.includes('godot')) return appLogosMap.godot;
         return appLogosMap.discode;
     }
 
     assert.strictEqual(resolveAppLogo('vscode', 'DisCode').url, appLogosMap.vscode.url, 'Explicit vscode logo must return VS Code CDN URL');
     assert.strictEqual(resolveAppLogo('antigravity', 'DisCode').url, appLogosMap.antigravity.url, 'Explicit antigravity logo must return Antigravity CDN URL');
+    assert.strictEqual(resolveAppLogo('android', 'DisCode').url, appLogosMap.android.url, 'Explicit android logo must return Android Studio CDN URL');
     assert.strictEqual(resolveAppLogo('auto', 'Antigravity').url, appLogosMap.antigravity.url, 'Auto logo with Antigravity title must resolve to Antigravity logo');
     assert.strictEqual(resolveAppLogo('auto', 'Visual Studio Code').url, appLogosMap.vscode.url, 'Auto logo with VS Code title must resolve to VS Code logo');
     assert.strictEqual(resolveAppLogo('none', 'DisCode').url, undefined, 'none logo option must return undefined URL to hide small badge');
 
-    console.log('[Self-Check] All invariants passed successfully! (29/29 assertions)');
+    console.log('[Self-Check] All invariants passed successfully! (30/30 assertions)');
 }
 
 runSelfCheck();

@@ -342,7 +342,7 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = '') {
             gap: 6px;
             margin-top: 4px;
         }
-        .token-btn {
+        .token-btn, .preset-app-btn {
             background: #1e2025;
             border: 1px solid rgba(255, 255, 255, 0.08);
             color: var(--text-normal);
@@ -354,14 +354,14 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = '') {
             transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
             user-select: none;
         }
-        .token-btn:hover {
+        .token-btn:hover, .preset-app-btn:hover {
             background: rgba(255, 82, 93, 0.15);
             border-color: rgba(255, 82, 93, 0.5);
             color: #ffb3b2;
             transform: translateY(-1px);
             box-shadow: 0 2px 8px rgba(255, 82, 93, 0.2);
         }
-        .token-btn:active {
+        .token-btn:active, .preset-app-btn:active {
             transform: scale(0.96);
         }
 
@@ -870,7 +870,7 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = '') {
                 </div>
                 <div>
                     <span class="brand-name">DisCode</span>
-                    <span class="brand-version">v1.3.2</span>
+                    <span class="brand-version">v1.3.6</span>
                     <span class="brand-tagline">Discord Rich Presence</span>
                 </div>
             </div>
@@ -961,11 +961,11 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = '') {
                             <input type="text" id="appName" class="input-text" placeholder="Visual Studio Code"/>
                             <div class="token-row" style="margin-bottom: 8px;">
                                 <span style="font-size: 11px; color: var(--text-muted); align-self: center; margin-right: 4px;">Presets:</span>
-                                <button type="button" class="token-btn preset-app-btn" data-preset="Visual Studio Code">Visual Studio Code</button>
-                                <button type="button" class="token-btn preset-app-btn" data-preset="DisCode">DisCode</button>
-                                <button type="button" class="token-btn preset-app-btn" data-preset="VSCodium">VSCodium</button>
-                                <button type="button" class="token-btn preset-app-btn" data-preset="Antigravity">Antigravity</button>
-                                <button type="button" class="token-btn preset-app-btn" data-preset="Cursor">Cursor</button>
+                                <button type="button" class="preset-app-btn" data-preset="Visual Studio Code">Visual Studio Code</button>
+                                <button type="button" class="preset-app-btn" data-preset="DisCode">DisCode</button>
+                                <button type="button" class="preset-app-btn" data-preset="VSCodium">VSCodium</button>
+                                <button type="button" class="preset-app-btn" data-preset="Antigravity">Antigravity</button>
+                                <button type="button" class="preset-app-btn" data-preset="Cursor">Cursor</button>
                             </div>
                             <div class="token-row">
                                 <span style="font-size: 11px; color: var(--text-muted); align-self: center; margin-right: 4px;">Tokens:</span>
@@ -1089,13 +1089,23 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = '') {
                                 <span class="field-sub">Choose which logo appears on the secondary badge or large image</span>
                             </label>
                             <select id="appLogo" class="select-input">
-                                <option value="auto">Auto - Match Application Title (VS Code, Antigravity, DisCode)</option>
+                                <option value="auto">Auto - Match Application Title (VS Code, Antigravity, DisCode, etc.)</option>
                                 <option value="vscode">Visual Studio Code (Official Blue Ribbon)</option>
                                 <option value="discode">DisCode (Red Headset)</option>
                                 <option value="antigravity">Google Antigravity (Official Logo)</option>
-                                <option value="vscodium">VSCodium (Official Logo)</option>
                                 <option value="cursor">Cursor (Official Logo)</option>
+                                <option value="vscodium">VSCodium (Official Logo)</option>
                                 <option value="vscode-insiders">VS Code Insiders (Green Ribbon)</option>
+                                <option value="vscodium-insiders">VSCodium Insiders</option>
+                                <option value="android">Android Studio</option>
+                                <option value="arduino">Arduino IDE</option>
+                                <option value="jupyter">Project Jupyter Notebook</option>
+                                <option value="godot">Godot Engine</option>
+                                <option value="git">Git</option>
+                                <option value="gitlab">GitLab</option>
+                                <option value="docker">Docker</option>
+                                <option value="firebase">Google Firebase</option>
+                                <option value="vercel">Vercel</option>
                                 <option value="none">Hide Badge (No small icon badge)</option>
                             </select>
                         </div>
@@ -1359,7 +1369,7 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = '') {
             const timerMinutes = document.getElementById('timerMinutes');
             const btnSave = document.getElementById('btnSave');
             const saveStatus = document.getElementById('saveStatus');
-            const tokenButtons = document.querySelectorAll('.token-btn');
+            const tokenButtons = document.querySelectorAll('.token-btn[data-token]');
 
             // Live Profile elements
             const previewAvatarImg = document.getElementById('previewAvatarImg');
@@ -1381,10 +1391,20 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = '') {
             const APP_LOGOS_MAP = {
                 discode: { label: 'DisCode', url: 'https://cdn.discordapp.com/app-icons/1565769356619554887/281d28bf86d74667d7721cc09711f77f.png' },
                 vscode: { label: 'Visual Studio Code', url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/vscode.png' },
+                'vscode-insiders': { label: 'Visual Studio Code Insiders', url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/vscode-insiders.png' },
                 antigravity: { label: 'Google Antigravity', url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/antigravity.png' },
-                vscodium: { label: 'VSCodium', url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/vscodium.png' },
                 cursor: { label: 'Cursor', url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/cursor.png' },
-                'vscode-insiders': { label: 'Visual Studio Code Insiders', url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/vscode-insiders.png' }
+                vscodium: { label: 'VSCodium', url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/vscodium.png' },
+                'vscodium-insiders': { label: 'VSCodium Insiders', url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/vscodium-insiders.png' },
+                android: { label: 'Android Studio', url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/android.png' },
+                arduino: { label: 'Arduino IDE', url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/arduino.png' },
+                jupyter: { label: 'Jupyter Notebook', url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/jupyter.png' },
+                godot: { label: 'Godot Engine', url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/godot.png' },
+                git: { label: 'Git', url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/git.png' },
+                gitlab: { label: 'GitLab', url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/gitlab.png' },
+                docker: { label: 'Docker', url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/docker.png' },
+                firebase: { label: 'Google Firebase', url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/firebase.png' },
+                vercel: { label: 'Vercel', url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/vercel.png' }
             };
 
             function updateSmallBadgePreview() {
@@ -1403,17 +1423,27 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = '') {
                 } else if (choice.startsWith('http://') || choice.startsWith('https://')) {
                     resolvedUrl = choice;
                 } else {
-                    const appNameLower = ((appNameInput ? appNameInput.value : '') + ' ' + (livePreviewData.appName || '')).toLowerCase();
-                    if (appNameLower.includes('antigravity')) {
+                    const customAppName = (appNameInput ? appNameInput.value : '').toLowerCase();
+                    if (customAppName.includes('antigravity')) {
                         resolvedUrl = APP_LOGOS_MAP.antigravity.url;
-                    } else if (appNameLower.includes('visual studio code') || appNameLower.includes('vscode')) {
+                    } else if (customAppName.includes('visual studio code') || customAppName.includes('vscode')) {
                         resolvedUrl = APP_LOGOS_MAP.vscode.url;
-                    } else if (appNameLower.includes('vscodium')) {
+                    } else if (customAppName.includes('vscodium')) {
                         resolvedUrl = APP_LOGOS_MAP.vscodium.url;
-                    } else if (appNameLower.includes('cursor')) {
+                    } else if (customAppName.includes('cursor')) {
                         resolvedUrl = APP_LOGOS_MAP.cursor.url;
-                    } else if (appNameLower.includes('insiders')) {
+                    } else if (customAppName.includes('insiders')) {
                         resolvedUrl = APP_LOGOS_MAP['vscode-insiders'].url;
+                    } else if (customAppName.includes('android')) {
+                        resolvedUrl = APP_LOGOS_MAP.android.url;
+                    } else if (customAppName.includes('arduino')) {
+                        resolvedUrl = APP_LOGOS_MAP.arduino.url;
+                    } else if (customAppName.includes('jupyter')) {
+                        resolvedUrl = APP_LOGOS_MAP.jupyter.url;
+                    } else if (customAppName.includes('godot')) {
+                        resolvedUrl = APP_LOGOS_MAP.godot.url;
+                    } else if (customAppName.includes('discode')) {
+                        resolvedUrl = APP_LOGOS_MAP.discode.url;
                     } else if (livePreviewData.smallIconUrl) {
                         resolvedUrl = livePreviewData.smallIconUrl;
                     }
@@ -1727,10 +1757,12 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = '') {
             tokenButtons.forEach(btn => {
                 btn.addEventListener('click', () => {
                     const token = btn.getAttribute('data-token');
+                    if (!token || token === 'null') return;
                     const targetId = btn.getAttribute('data-target') || 'detailsEditing';
                     const targetEl = document.getElementById(targetId);
                     if (targetEl) {
-                        targetEl.value = targetEl.value + ' ' + token;
+                        const cur = targetEl.value ? targetEl.value.trim() : '';
+                        targetEl.value = cur ? cur + ' ' + token : token;
                         triggerLiveApply(true);
                         targetEl.focus();
                     }

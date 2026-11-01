@@ -1,8 +1,22 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DiscordRpcManager = void 0;
+exports.fitDiscordText = fitDiscordText;
 const discord_rpc_1 = require("discord-rpc");
 const events_1 = require("events");
+/**
+ * Discord rejects SET_ACTIVITY when a text field is shorter than 2 or longer than 128 chars,
+ * e.g. a "C" language label or a very long file name.
+ */
+function fitDiscordText(value) {
+    const text = (value || '').trim();
+    if (!text)
+        return undefined;
+    // ponytail: pads with a zero-width space to reach the 2-char minimum; swap for a visible char if Discord ever trims it.
+    if (text.length < 2)
+        return text + '\u200B';
+    return text.length > 128 ? text.slice(0, 127) + '…' : text;
+}
 class DiscordRpcManager {
     static instance = null;
     client = null;
@@ -70,10 +84,12 @@ class DiscordRpcManager {
         this.clearReconnectTimer();
         this.emitState();
         this.log('Connecting to Discord IPC socket...');
+        const client = new discord_rpc_1.Client({ transport: 'ipc' });
+        this.client = client;
         try {
-            const client = new discord_rpc_1.Client({ transport: 'ipc' });
-            this.client = client;
             client.on('ready', () => {
+                if (this.client !== client)
+                    return;
                 this.isConnected = true;
                 this.isConnecting = false;
                 this.retryCount = 0;
@@ -115,17 +131,24 @@ class DiscordRpcManager {
                     this.updateActivity(toSend);
                 }
             });
+            // Events from a client we already replaced (e.g. after a Client ID switch) must not tear down the new one.
             client.on('close', () => {
+                if (this.client !== client)
+                    return;
                 this.log('Discord IPC connection closed.');
                 this.handleDisconnect();
             });
             client.on('error', (err) => {
+                if (this.client !== client)
+                    return;
                 this.log(`Discord IPC error: ${String(err)}`);
                 this.handleDisconnect(err);
             });
             const transportAny = client.transport;
             if (transportAny?.socket?.on) {
                 transportAny.socket.on('error', (err) => {
+                    if (this.client !== client)
+                        return;
                     this.log(`Socket error trapped: ${String(err)}`);
                     this.handleDisconnect(err);
                 });
@@ -133,6 +156,8 @@ class DiscordRpcManager {
             await client.login({ clientId: this.clientId });
         }
         catch (error) {
+            if (this.client !== client)
+                return;
             this.log(`Failed to login to Discord: ${String(error)}`);
             this.handleDisconnect(error);
         }
@@ -248,28 +273,30 @@ class DiscordRpcManager {
             const toSend = this.pendingPayload;
             this.pendingPayload = null;
             this.lastSendTimestamp = 0;
-            await this.executeSend(toSend, true);
+            await this.executeSend(toSend);
         }
     }
-    async executeSend(payload, force = false) {
+    async executeSend(payload) {
         if (!this.client || !this.isConnected)
             return;
-        if (!force && this.arePayloadsEqual(this.lastSentPayload, payload)) {
+        // Forced sends skip the throttle but still skip identical payloads, so settings typing doesn't hit Discord's rate limit.
+        if (this.arePayloadsEqual(this.lastSentPayload, payload)) {
             this.pendingPayload = null;
             return;
         }
         try {
             this.log(`Sending Activity to Discord -> Type: ${payload.type ?? 0} | Details: "${payload.details || ''}" | State: "${payload.state || ''}"`);
             const activity = {
-                state: payload.state,
-                details: payload.details,
+                state: fitDiscordText(payload.state),
+                details: fitDiscordText(payload.details),
                 instance: Boolean(payload.instance)
             };
             if (payload.type !== undefined) {
                 activity.type = payload.type;
             }
-            if (payload.name) {
-                activity.name = payload.name;
+            const name = fitDiscordText(payload.name);
+            if (name) {
+                activity.name = name;
             }
             if (payload.startTimestamp || payload.endTimestamp) {
                 activity.timestamps = {
@@ -280,9 +307,9 @@ class DiscordRpcManager {
             if (payload.largeImageKey || payload.smallImageKey) {
                 activity.assets = {
                     large_image: payload.largeImageKey,
-                    large_text: payload.largeImageText,
+                    large_text: fitDiscordText(payload.largeImageText),
                     small_image: payload.smallImageKey,
-                    small_text: payload.smallImageText
+                    small_text: fitDiscordText(payload.smallImageText)
                 };
             }
             const buttons = payload.buttons;
@@ -299,6 +326,12 @@ class DiscordRpcManager {
         }
         catch (err) {
             this.log(`Failed to set activity: ${String(err)}`);
+            // An RPC error code means Discord rejected this payload but the socket is fine;
+            // reconnecting would just resend the same payload in a loop.
+            if (typeof err?.code === 'number') {
+                this.pendingPayload = null;
+                return;
+            }
             this.handleDisconnect(err);
         }
     }

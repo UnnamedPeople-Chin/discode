@@ -68,12 +68,17 @@ class ConfigurationHandler {
     constructor() {
         this.loadSettings();
         this.disposables.push(vscode.workspace.onDidChangeConfiguration(e => {
+            // While persistSettings writes keys one by one, reloading would read a half-written
+            // config (e.g. old clientId) and undo the in-memory values already applied.
+            if (this.isPersisting)
+                return;
             if (e.affectsConfiguration(this.section)) {
                 this.loadSettings();
                 this.onDidChangeSettingsEmitter.fire();
             }
         }));
     }
+    isPersisting = false;
     loadSettings() {
         const config = vscode.workspace.getConfiguration(this.section);
         this._enabled = config.get('enabled', true);
@@ -226,11 +231,16 @@ class ConfigurationHandler {
     }
     async persistSettings(settings, target = vscode.ConfigurationTarget.Global) {
         const config = vscode.workspace.getConfiguration(this.section);
-        for (const [key, value] of Object.entries(settings)) {
-            const current = config.get(key);
-            if (current !== value) {
-                await config.update(key, value, target);
+        this.isPersisting = true;
+        try {
+            for (const [key, value] of Object.entries(settings)) {
+                if (config.get(key) !== value) {
+                    await config.update(key, value, target);
+                }
             }
+        }
+        finally {
+            this.isPersisting = false;
         }
     }
     async updateSetting(key, value, target = vscode.ConfigurationTarget.Global) {
@@ -243,6 +253,7 @@ class ConfigurationHandler {
     getAllSettingsAsObject() {
         return {
             enabled: this._enabled,
+            clientId: this._clientId,
             'appearance.largeImageStyle': this._appearanceSettings.largeImageStyle,
             'appearance.showElapsedTime': this._appearanceSettings.showElapsedTime,
             'appearance.activityType': this._appearanceSettings.activityType,

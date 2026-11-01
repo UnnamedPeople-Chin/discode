@@ -1190,7 +1190,7 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = '') {
                             <select id="whenNoFileOpen" class="select-input">
                                 <option value="keepLastFile">Keep Last Active File</option>
                                 <option value="idle">Switch to Idle Status</option>
-                                <option value="noFile">Show Workspace with No File</option>
+                                <option value="showWorkspace">Show Workspace with No File</option>
                                 <option value="clear">Clear Presence Completely</option>
                             </select>
                         </div>
@@ -1199,7 +1199,7 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = '') {
                             <label class="field-label" for="idleAction">When User Goes Idle (AFK)</label>
                             <select id="idleAction" class="select-input">
                                 <option value="showIdle">Show Idle Status</option>
-                                <option value="keepLastFile">Keep Last File Presence</option>
+                                <option value="keepFile">Keep Last File Presence</option>
                                 <option value="clear">Clear Presence</option>
                             </select>
                         </div>
@@ -1880,11 +1880,11 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = '') {
                     const s = message.settings;
                     if (s.enabled !== undefined) document.getElementById('enabled').checked = Boolean(s.enabled);
                     if (s['appearance.activityType'] && activityTypeSelect) activityTypeSelect.value = s['appearance.activityType'];
-                    if (s['formatting.appName'] && appNameInput) appNameInput.value = s['formatting.appName'];
-                    if (s['formatting.detailsEditing']) detailsInput.value = s['formatting.detailsEditing'];
-                    if (s['formatting.stateEditing']) stateInput.value = s['formatting.stateEditing'];
-                    if (s['formatting.detailsIdle']) document.getElementById('detailsIdle').value = s['formatting.detailsIdle'];
-                    if (s['formatting.stateIdle']) document.getElementById('stateIdle').value = s['formatting.stateIdle'];
+                    if (s['formatting.appName'] !== undefined && appNameInput) appNameInput.value = s['formatting.appName'];
+                    if (s['formatting.detailsEditing'] !== undefined) detailsInput.value = s['formatting.detailsEditing'];
+                    if (s['formatting.stateEditing'] !== undefined) stateInput.value = s['formatting.stateEditing'];
+                    if (s['formatting.detailsIdle'] !== undefined) document.getElementById('detailsIdle').value = s['formatting.detailsIdle'];
+                    if (s['formatting.stateIdle'] !== undefined) document.getElementById('stateIdle').value = s['formatting.stateIdle'];
                     if (s['appearance.largeImageStyle']) document.getElementById('largeImageStyle').value = s['appearance.largeImageStyle'];
                     if (s['appearance.appLogo'] && appLogoSelect) appLogoSelect.value = s['appearance.appLogo'];
                     if (s['appearance.showElapsedTime'] !== undefined) showElapsedTime.checked = Boolean(s['appearance.showElapsedTime']);
@@ -1901,7 +1901,7 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = '') {
                     if (s['privacy.showWorkspaceName'] !== undefined) showWorkspaceName.checked = Boolean(s['privacy.showWorkspaceName']);
                     if (s['privacy.showGitBranch'] !== undefined) showGitBranch.checked = Boolean(s['privacy.showGitBranch']);
                     if (s['privacy.showDebugStatus'] !== undefined) document.getElementById('showDebugStatus').checked = Boolean(s['privacy.showDebugStatus']);
-                    if (s.clientId) document.getElementById('clientId').value = s.clientId;
+                    if (s.clientId !== undefined && document.getElementById('clientId')) document.getElementById('clientId').value = s.clientId;
 
                     if (message.previewData) {
                         livePreviewData = Object.assign(livePreviewData, message.previewData);

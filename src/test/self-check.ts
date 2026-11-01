@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import { DiscordRpcManager } from '../rpc/DiscordRpcManager';
+import { DiscordRpcManager, fitDiscordText } from '../rpc/DiscordRpcManager';
 
 function formatTemplate(template: string, vars: Record<string, string>): string {
     return template.replace(/\{(\w+)\}/g, (_, key) => vars[key] ?? '').trim();
@@ -204,7 +204,18 @@ function runSelfCheck(): void {
     assert.strictEqual(resolveAppLogo('auto', 'Visual Studio Code').url, appLogosMap.vscode.url, 'Auto logo with VS Code title must resolve to VS Code logo');
     assert.strictEqual(resolveAppLogo('none', 'DisCode').url, undefined, 'none logo option must return undefined URL to hide small badge');
 
-    console.log('[Self-Check] All invariants passed successfully! (30/30 assertions)');
+    // 12. Invariant: Discord text validation & truncation (2-128 chars constraint)
+    assert.strictEqual(fitDiscordText(undefined), undefined, 'undefined must stay undefined');
+    assert.strictEqual(fitDiscordText(''), undefined, 'empty string must return undefined');
+    assert.strictEqual(fitDiscordText('   '), undefined, 'whitespace-only must return undefined');
+    assert.strictEqual(fitDiscordText('C'), 'C\u200B', 'Single character must be padded with zero-width space for Discord length constraint');
+    assert.strictEqual(fitDiscordText('TypeScript'), 'TypeScript', 'Normal string between 2 and 128 characters remains untouched');
+    const longString = 'A'.repeat(150);
+    const fittedLong = fitDiscordText(longString);
+    assert.ok(fittedLong !== undefined && fittedLong.length === 128, 'String longer than 128 must be truncated to 128 chars');
+    assert.ok(fittedLong?.endsWith('…'), 'Truncated string must end with ellipsis');
+
+    console.log('[Self-Check] All invariants passed successfully! (37/37 assertions)');
 }
 
 runSelfCheck();

@@ -170,7 +170,17 @@ function runSelfCheck() {
     assert.strictEqual(resolveAppLogo('auto', 'Antigravity').url, appLogosMap.antigravity.url, 'Auto logo with Antigravity title must resolve to Antigravity logo');
     assert.strictEqual(resolveAppLogo('auto', 'Visual Studio Code').url, appLogosMap.vscode.url, 'Auto logo with VS Code title must resolve to VS Code logo');
     assert.strictEqual(resolveAppLogo('none', 'DisCode').url, undefined, 'none logo option must return undefined URL to hide small badge');
-    console.log('[Self-Check] All invariants passed successfully! (30/30 assertions)');
+    // 12. Invariant: Discord text validation & truncation (2-128 chars constraint)
+    assert.strictEqual((0, DiscordRpcManager_1.fitDiscordText)(undefined), undefined, 'undefined must stay undefined');
+    assert.strictEqual((0, DiscordRpcManager_1.fitDiscordText)(''), undefined, 'empty string must return undefined');
+    assert.strictEqual((0, DiscordRpcManager_1.fitDiscordText)('   '), undefined, 'whitespace-only must return undefined');
+    assert.strictEqual((0, DiscordRpcManager_1.fitDiscordText)('C'), 'C\u200B', 'Single character must be padded with zero-width space for Discord length constraint');
+    assert.strictEqual((0, DiscordRpcManager_1.fitDiscordText)('TypeScript'), 'TypeScript', 'Normal string between 2 and 128 characters remains untouched');
+    const longString = 'A'.repeat(150);
+    const fittedLong = (0, DiscordRpcManager_1.fitDiscordText)(longString);
+    assert.ok(fittedLong !== undefined && fittedLong.length === 128, 'String longer than 128 must be truncated to 128 chars');
+    assert.ok(fittedLong?.endsWith('…'), 'Truncated string must end with ellipsis');
+    console.log('[Self-Check] All invariants passed successfully! (37/37 assertions)');
 }
 runSelfCheck();
 //# sourceMappingURL=self-check.js.map

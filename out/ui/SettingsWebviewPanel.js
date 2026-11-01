@@ -153,14 +153,10 @@ class SettingsWebviewPanel {
             connectionState: state
         });
     }
+    // applyInMemory fires onDidChangeSettings; extension.ts reacts to it (Client ID switch + presence sync).
     handleLiveApplySettings(settings) {
         try {
             this.configHandler.applyInMemory(settings);
-            const effectiveId = this.configHandler.effectiveClientId;
-            if (this.rpcManager.getClientId() !== effectiveId) {
-                this.rpcManager.updateClientId(effectiveId);
-            }
-            this.activityDetector.forceSync();
             this.configHandler.persistSettings(settings).catch(() => { });
         }
         catch (error) {
@@ -170,11 +166,6 @@ class SettingsWebviewPanel {
     async handleSaveSettings(newSettings) {
         try {
             this.configHandler.applyInMemory(newSettings);
-            const effectiveId = this.configHandler.effectiveClientId;
-            if (this.rpcManager.getClientId() !== effectiveId) {
-                this.rpcManager.updateClientId(effectiveId);
-            }
-            this.activityDetector.forceSync();
             await this.configHandler.persistSettings(newSettings);
             this.sendInitialData();
             this.panel.webview.postMessage({
@@ -197,7 +188,6 @@ class SettingsWebviewPanel {
     async handleApplyTimer(timerSettings) {
         try {
             this.configHandler.applyInMemory(timerSettings);
-            this.activityDetector.forceSync();
             await this.configHandler.persistSettings(timerSettings);
             this.panel.webview.postMessage({
                 command: 'actionResult',

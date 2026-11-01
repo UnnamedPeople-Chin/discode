@@ -162,7 +162,7 @@ class ActivityDetector {
             else {
                 this.evaluateState();
             }
-        }), vscode.debug.onDidStartDebugSession(() => this.evaluateState(true)), vscode.debug.onDidTerminateDebugSession(() => this.evaluateState(true)), vscode.workspace.onDidChangeWorkspaceFolders(() => this.evaluateState(true)), this.configHandler.onDidChangeSettings(() => this.forceSync()));
+        }), vscode.debug.onDidStartDebugSession(() => this.evaluateState(true)), vscode.debug.onDidTerminateDebugSession(() => this.evaluateState(true)), vscode.workspace.onDidChangeWorkspaceFolders(() => this.evaluateState(true)));
     }
     onEditorContentOrSelectionChange() {
         if (this.isIdle) {

@@ -1,3 +1,4 @@
+import { APP_PRESETS, presetLogoUrl } from '../presets';
 const ICONS = {
     terminal: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>`,
     schedule: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`,
@@ -957,14 +958,10 @@ export function getSettingsModalWebviewHtml(nonce: string, cspSource: string, ba
                                 <span class="field-sub">Choose app name displayed on Discord (e.g. "Visual Studio Code", "DisCode", or custom template)</span>
                             </label>
                             <input type="text" id="appName" class="input-text" placeholder="Visual Studio Code"/>
-                            <div class="token-row" style="margin-bottom: 8px;">
-                                <span style="font-size: 11px; color: var(--text-muted); align-self: center; margin-right: 4px;">Presets:</span>
-                                <button type="button" class="preset-app-btn" data-preset="Visual Studio Code">Visual Studio Code</button>
-                                <button type="button" class="preset-app-btn" data-preset="DisCode">DisCode</button>
-                                <button type="button" class="preset-app-btn" data-preset="VSCodium">VSCodium</button>
-                                <button type="button" class="preset-app-btn" data-preset="Antigravity">Antigravity</button>
-                                <button type="button" class="preset-app-btn" data-preset="Cursor">Cursor</button>
-                            </div>
+                            <select id="appPreset" class="select-input" style="margin-bottom: 8px;" aria-label="App presets">
+                                <option value="">Presets: pick a coding app, or type any name above</option>
+                                ${APP_PRESETS.map(p => `<option value="${p.name}">${p.name}</option>`).join('')}
+                            </select>
                             <div class="token-row">
                                 <span style="font-size: 11px; color: var(--text-muted); align-self: center; margin-right: 4px;">Tokens:</span>
                                 <button type="button" class="token-btn" data-target="appName" data-token="{workspace}">+ {workspace}</button>
@@ -1405,6 +1402,8 @@ export function getSettingsModalWebviewHtml(nonce: string, cspSource: string, ba
                 vercel: { label: 'Vercel', url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/vercel.png' }
             };
 
+            const APP_PRESET_LOGOS = ${JSON.stringify(APP_PRESETS.filter(p => p.icon).map(p => ({ keys: p.keys, url: presetLogoUrl(p.icon!) })))};
+
             function updateSmallBadgePreview() {
                 if (!previewSmallBadge) return;
                 const choice = appLogoSelect ? appLogoSelect.value : 'auto';
@@ -1442,11 +1441,16 @@ export function getSettingsModalWebviewHtml(nonce: string, cspSource: string, ba
                         resolvedUrl = APP_LOGOS_MAP.godot.url;
                     } else if (customAppName.includes('discode')) {
                         resolvedUrl = APP_LOGOS_MAP.discode.url;
+                    } else if (APP_PRESET_LOGOS.find(p => p.keys.some(k => customAppName.includes(k)))) {
+                        resolvedUrl = APP_PRESET_LOGOS.find(p => p.keys.some(k => customAppName.includes(k))).url;
                     } else if (livePreviewData.smallIconUrl) {
                         resolvedUrl = livePreviewData.smallIconUrl;
                     }
                 }
 
+                if (largeImgEl && largeImgEl.value === 'editorIcon' && resolvedUrl) {
+                    updatePreviewIcon(resolvedUrl, livePreviewData.language);
+                }
                 if (resolvedUrl && !resolvedUrl.includes('app-icons/1565769356619554887')) {
                     if (previewSmallBadgeImg) {
                         previewSmallBadgeImg.src = resolvedUrl;
@@ -1700,7 +1704,18 @@ export function getSettingsModalWebviewHtml(nonce: string, cspSource: string, ba
             detailsInput.addEventListener('input', () => triggerLiveApply(false));
             stateInput.addEventListener('input', () => triggerLiveApply(false));
             if (activityTypeSelect) activityTypeSelect.addEventListener('change', () => triggerLiveApply(true));
-            if (appNameInput) appNameInput.addEventListener('input', () => triggerLiveApply(false));
+            const appPresetEl = document.getElementById('appPreset');
+            const BUILTIN_CLIENT_IDS = ['383226320970055681', '1565769356619554887', '790693994793664533'];
+            if (appNameInput) appNameInput.addEventListener('input', () => {
+                if (appPresetEl) {
+                    appPresetEl.value = Array.from(appPresetEl.options).some(o => o.value === appNameInput.value) ? appNameInput.value : '';
+                }
+                const clientIdEl = document.getElementById('clientId');
+                if (clientIdEl && BUILTIN_CLIENT_IDS.includes(clientIdEl.value.trim())) {
+                    clientIdEl.value = '';
+                }
+                triggerLiveApply(false);
+            });
             showElapsedTime.addEventListener('change', () => triggerLiveApply(true));
             showFileName.addEventListener('change', () => triggerLiveApply(true));
             showWorkspaceName.addEventListener('change', () => triggerLiveApply(true));
@@ -1728,21 +1743,15 @@ export function getSettingsModalWebviewHtml(nonce: string, cspSource: string, ba
             if (timerHours) timerHours.addEventListener('input', () => triggerLiveApply(false));
             if (timerMinutes) timerMinutes.addEventListener('input', () => triggerLiveApply(false));
 
-            // Preset app name buttons
-            document.querySelectorAll('.preset-app-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const preset = btn.getAttribute('data-preset');
+            // Preset app name dropdown
+            [appPresetEl].filter(Boolean).forEach(btn => {
+                btn.addEventListener('change', () => {
+                    const preset = btn.value;
                     if (preset && appNameInput) {
                         appNameInput.value = preset;
                         const clientIdEl = document.getElementById('clientId');
-                        if (clientIdEl) {
-                            if (preset === 'Visual Studio Code' || preset === 'Cursor') {
-                                clientIdEl.value = '383226320970055681';
-                            } else if (preset === 'DisCode' || preset === 'Antigravity') {
-                                clientIdEl.value = '1565769356619554887';
-                            } else if (preset === 'VSCodium') {
-                                clientIdEl.value = '790693994793664533';
-                            }
+                        if (clientIdEl && (BUILTIN_CLIENT_IDS.includes(clientIdEl.value.trim()) || !clientIdEl.value.trim())) {
+                            clientIdEl.value = '';
                         }
                         updateSmallBadgePreview();
                         triggerLiveApply(true);
@@ -1842,6 +1851,7 @@ export function getSettingsModalWebviewHtml(nonce: string, cspSource: string, ba
             document.getElementById('btnResetDefaults').addEventListener('click', () => {
                 if (activityTypeSelect) activityTypeSelect.value = 'playing';
                 if (appNameInput) appNameInput.value = 'DisCode';
+                if (appPresetEl) appPresetEl.value = 'DisCode';
                 if (appLogoSelect) appLogoSelect.value = 'auto';
                 updateSmallBadgePreview();
                 syncPreview();
@@ -1878,7 +1888,12 @@ export function getSettingsModalWebviewHtml(nonce: string, cspSource: string, ba
                     const s = message.settings;
                     if (s.enabled !== undefined) document.getElementById('enabled').checked = Boolean(s.enabled);
                     if (s['appearance.activityType'] && activityTypeSelect) activityTypeSelect.value = s['appearance.activityType'];
-                    if (s['formatting.appName'] !== undefined && appNameInput) appNameInput.value = s['formatting.appName'];
+                    if (s['formatting.appName'] !== undefined && appNameInput) {
+                        appNameInput.value = s['formatting.appName'];
+                        if (appPresetEl) {
+                            appPresetEl.value = Array.from(appPresetEl.options).some(o => o.value === s['formatting.appName']) ? s['formatting.appName'] : '';
+                        }
+                    }
                     if (s['formatting.detailsEditing'] !== undefined) detailsInput.value = s['formatting.detailsEditing'];
                     if (s['formatting.stateEditing'] !== undefined) stateInput.value = s['formatting.stateEditing'];
                     if (s['formatting.detailsIdle'] !== undefined) document.getElementById('detailsIdle').value = s['formatting.detailsIdle'];

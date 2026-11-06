@@ -2849,12 +2849,12 @@ var require_lib2 = __commonJS({
       const dest = new URL$1(destination).protocol;
       return orig === dest;
     };
-    function fetch(url, opts) {
-      if (!fetch.Promise) {
+    function fetch2(url, opts) {
+      if (!fetch2.Promise) {
         throw new Error("native promise missing, set fetch.Promise to your favorite alternative");
       }
-      Body.Promise = fetch.Promise;
-      return new fetch.Promise(function(resolve, reject) {
+      Body.Promise = fetch2.Promise;
+      return new fetch2.Promise(function(resolve, reject) {
         const request = new Request(url, opts);
         const options = getNodeRequestOptions(request);
         const send = (options.protocol === "https:" ? https : http).request;
@@ -2925,7 +2925,7 @@ var require_lib2 = __commonJS({
         req.on("response", function(res) {
           clearTimeout(reqTimeout);
           const headers = createHeadersLenient(res.headers);
-          if (fetch.isRedirect(res.statusCode)) {
+          if (fetch2.isRedirect(res.statusCode)) {
             const location = headers.get("Location");
             let locationURL = null;
             try {
@@ -2987,7 +2987,7 @@ var require_lib2 = __commonJS({
                   requestOpts.body = void 0;
                   requestOpts.headers.delete("content-length");
                 }
-                resolve(fetch(new Request(locationURL, requestOpts)));
+                resolve(fetch2(new Request(locationURL, requestOpts)));
                 finalize();
                 return;
             }
@@ -3079,11 +3079,11 @@ var require_lib2 = __commonJS({
         stream.end();
       }
     }
-    fetch.isRedirect = function(code) {
+    fetch2.isRedirect = function(code) {
       return code === 301 || code === 302 || code === 303 || code === 307 || code === 308;
     };
-    fetch.Promise = global.Promise;
-    module2.exports = exports2 = fetch;
+    fetch2.Promise = global.Promise;
+    module2.exports = exports2 = fetch2;
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.default = exports2;
     exports2.Headers = Headers;
@@ -3100,7 +3100,7 @@ var require_ipc = __commonJS({
     "use strict";
     var net = require("net");
     var EventEmitter4 = require("events");
-    var fetch = require_lib2();
+    var fetch2 = require_lib2();
     var { uuid } = require_util();
     var OPCodes = {
       HANDSHAKE: 0,
@@ -3140,7 +3140,7 @@ var require_ipc = __commonJS({
       }
       const endpoint = `http://127.0.0.1:${6463 + tries % 10}`;
       try {
-        const r = await fetch(endpoint);
+        const r = await fetch2(endpoint);
         if (r.status === 404) {
           return endpoint;
         }
@@ -6647,7 +6647,7 @@ var require_client = __commonJS({
     "use strict";
     var EventEmitter4 = require("events");
     var { setTimeout: setTimeout2, clearTimeout: clearTimeout2 } = require("timers");
-    var fetch = require_lib2();
+    var fetch2 = require_lib2();
     var transports = require_transports();
     var { RPCCommands, RPCEvents, RelationshipTypes } = require_constants();
     var { pid: getPid, uuid } = require_util();
@@ -6670,7 +6670,7 @@ var require_client = __commonJS({
         if (!Transport) {
           throw new TypeError("RPC_INVALID_TRANSPORT", options.transport);
         }
-        this.fetch = (method, path2, { data, query } = {}) => fetch(`${this.fetch.endpoint}${path2}${query ? new URLSearchParams(query) : ""}`, {
+        this.fetch = (method, path2, { data, query } = {}) => fetch2(`${this.fetch.endpoint}${path2}${query ? new URLSearchParams(query) : ""}`, {
           method,
           body: data,
           headers: {
@@ -7243,6 +7243,71 @@ var vscode4 = __toESM(require("vscode"));
 // src/activity/ActivityDetector.ts
 var path = __toESM(require("path"));
 var vscode = __toESM(require("vscode"));
+
+// src/presets.ts
+var TILE_BG = "181a1f";
+var LOBE = "unpkg.com/@lobehub/icons-static-png@latest/dark";
+var presetLogoUrl = (icon) => `https://wsrv.nl/?url=${LOBE}/${icon}.png&w=840&h=840&fit=contain&we&bg=${TILE_BG}&cbg=${TILE_BG}&output=png`;
+var svgTile = (svgUrl) => `https://wsrv.nl/?url=${encodeURIComponent(svgUrl)}&w=420&h=420&fit=contain&we&bg=${TILE_BG}&cbg=${TILE_BG}&output=png`;
+var faviconTile = (domain) => `https://wsrv.nl/?url=${encodeURIComponent(`www.google.com/s2/favicons?domain=${domain}&sz=128`)}&w=220&h=220&fit=contain&we&bg=${TILE_BG}&cbg=${TILE_BG}&output=png`;
+var APP_PRESETS = [
+  { name: "Visual Studio Code", keys: ["visual studio code", "vscode"] },
+  { name: "DisCode", keys: ["discode"] },
+  { name: "VSCodium", keys: ["vscodium"] },
+  { name: "Antigravity", keys: ["antigravity"] },
+  { name: "Cursor", keys: ["cursor"] },
+  { name: "Claude Code", keys: ["claude code"], icon: "claude-color" },
+  { name: "Claude", keys: ["claude"], icon: "claude-color" },
+  { name: "Codex", keys: ["codex", "chatgpt", "openai"], icon: "openai" },
+  { name: "Gemini CLI", keys: ["gemini"], icon: "gemini-color" },
+  { name: "GitHub Copilot", keys: ["copilot"], icon: "copilot-color" },
+  { name: "Windsurf", keys: ["windsurf"], icon: "windsurf" },
+  { name: "Kiro", keys: ["kiro"], icon: "kiro" },
+  { name: "Trae", keys: ["trae"], icon: "trae-color" },
+  { name: "Cline", keys: ["cline"], icon: "cline" },
+  { name: "Replit", keys: ["replit"], icon: "replit-color" },
+  { name: "Lovable", keys: ["lovable"], icon: "lovable-color" },
+  { name: "v0", keys: ["v0"], icon: "v0" },
+  { name: "Qwen Code", keys: ["qwen"], icon: "qwen-color" },
+  { name: "DeepSeek", keys: ["deepseek"], icon: "deepseek-color" },
+  { name: "Kimi", keys: ["kimi"], icon: "kimi-color" },
+  { name: "Perplexity", keys: ["perplexity"], icon: "perplexity-color" },
+  { name: "Ollama", keys: ["ollama"], icon: "ollama" },
+  { name: "Grok", keys: ["grok"], icon: "grok" },
+  { name: "Mistral", keys: ["mistral"], icon: "mistral-color" }
+];
+function findPreset(appName) {
+  const n = appName.toLowerCase();
+  return APP_PRESETS.find((p) => p.icon && p.keys.some((k) => n.includes(k)));
+}
+function brandOf(appName) {
+  const slug = appName.toLowerCase().replace(/\{[^}]*\}/g, "").replace(/[^a-z0-9.]/g, "");
+  if (slug.length < 2) return void 0;
+  return { brand: slug.split(".")[0], domain: slug.includes(".") ? slug : `${slug}.com` };
+}
+async function exists(url) {
+  try {
+    const r = await fetch(url, { method: "HEAD", signal: AbortSignal.timeout(6e3) });
+    return r.ok;
+  } catch {
+    return false;
+  }
+}
+async function probeBrandLogo(brand, domain) {
+  for (const slug of [`${brand}-color`, brand]) {
+    if (await exists(`https://${LOBE}/${slug}.png`)) return presetLogoUrl(slug);
+  }
+  for (const svg of [
+    `api.iconify.design/logos/${brand}-icon.svg?height=256`,
+    `api.iconify.design/devicon/${brand}.svg?height=256`,
+    `api.iconify.design/simple-icons/${brand}.svg?height=256&color=%23ffffff`
+  ]) {
+    if (await exists(`https://${svg}`)) return svgTile(svg);
+  }
+  return faviconTile(domain);
+}
+
+// src/activity/ActivityDetector.ts
 var DISCODE_OFFICIAL_ICON = "https://cdn.discordapp.com/app-icons/1565769356619554887/281d28bf86d74667d7721cc09711f77f.png";
 var VSCORD_CDN_BASE = "https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons";
 var APP_LOGOS = {
@@ -7482,6 +7547,8 @@ var ActivityDetector = class {
   onActivityChangeEmitter = new vscode.EventEmitter();
   onDidChangeActivity = this.onActivityChangeEmitter.event;
   selectionDebounceTimer = null;
+  customLogoCache = /* @__PURE__ */ new Map();
+  probing = /* @__PURE__ */ new Set();
   registerListeners() {
     this.disposables.push(
       vscode.window.onDidChangeActiveTextEditor(() => this.onUserActivity(true)),
@@ -7788,6 +7855,24 @@ var ActivityDetector = class {
     if (customAppName.includes("jupyter")) return APP_LOGOS["jupyter"];
     if (customAppName.includes("godot")) return APP_LOGOS["godot"];
     if (customAppName.includes("discode")) return APP_LOGOS["discode"];
+    const preset = findPreset(customAppName);
+    if (preset?.icon) return { url: presetLogoUrl(preset.icon), label: this.configHandler.formatting.appName };
+    const guess = brandOf(customAppName);
+    if (guess) {
+      const cached = this.customLogoCache.get(guess.brand);
+      if (cached) return { url: cached, label: this.configHandler.formatting.appName };
+      if (!this.probing.has(guess.brand)) {
+        this.probing.add(guess.brand);
+        probeBrandLogo(guess.brand, guess.domain).then((url) => {
+          this.customLogoCache.set(guess.brand, url);
+          this.forceSync();
+        }).catch(() => this.probing.delete(guess.brand));
+      }
+      return {
+        url: faviconTile(guess.domain),
+        label: this.configHandler.formatting.appName
+      };
+    }
     const envName = (vscode.env.appName || "").toLowerCase();
     if (envName.includes("antigravity")) return APP_LOGOS["antigravity"];
     if (envName.includes("codium")) return APP_LOGOS["vscodium"];
@@ -9550,14 +9635,10 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = "") {
                                 <span class="field-sub">Choose app name displayed on Discord (e.g. "Visual Studio Code", "DisCode", or custom template)</span>
                             </label>
                             <input type="text" id="appName" class="input-text" placeholder="Visual Studio Code"/>
-                            <div class="token-row" style="margin-bottom: 8px;">
-                                <span style="font-size: 11px; color: var(--text-muted); align-self: center; margin-right: 4px;">Presets:</span>
-                                <button type="button" class="preset-app-btn" data-preset="Visual Studio Code">Visual Studio Code</button>
-                                <button type="button" class="preset-app-btn" data-preset="DisCode">DisCode</button>
-                                <button type="button" class="preset-app-btn" data-preset="VSCodium">VSCodium</button>
-                                <button type="button" class="preset-app-btn" data-preset="Antigravity">Antigravity</button>
-                                <button type="button" class="preset-app-btn" data-preset="Cursor">Cursor</button>
-                            </div>
+                            <select id="appPreset" class="select-input" style="margin-bottom: 8px;" aria-label="App presets">
+                                <option value="">Presets: pick a coding app, or type any name above</option>
+                                ${APP_PRESETS.map((p) => `<option value="${p.name}">${p.name}</option>`).join("")}
+                            </select>
                             <div class="token-row">
                                 <span style="font-size: 11px; color: var(--text-muted); align-self: center; margin-right: 4px;">Tokens:</span>
                                 <button type="button" class="token-btn" data-target="appName" data-token="{workspace}">+ {workspace}</button>
@@ -9998,6 +10079,8 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = "") {
                 vercel: { label: 'Vercel', url: 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons/vercel.png' }
             };
 
+            const APP_PRESET_LOGOS = ${JSON.stringify(APP_PRESETS.filter((p) => p.icon).map((p) => ({ keys: p.keys, url: presetLogoUrl(p.icon) })))};
+
             function updateSmallBadgePreview() {
                 if (!previewSmallBadge) return;
                 const choice = appLogoSelect ? appLogoSelect.value : 'auto';
@@ -10035,11 +10118,16 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = "") {
                         resolvedUrl = APP_LOGOS_MAP.godot.url;
                     } else if (customAppName.includes('discode')) {
                         resolvedUrl = APP_LOGOS_MAP.discode.url;
+                    } else if (APP_PRESET_LOGOS.find(p => p.keys.some(k => customAppName.includes(k)))) {
+                        resolvedUrl = APP_PRESET_LOGOS.find(p => p.keys.some(k => customAppName.includes(k))).url;
                     } else if (livePreviewData.smallIconUrl) {
                         resolvedUrl = livePreviewData.smallIconUrl;
                     }
                 }
 
+                if (largeImgEl && largeImgEl.value === 'editorIcon' && resolvedUrl) {
+                    updatePreviewIcon(resolvedUrl, livePreviewData.language);
+                }
                 if (resolvedUrl && !resolvedUrl.includes('app-icons/1565769356619554887')) {
                     if (previewSmallBadgeImg) {
                         previewSmallBadgeImg.src = resolvedUrl;
@@ -10293,7 +10381,18 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = "") {
             detailsInput.addEventListener('input', () => triggerLiveApply(false));
             stateInput.addEventListener('input', () => triggerLiveApply(false));
             if (activityTypeSelect) activityTypeSelect.addEventListener('change', () => triggerLiveApply(true));
-            if (appNameInput) appNameInput.addEventListener('input', () => triggerLiveApply(false));
+            const appPresetEl = document.getElementById('appPreset');
+            const BUILTIN_CLIENT_IDS = ['383226320970055681', '1565769356619554887', '790693994793664533'];
+            if (appNameInput) appNameInput.addEventListener('input', () => {
+                if (appPresetEl) {
+                    appPresetEl.value = Array.from(appPresetEl.options).some(o => o.value === appNameInput.value) ? appNameInput.value : '';
+                }
+                const clientIdEl = document.getElementById('clientId');
+                if (clientIdEl && BUILTIN_CLIENT_IDS.includes(clientIdEl.value.trim())) {
+                    clientIdEl.value = '';
+                }
+                triggerLiveApply(false);
+            });
             showElapsedTime.addEventListener('change', () => triggerLiveApply(true));
             showFileName.addEventListener('change', () => triggerLiveApply(true));
             showWorkspaceName.addEventListener('change', () => triggerLiveApply(true));
@@ -10321,21 +10420,15 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = "") {
             if (timerHours) timerHours.addEventListener('input', () => triggerLiveApply(false));
             if (timerMinutes) timerMinutes.addEventListener('input', () => triggerLiveApply(false));
 
-            // Preset app name buttons
-            document.querySelectorAll('.preset-app-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const preset = btn.getAttribute('data-preset');
+            // Preset app name dropdown
+            [appPresetEl].filter(Boolean).forEach(btn => {
+                btn.addEventListener('change', () => {
+                    const preset = btn.value;
                     if (preset && appNameInput) {
                         appNameInput.value = preset;
                         const clientIdEl = document.getElementById('clientId');
-                        if (clientIdEl) {
-                            if (preset === 'Visual Studio Code' || preset === 'Cursor') {
-                                clientIdEl.value = '383226320970055681';
-                            } else if (preset === 'DisCode' || preset === 'Antigravity') {
-                                clientIdEl.value = '1565769356619554887';
-                            } else if (preset === 'VSCodium') {
-                                clientIdEl.value = '790693994793664533';
-                            }
+                        if (clientIdEl && (BUILTIN_CLIENT_IDS.includes(clientIdEl.value.trim()) || !clientIdEl.value.trim())) {
+                            clientIdEl.value = '';
                         }
                         updateSmallBadgePreview();
                         triggerLiveApply(true);
@@ -10435,6 +10528,7 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = "") {
             document.getElementById('btnResetDefaults').addEventListener('click', () => {
                 if (activityTypeSelect) activityTypeSelect.value = 'playing';
                 if (appNameInput) appNameInput.value = 'DisCode';
+                if (appPresetEl) appPresetEl.value = 'DisCode';
                 if (appLogoSelect) appLogoSelect.value = 'auto';
                 updateSmallBadgePreview();
                 syncPreview();
@@ -10471,7 +10565,12 @@ function getSettingsModalWebviewHtml(nonce, cspSource, bannerUri = "") {
                     const s = message.settings;
                     if (s.enabled !== undefined) document.getElementById('enabled').checked = Boolean(s.enabled);
                     if (s['appearance.activityType'] && activityTypeSelect) activityTypeSelect.value = s['appearance.activityType'];
-                    if (s['formatting.appName'] !== undefined && appNameInput) appNameInput.value = s['formatting.appName'];
+                    if (s['formatting.appName'] !== undefined && appNameInput) {
+                        appNameInput.value = s['formatting.appName'];
+                        if (appPresetEl) {
+                            appPresetEl.value = Array.from(appPresetEl.options).some(o => o.value === s['formatting.appName']) ? s['formatting.appName'] : '';
+                        }
+                    }
                     if (s['formatting.detailsEditing'] !== undefined) detailsInput.value = s['formatting.detailsEditing'];
                     if (s['formatting.stateEditing'] !== undefined) stateInput.value = s['formatting.stateEditing'];
                     if (s['formatting.detailsIdle'] !== undefined) document.getElementById('detailsIdle').value = s['formatting.detailsIdle'];
@@ -10783,7 +10882,7 @@ async function activate(context) {
     rpcManager.onConnectionChange((state) => {
       if (state.isConnected) {
         statusBarItem.text = "$(pulse) Discord: Connected";
-        statusBarItem.tooltip = `Terhubung ke Discord sebagai: ${state.user || "User"} (Klik untuk buka Settings / Ctrl+Alt+D)`;
+        statusBarItem.tooltip = `Terhubung ke Discord sebagai: ${state.user || "User"} (Klik untuk buka Settings / Ctrl+Alt+Shift+D)`;
         activityDetector.evaluateState(true);
       } else if (state.isConnecting) {
         statusBarItem.text = "$(sync~spin) Discord: Connecting...";

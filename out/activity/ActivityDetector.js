@@ -36,6 +36,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ActivityDetector = exports.KNOWN_CDN_ICONS = exports.APP_LOGOS = void 0;
 const path = __importStar(require("path"));
 const vscode = __importStar(require("vscode"));
+const presets_1 = require("../presets");
 const DISCODE_OFFICIAL_ICON = 'https://cdn.discordapp.com/app-icons/1565769356619554887/281d28bf86d74667d7721cc09711f77f.png';
 const VSCORD_CDN_BASE = 'https://cdn.jsdelivr.net/gh/LeonardSSH/vscord@main/assets/icons';
 exports.APP_LOGOS = {
@@ -150,6 +151,8 @@ class ActivityDetector {
         this.evaluateState();
     }
     selectionDebounceTimer = null;
+    customLogoCache = new Map();
+    probing = new Set();
     registerListeners() {
         this.disposables.push(vscode.window.onDidChangeActiveTextEditor(() => this.onUserActivity(true)), vscode.window.onDidChangeTextEditorSelection(() => this.onEditorContentOrSelectionChange()), vscode.workspace.onDidChangeTextDocument(e => {
             if (e.contentChanges.length > 0) {
@@ -471,6 +474,29 @@ class ActivityDetector {
             return exports.APP_LOGOS['godot'];
         if (customAppName.includes('discode'))
             return exports.APP_LOGOS['discode'];
+        // Known coding agents: curated logo tile.
+        const preset = (0, presets_1.findPreset)(customAppName);
+        if (preset?.icon)
+            return { url: (0, presets_1.presetLogoUrl)(preset.icon), label: this.configHandler.formatting.appName };
+        // Any other title ("Figma", "github.com"): look the brand up once in the background, cache it,
+        // and show the site favicon until the lookup lands.
+        const guess = (0, presets_1.brandOf)(customAppName);
+        if (guess) {
+            const cached = this.customLogoCache.get(guess.brand);
+            if (cached)
+                return { url: cached, label: this.configHandler.formatting.appName };
+            if (!this.probing.has(guess.brand)) {
+                this.probing.add(guess.brand);
+                (0, presets_1.probeBrandLogo)(guess.brand, guess.domain).then(url => {
+                    this.customLogoCache.set(guess.brand, url);
+                    this.forceSync();
+                }).catch(() => this.probing.delete(guess.brand));
+            }
+            return {
+                url: (0, presets_1.faviconTile)(guess.domain),
+                label: this.configHandler.formatting.appName
+            };
+        }
         // Fallback to editor environment if title is custom
         const envName = (vscode.env.appName || '').toLowerCase();
         if (envName.includes('antigravity'))

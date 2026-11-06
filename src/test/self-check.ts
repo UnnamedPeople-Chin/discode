@@ -1,5 +1,6 @@
 import * as assert from 'assert';
 import { DiscordRpcManager, fitDiscordText } from '../rpc/DiscordRpcManager';
+import { brandOf, findPreset } from '../presets';
 
 function formatTemplate(template: string, vars: Record<string, string>): string {
     return template.replace(/\{(\w+)\}/g, (_, key) => vars[key] ?? '').trim();
@@ -215,7 +216,15 @@ function runSelfCheck(): void {
     assert.ok(fittedLong !== undefined && fittedLong.length === 128, 'String longer than 128 must be truncated to 128 chars');
     assert.ok(fittedLong?.endsWith('…'), 'Truncated string must end with ellipsis');
 
-    console.log('[Self-Check] All invariants passed successfully! (37/37 assertions)');
+    // 13. Invariant: app presets and custom brand guess
+    assert.strictEqual(findPreset('Claude Code')?.icon, 'claude-color', 'Claude Code must resolve to a Claude logo');
+    assert.strictEqual(findPreset('Codex CLI')?.name, 'Codex', 'Codex CLI must match the Codex preset');
+    assert.strictEqual(findPreset('Figma'), undefined, 'Unknown names must not match a preset');
+    assert.deepStrictEqual(brandOf('Figma'), { brand: 'figma', domain: 'figma.com' }, 'Plain name guesses <name>.com');
+    assert.deepStrictEqual(brandOf('github.com'), { brand: 'github', domain: 'github.com' }, 'Dotted name keeps its domain');
+    assert.strictEqual(brandOf('{workspace}'), undefined, 'Template-only names have no brand');
+
+    console.log('[Self-Check] All invariants passed successfully! (43/43 assertions)');
 }
 
 runSelfCheck();

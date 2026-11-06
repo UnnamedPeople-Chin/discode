@@ -53,8 +53,8 @@
     "keybindings": [
       {
         "command": "discordPresence.openSettings",
-        "key": "ctrl+alt+d",
-        "mac": "cmd+alt+d"
+        "key": "ctrl+alt+shift+d",
+        "mac": "cmd+alt+shift+d"
       }
     ],
     "configuration": {

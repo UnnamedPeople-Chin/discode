@@ -35,7 +35,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
         rpcManager.onConnectionChange(state => {
             if (state.isConnected) {
                 statusBarItem.text = '$(pulse) Discord: Connected';
-                statusBarItem.tooltip = `Terhubung ke Discord sebagai: ${state.user || 'User'} (Klik untuk buka Settings / Ctrl+Alt+D)`;
+                statusBarItem.tooltip = `Terhubung ke Discord sebagai: ${state.user || 'User'} (Klik untuk buka Settings / Ctrl+Alt+Shift+D)`;
                 activityDetector.evaluateState(true);
             } else if (state.isConnecting) {
                 statusBarItem.text = '$(sync~spin) Discord: Connecting...';

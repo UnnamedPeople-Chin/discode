@@ -35,6 +35,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 const assert = __importStar(require("assert"));
 const DiscordRpcManager_1 = require("../rpc/DiscordRpcManager");
+const presets_1 = require("../presets");
 function formatTemplate(template, vars) {
     return template.replace(/\{(\w+)\}/g, (_, key) => vars[key] ?? '').trim();
 }
@@ -180,7 +181,14 @@ function runSelfCheck() {
     const fittedLong = (0, DiscordRpcManager_1.fitDiscordText)(longString);
     assert.ok(fittedLong !== undefined && fittedLong.length === 128, 'String longer than 128 must be truncated to 128 chars');
     assert.ok(fittedLong?.endsWith('…'), 'Truncated string must end with ellipsis');
-    console.log('[Self-Check] All invariants passed successfully! (37/37 assertions)');
+    // 13. Invariant: app presets and custom brand guess
+    assert.strictEqual((0, presets_1.findPreset)('Claude Code')?.icon, 'claude-color', 'Claude Code must resolve to a Claude logo');
+    assert.strictEqual((0, presets_1.findPreset)('Codex CLI')?.name, 'Codex', 'Codex CLI must match the Codex preset');
+    assert.strictEqual((0, presets_1.findPreset)('Figma'), undefined, 'Unknown names must not match a preset');
+    assert.deepStrictEqual((0, presets_1.brandOf)('Figma'), { brand: 'figma', domain: 'figma.com' }, 'Plain name guesses <name>.com');
+    assert.deepStrictEqual((0, presets_1.brandOf)('github.com'), { brand: 'github', domain: 'github.com' }, 'Dotted name keeps its domain');
+    assert.strictEqual((0, presets_1.brandOf)('{workspace}'), undefined, 'Template-only names have no brand');
+    console.log('[Self-Check] All invariants passed successfully! (43/43 assertions)');
 }
 runSelfCheck();
 //# sourceMappingURL=self-check.js.map

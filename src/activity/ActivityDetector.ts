@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import { ConfigurationHandler } from '../config/ConfigurationHandler';
 import { ActivityPayload, DiscordRpcManager } from '../rpc/DiscordRpcManager';
+import { brandOf, faviconTile, findPreset, presetLogoUrl, probeBrandLogo } from '../presets';
 
 interface FileIconInfo {
     iconKey: string;
@@ -145,6 +146,8 @@ export class ActivityDetector implements vscode.Disposable {
     }
 
     private selectionDebounceTimer: NodeJS.Timeout | null = null;
+    private customLogoCache = new Map<string, string>();
+    private probing = new Set<string>();
 
     private registerListeners(): void {
         this.disposables.push(
@@ -498,6 +501,28 @@ export class ActivityDetector implements vscode.Disposable {
         if (customAppName.includes('godot')) return APP_LOGOS['godot'];
         if (customAppName.includes('discode')) return APP_LOGOS['discode'];
 
+        // Known coding agents: curated logo tile.
+        const preset = findPreset(customAppName);
+        if (preset?.icon) return { url: presetLogoUrl(preset.icon), label: this.configHandler.formatting.appName };
+
+        // Any other title ("Figma", "github.com"): look the brand up once in the background, cache it,
+        // and show the site favicon until the lookup lands.
+        const guess = brandOf(customAppName);
+        if (guess) {
+            const cached = this.customLogoCache.get(guess.brand);
+            if (cached) return { url: cached, label: this.configHandler.formatting.appName };
+            if (!this.probing.has(guess.brand)) {
+                this.probing.add(guess.brand);
+                probeBrandLogo(guess.brand, guess.domain).then(url => {
+                    this.customLogoCache.set(guess.brand, url);
+                    this.forceSync();
+                }).catch(() => this.probing.delete(guess.brand));
+            }
+            return {
+                url: faviconTile(guess.domain),
+                label: this.configHandler.formatting.appName
+            };
+        }
         // Fallback to editor environment if title is custom
         const envName = (vscode.env.appName || '').toLowerCase();
         if (envName.includes('antigravity')) return APP_LOGOS['antigravity'];

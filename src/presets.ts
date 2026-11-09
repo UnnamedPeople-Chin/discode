@@ -27,7 +27,7 @@ export const APP_PRESETS: AppPreset[] = [
     { name: 'VSCodium', keys: ['vscodium'] },
     { name: 'Antigravity', keys: ['antigravity'] },
     { name: 'Cursor', keys: ['cursor'] },
-    { name: 'Claude Code', keys: ['claude code'], icon: 'claude-color' },
+    { name: 'Claude Code', keys: ['claude code', 'claudecode', 'clawd'], icon: 'claudecode-color' },
     { name: 'Claude', keys: ['claude'], icon: 'claude-color' },
     { name: 'Codex', keys: ['codex', 'chatgpt', 'openai'], icon: 'openai' },
     { name: 'Gemini CLI', keys: ['gemini'], icon: 'gemini-color' },

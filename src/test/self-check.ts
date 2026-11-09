@@ -217,7 +217,8 @@ function runSelfCheck(): void {
     assert.ok(fittedLong?.endsWith('…'), 'Truncated string must end with ellipsis');
 
     // 13. Invariant: app presets and custom brand guess
-    assert.strictEqual(findPreset('Claude Code')?.icon, 'claude-color', 'Claude Code must resolve to a Claude logo');
+    assert.strictEqual(findPreset('Claude Code')?.icon, 'claudecode-color', 'Claude Code must resolve to the Claude Code mascot logo');
+    assert.strictEqual(findPreset('Claude')?.icon, 'claude-color', 'Claude must resolve to the standard Claude sunburst logo');
     assert.strictEqual(findPreset('Codex CLI')?.name, 'Codex', 'Codex CLI must match the Codex preset');
     assert.strictEqual(findPreset('Figma'), undefined, 'Unknown names must not match a preset');
     assert.deepStrictEqual(brandOf('Figma'), { brand: 'figma', domain: 'figma.com' }, 'Plain name guesses <name>.com');

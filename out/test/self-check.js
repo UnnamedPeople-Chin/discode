@@ -182,7 +182,8 @@ function runSelfCheck() {
     assert.ok(fittedLong !== undefined && fittedLong.length === 128, 'String longer than 128 must be truncated to 128 chars');
     assert.ok(fittedLong?.endsWith('…'), 'Truncated string must end with ellipsis');
     // 13. Invariant: app presets and custom brand guess
-    assert.strictEqual((0, presets_1.findPreset)('Claude Code')?.icon, 'claude-color', 'Claude Code must resolve to a Claude logo');
+    assert.strictEqual((0, presets_1.findPreset)('Claude Code')?.icon, 'claudecode-color', 'Claude Code must resolve to the Claude Code mascot logo');
+    assert.strictEqual((0, presets_1.findPreset)('Claude')?.icon, 'claude-color', 'Claude must resolve to the standard Claude sunburst logo');
     assert.strictEqual((0, presets_1.findPreset)('Codex CLI')?.name, 'Codex', 'Codex CLI must match the Codex preset');
     assert.strictEqual((0, presets_1.findPreset)('Figma'), undefined, 'Unknown names must not match a preset');
     assert.deepStrictEqual((0, presets_1.brandOf)('Figma'), { brand: 'figma', domain: 'figma.com' }, 'Plain name guesses <name>.com');

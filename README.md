@@ -16,7 +16,7 @@ A high-performance, privacy-conscious Rich Presence extension for Visual Studio 
 
 DisCode establishes a robust, production-grade integration between the **VS Code Extension API** and the **Discord Local RPC IPC socket**. Built with a centralized Singleton state orchestrator, exponential backoff reconnection, and an anti-leak disposal lifecycle, DisCode guarantees zero editor lag. 
 
-Key highlights include an **Interactive GUI Settings Dashboard with a Live Discord Profile Preview (`Ctrl + Alt + D`)**, dynamic language logo matching (React, TypeScript, Python, Go, Docker, etc.), granular elapsed timer controls, and sub-second instant synchronization without restarting your editor.
+Key highlights include an **Interactive GUI Settings Dashboard with a Live Discord Profile Preview (`Ctrl + Alt + Shift + D`)**, customizable activity verbs (`Playing`, `Watching`, `Listening to`, `Competing in`), built-in **AI Coding Agent & IDE Presets** (`Claude Code`, `Cursor`, `Antigravity`, `Windsurf`, `Codex`, `GitHub Copilot`, etc.) with automatic dark-tile brand logo resolution for any custom app name, dynamic language logo matching (React, TypeScript, Python, Go, Docker, Dart, etc.), granular elapsed timer controls, and sub-second instant synchronization without restarting your editor.
 
 ---
 
@@ -50,9 +50,11 @@ DisCode is engineered strictly as a client-side integration and prioritizes deve
 ## Key Features
 
 ### 1. GUI Settings Dashboard & Live Profile Card Preview
-- **Interactive Webview (`Ctrl + Alt + D`):** Adjust all extension options through a Discord-styled visual dashboard without modifying raw JSON configuration files.
+- **Interactive Webview (`Ctrl + Alt + Shift + D`):** Adjust all extension options through a Discord-styled visual dashboard without modifying raw JSON configuration files.
 - **Authentic Live Preview:** A real-time replica of the Discord user profile card sits alongside the configuration form, updating instantly as you edit templates, toggle options, or change icon styles.
-- **Clickable Variable Pills:** Click placeholder tags (`{fileName}`, `{language}`, `{workspace}`, `{gitBranch}`, `{currentLine}`) to automatically insert them into your status text.
+- **Activity Verb & App Title Customizer:** Switch between `Playing`, `Watching`, `Listening to`, and `Competing in`, and customize the displayed application title using either the **Coding Agent & IDE Presets Dropdown** (`Visual Studio Code`, `DisCode`, `VSCodium`, `Antigravity`, `Cursor`, `Claude Code`, `Claude`, `Codex`, `Gemini CLI`, `GitHub Copilot`, `Windsurf`, `Kiro`, `Trae`, `Cline`, `Replit`, `Lovable`, `v0`, `Qwen Code`, `DeepSeek`, `Kimi`, `Perplexity`, `Ollama`, `Grok`, `Mistral`) or any custom name/template.
+- **Universal Brand & Badge Logo Engine:** Pick from 17+ curated editor/tool badges or use **Auto Mode**—which automatically matches your application title to official dark-padded logos (including the `Claude Code` *Clawd* mascot and 3,500+ global brand/developer logos via LobeHub, Iconify Logos, Devicon, Simple Icons, and domain favicons).
+- **Clickable Variable Pills:** Click placeholder tags (`{fileName}`, `{language}`, `{workspace}`, `{gitBranch}`, `{currentLine}`, `{lineCount}`) to automatically insert them into your status text or application title.
 
 ### 2. Advanced Elapsed Timer Engine
 - **Multiple Timer Modes:**
@@ -122,7 +124,7 @@ Ensure **Display current activity as a status message** is enabled in Discord un
 
 | Shortcut / Trigger | Action |
 | :--- | :--- |
-| **`Ctrl + Alt + D`** (macOS: `Cmd + Alt + D`) | Opens the **DisCode Settings Dashboard & Live Preview**. |
+| **`Ctrl + Alt + Shift + D`** (macOS: `Cmd + Alt + Shift + D`) | Opens the **DisCode Settings Dashboard & Live Preview**. |
 | **Status Bar Item** (`Discord: Connected`) | Displays live IPC status and opens settings on click. |
 | **`Ctrl + Shift + P`** -> `Discord Presence: Reset Elapsed Timer` | Resets the elapsed coding counter back to `00:00`. |
 
